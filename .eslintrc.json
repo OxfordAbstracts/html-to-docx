@@ -6,7 +6,8 @@
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": ["error"],
-    "default-case": "off"
+    "default-case": "off",
+    "import/extensions": ["error", "always"]
   },
   "ignorePatterns": "dist/**/*.js"
 }
