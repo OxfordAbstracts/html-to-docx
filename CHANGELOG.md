@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.1](https://github.com/privateOmega/html-to-docx/compare/v1.8.0...v1.8.1) (2025-01-21)
+
+
+### Bug Fixes
+
+* correctly handle a percentage width for table cells ([ea17bbe](https://github.com/privateOmega/html-to-docx/commit/ea17bbe15e6403cb7aeeda5dfc5a9ef74ecc6b7a))
+
 ## [1.8.0](https://github.com/privateOmega/html-to-docx/compare/v1.7.0...v1.8.0) (2023-03-26)
 
 
