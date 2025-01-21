@@ -275,6 +275,8 @@ const fixupColumnWidth = (columnWidthString) => {
   } else if (inchRegex.test(columnWidthString)) {
     const matchedParts = columnWidthString.match(inchRegex);
     return inchToTWIP(matchedParts[1]);
+  } else {
+    return columnWidthString;
   }
 };
 
@@ -1111,12 +1113,17 @@ const buildTableCellBorders = (tableCellBorder) => {
   return tableCellBordersFragment;
 };
 
-const buildTableCellWidth = (tableCellWidth) =>
-  fragment({ namespaceAlias: { w: namespaces.w } })
-    .ele('@w', 'tcW')
-    .att('@w', 'w', fixupColumnWidth(tableCellWidth))
-    .att('@w', 'type', 'dxa')
-    .up();
+const buildTableCellWidth = (tableCellWidth) => {
+  const colWidth = fixupColumnWidth(tableCellWidth);
+  const frag = fragment({ namespaceAlias: { w: namespaces.w } }).ele('@w', 'tcW');
+
+  if (typeof colWidth === 'string' && colWidth.endsWith('%')) {
+    // The % symbol must be included according to http://officeopenxml.com/WPtableWidth.php
+    return frag.att('@w', 'w', colWidth).att('@w', 'type', 'pct').up();
+  } else {
+    return frag.att('@w', 'w', colWidth).att('@w', 'type', 'dxa').up();
+  }
+};
 
 const buildTableCellProperties = (attributes) => {
   const tableCellPropertiesFragment = fragment({ namespaceAlias: { w: namespaces.w } }).ele(
