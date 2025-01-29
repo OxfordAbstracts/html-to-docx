@@ -1,20 +1,16 @@
 lint:
   npx eslint --fix .
 
+prettier-check:
+  npx prettier --check --write '**/*.js'
+
 build:
   npx rollup -c
 
 test-unit:
-  node tests/main.js
+  node --test tests/**/*.js
 
-test: lint build test-unit
-  node example/example-node.js
+test: lint prettier-check build test-unit
 
 release:
-  standard-version
-
-prettier-check:
-  prettier --check '**/*.{js}'
-
-validate:
-  run-s lint prettier:check
+  npx standard-version
