@@ -41,7 +41,7 @@ function generateHTMLWithImages(numberOfImages = 4, imgSizeInMb = 4) {
   return html;
 }
 
-it('handles a large image in HTML file', async () => {
+it('handles large images in HTML file', async () => {
   const largeHTML = generateHTMLWithImages();
   const docxContent = await HTMLtoDOCX(largeHTML, null, {
     createdAt,
