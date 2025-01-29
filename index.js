@@ -18,6 +18,7 @@ const minifyHTMLString = (htmlString) => {
 
     throw new Error('invalid html string');
   } catch (error) {
+    console.error(error);
     return null;
   }
 };
