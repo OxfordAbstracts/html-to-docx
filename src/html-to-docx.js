@@ -1,7 +1,6 @@
 import { create } from 'xmlbuilder2';
 import VNode from 'virtual-dom/vnode/vnode.js';
 import VText from 'virtual-dom/vnode/vtext.js';
-// eslint-disable-next-line import/no-named-default
 import { default as HTMLToVDOM } from 'html-to-vdom';
 import { decode } from 'html-entities';
 
@@ -78,7 +77,6 @@ const normalizeUnits = (dimensioningObject, defaultDimensionsProperty) => {
       }
     });
   } else {
-    // eslint-disable-next-line no-param-reassign
     normalizedUnitResult = null;
   }
 
@@ -88,13 +86,12 @@ const normalizeUnits = (dimensioningObject, defaultDimensionsProperty) => {
 const normalizeDocumentOptions = (documentOptions) => {
   const normalizedDocumentOptions = { ...documentOptions };
   Object.keys(documentOptions).forEach((key) => {
-    // eslint-disable-next-line default-case
     switch (key) {
       case 'pageSize':
       case 'margins':
         normalizedDocumentOptions[key] = normalizeUnits(
           documentOptions[key],
-          defaultDocumentOptions[key]
+          defaultDocumentOptions[key],
         );
         break;
       case 'fontSize':
@@ -114,23 +111,21 @@ async function addFilesToContainer(
   htmlString,
   suppliedDocumentOptions,
   headerHTMLString,
-  footerHTMLString
+  footerHTMLString,
 ) {
   const normalizedDocumentOptions = normalizeDocumentOptions(suppliedDocumentOptions);
   const documentOptions = mergeOptions(defaultDocumentOptions, normalizedDocumentOptions);
 
   if (documentOptions.header && !headerHTMLString) {
-    // eslint-disable-next-line no-param-reassign
     headerHTMLString = defaultHTMLString;
   }
   if (documentOptions.footer && !footerHTMLString) {
-    // eslint-disable-next-line no-param-reassign
     footerHTMLString = defaultHTMLString;
   }
   if (documentOptions.decodeUnicode) {
-    headerHTMLString = decode(headerHTMLString); // eslint-disable-line no-param-reassign
-    htmlString = decode(htmlString); // eslint-disable-line no-param-reassign
-    footerHTMLString = decode(footerHTMLString); // eslint-disable-line no-param-reassign
+    headerHTMLString = decode(headerHTMLString);
+    htmlString = decode(htmlString);
+    footerHTMLString = decode(footerHTMLString);
   }
 
   const docxDocument = new DocxDocument({ zip, htmlString, ...documentOptions });
@@ -142,7 +137,7 @@ async function addFilesToContainer(
     .file(
       '.rels',
       create({ encoding: 'UTF-8', standalone: true }, relsXML).toString({ prettyPrint: true }),
-      { createFolders: false }
+      { createFolders: false },
     );
 
   zip.folder('docProps').file('core.xml', docxDocument.generateCoreXML(), {
@@ -161,7 +156,7 @@ async function addFilesToContainer(
       docxDocument.relationshipFilename,
       headerType,
       fileNameWithExt,
-      internalRelationship
+      internalRelationship,
     );
 
     zip.folder(wordFolder).file(fileNameWithExt, headerXML.toString({ prettyPrint: true }), {
@@ -182,7 +177,7 @@ async function addFilesToContainer(
       docxDocument.relationshipFilename,
       footerType,
       fileNameWithExt,
-      internalRelationship
+      internalRelationship,
     );
 
     zip.folder(wordFolder).file(fileNameWithExt, footerXML.toString({ prettyPrint: true }), {
@@ -196,7 +191,7 @@ async function addFilesToContainer(
     docxDocument.relationshipFilename,
     themeType,
     `${themeFolder}/${themeFileNameWithExt}`,
-    internalRelationship
+    internalRelationship,
   );
   zip
     .folder(wordFolder)

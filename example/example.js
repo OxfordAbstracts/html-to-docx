@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import fs from 'fs';
 // FIXME: Incase you have the npm package
 // import HTMLtoDOCX from 'html-to-docx';
