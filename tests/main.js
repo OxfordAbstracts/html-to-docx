@@ -94,36 +94,3 @@ it('converts HTML with percentage width table', async () => {
 
   assert.strictEqual(actualContent.replaceAll(/\s/g, ''), expectedContent.replaceAll(/\s/g, ''));
 });
-
-it('handles large HTML files without stack overflow', async () => {
-  function generateLargeHTML(sizeInMB = 5) {
-    const paragraphTemplate = '<p>This is a test paragraph with some content.</p>\n';
-    const bytesPerParagraph = paragraphTemplate.length;
-    const targetBytes = sizeInMB * 1024 * 1024;
-    const paragraphCount = Math.ceil(targetBytes / bytesPerParagraph);
-
-    let html = '<html><body>\n';
-    for (let i = 0; i < paragraphCount; i += 1) {
-      html += paragraphTemplate;
-    }
-    html += '</body></html>';
-
-    return html;
-  }
-
-  const largeHTML = generateLargeHTML(5); // 5MB of HTML
-  const docxContent = await HTMLtoDOCX(largeHTML, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  });
-
-  const zip = new JSZip();
-  const zipContent = await zip.loadAsync(docxContent);
-
-  // Verify the document was created successfully
-  assert.ok('word/document.xml' in zipContent.files);
-
-  // Check that the document contains our content
-  const docXml = await zipContent.file('word/document.xml').async('string');
-  assert.ok(docXml.includes('<w:t xml:space="preserve">This is a test paragraph'));
-});

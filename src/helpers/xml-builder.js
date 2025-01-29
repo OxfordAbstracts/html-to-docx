@@ -49,6 +49,7 @@ import {
 } from '../constants.js';
 import { vNodeHasChildren } from '../utils/vnode.js';
 import { isValidUrl } from '../utils/url.js';
+import { extractBase64Data } from '../utils/base64.js';
 
 const fixupColorCode = (colorCodeString) => {
   if (Object.prototype.hasOwnProperty.call(colorNames, colorCodeString.toLowerCase())) {
@@ -978,8 +979,7 @@ const buildParagraph = async (vNode, attributes, docxDocumentInstance) => {
               break;
             }
           } else {
-            // eslint-disable-next-line no-useless-escape
-            base64String = imageSource.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
+            base64String = extractBase64Data(base64String).data;
           }
           const imageBuffer = Buffer.from(decodeURIComponent(base64String), 'base64');
           const imageProperties = sizeOf(imageBuffer);
@@ -1032,8 +1032,7 @@ const buildParagraph = async (vNode, attributes, docxDocumentInstance) => {
           return paragraphFragment;
         }
       } else {
-        // eslint-disable-next-line no-useless-escape
-        base64String = base64String.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)[2];
+        base64String = extractBase64Data(base64String).data;
       }
 
       const imageBuffer = Buffer.from(decodeURIComponent(base64String), 'base64');

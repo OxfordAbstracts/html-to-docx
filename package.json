@@ -55,6 +55,7 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/virtual-dom": "^2.1.4",
+    "canvas": "^3.1.0",
     "eslint": "^9.19.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^10.0.1",
