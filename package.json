@@ -12,16 +12,13 @@
   ],
   "type": "module",
   "main": "index.js",
-  "module": "dist/html-to-docx.esm.js",
   "scripts": {
     "test": "npm run build && npm run test-unit",
     "test-unit": "node tests/main.js",
-    "prerelease": "rollup -c",
     "release": "standard-version",
     "lint": "eslint --fix .",
     "prettier:check": "prettier --check '**/*.{js}'",
-    "validate": "run-s lint prettier:check",
-    "build": "rollup -c"
+    "validate": "run-s lint prettier:check"
   },
   "repository": {
     "type": "git",
@@ -51,9 +48,6 @@
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "@eslint/js": "^9.19.0",
-    "@rollup/plugin-commonjs": "^28.0.2",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/virtual-dom": "^2.1.4",
     "canvas": "^3.1.0",
     "eslint": "^9.19.0",
@@ -65,10 +59,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
     "prettier": "^3.4.2",
-    "rollup": "^4.32.1",
-    "rollup-plugin-cleaner": "^1.0.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-terser": "^7.0.2",
     "standard-version": "^9.5.0"
   },
   "dependencies": {

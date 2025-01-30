@@ -4,13 +4,10 @@ lint:
 prettier-check:
   npx prettier --check --write '**/*.js'
 
-build:
-  npx rollup -c
-
 test-unit:
   node --test tests/**/*.js
 
-test: lint prettier-check build test-unit
+test: lint prettier-check test-unit
 
 release:
   npx standard-version
