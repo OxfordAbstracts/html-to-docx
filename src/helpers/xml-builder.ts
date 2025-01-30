@@ -7,7 +7,7 @@ import colorNames from 'color-name';
 import lodash from 'lodash';
 import sizeOf from 'image-size';
 
-import namespaces from '../namespaces.js';
+import namespaces from '../namespaces.ts';
 import {
   rgbToHex,
   hslToHex,
@@ -16,7 +16,7 @@ import {
   hexRegex,
   hex3Regex,
   hex3ToHex,
-} from '../utils/color-conversion.js';
+} from '../utils/color-conversion.ts';
 import {
   pixelToEMU,
   pixelRegex,
@@ -34,8 +34,8 @@ import {
   cmRegex,
   inchRegex,
   inchToTWIP,
-} from '../utils/unit-conversion.js';
-import { buildImage, buildList } from './render-document-file.js';
+} from '../utils/unit-conversion.ts';
+import { buildImage, buildList } from './render-document-file.ts';
 import {
   defaultFont,
   hyperlinkType,
@@ -44,10 +44,10 @@ import {
   verticalAlignValues,
   imageType,
   internalRelationship,
-} from '../constants.js';
-import { vNodeHasChildren } from '../utils/vnode.js';
-import { isValidUrl } from '../utils/url.js';
-import { fetchImageToDataUrl, extractBase64Data } from '../utils/base64.js';
+} from '../constants.ts';
+import { vNodeHasChildren } from '../utils/vnode.ts';
+import { isValidUrl } from '../utils/url.ts';
+import { fetchImageToDataUrl, extractBase64Data } from '../utils/base64.ts';
 
 const fixupColorCode = (colorCodeString) => {
   if (Object.prototype.hasOwnProperty.call(colorNames, colorCodeString.toLowerCase())) {

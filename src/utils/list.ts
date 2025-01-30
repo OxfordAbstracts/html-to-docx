@@ -1,5 +1,5 @@
 class ListStyleBuilder {
-  // defaults is an object passed in from constants.js / numbering with the following properties:
+  // defaults is an object passed in from constants.ts / numbering with the following properties:
   // defaultOrderedListStyleType: 'decimal' (unless otherwise specified)
   constructor(defaults) {
     this.defaults = defaults || { defaultOrderedListStyleType: 'decimal' };

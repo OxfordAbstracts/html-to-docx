@@ -1,7 +1,7 @@
 import fs from 'fs';
-import { default as HTMLtoDOCX } from '../index.js';
+import { default as HTMLtoDOCX } from '../index.ts';
 
-import test from 'node:test';
+import { test } from 'node:test';
 const filePath = 'tests/tmp/example.docx';
 
 const htmlString = `<!DOCTYPE html>

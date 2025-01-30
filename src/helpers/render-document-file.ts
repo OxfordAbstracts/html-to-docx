@@ -7,12 +7,12 @@ import isVText from 'virtual-dom/vnode/is-vtext.js';
 import { default as HTMLToVDOM } from 'html-to-vdom';
 import sizeOf from 'image-size';
 
-import * as xmlBuilder from './xml-builder.js';
-import namespaces from '../namespaces.js';
-import { imageType, internalRelationship } from '../constants.js';
-import { vNodeHasChildren } from '../utils/vnode.js';
-import { isValidUrl } from '../utils/url.js';
-import { fetchImageToDataUrl } from '../utils/base64.js';
+import * as xmlBuilder from './xml-builder.ts';
+import namespaces from '../namespaces.ts';
+import { imageType, internalRelationship } from '../constants.ts';
+import { vNodeHasChildren } from '../utils/vnode.ts';
+import { isValidUrl } from '../utils/url.ts';
+import { fetchImageToDataUrl } from '../utils/base64.ts';
 
 const convertHTML = HTMLToVDOM({
   VNode,

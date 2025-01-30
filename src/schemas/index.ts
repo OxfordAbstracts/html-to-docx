@@ -1,0 +1,12 @@
+export { default as contentTypesXML } from './content-types.ts';
+export { default as generateCoreXML } from './core.ts';
+export { default as documentRelsXML } from './document-rels.ts';
+export { default as relsXML } from './rels.ts';
+export { default as generateNumberingXMLTemplate } from './numbering.ts';
+export { default as generateStylesXML } from './styles.ts';
+export { default as fontTableXML } from './font-table.ts';
+export { default as generateThemeXML } from './theme.ts';
+export { default as settingsXML } from './settings.ts';
+export { default as webSettingsXML } from './web-settings.ts';
+export { default as genericRelsXML } from './generic-rels.ts';
+export { default as generateDocumentTemplate } from './document.template.ts';

@@ -1,4 +1,4 @@
-import { defaultFont } from '../constants.js';
+import { defaultFont } from '../constants.ts';
 
 const generateThemeXML = (font = defaultFont) => `
     <?xml version="1.0" encoding="UTF-8" standalone="yes"?>

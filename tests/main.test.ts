@@ -1,13 +1,13 @@
 import fs from 'fs/promises';
-import it from 'node:test';
+import { test } from 'node:test';
 import assert from 'assert';
 import JSZip from 'jszip';
 
-import HTMLtoDOCX from '../index.js';
+import HTMLtoDOCX from '../index.ts';
 
 const createdAt = new Date('2025-01-01');
 
-it('creates a valid Docx file', async () => {
+test('creates a valid Docx file', async () => {
   const htmlStr = `
     <html>
       <head>
@@ -44,7 +44,7 @@ it('creates a valid Docx file', async () => {
   assert.ok('word/webSettings.xml' in filesObj);
 });
 
-it('converts HTML with table', async () => {
+test('converts HTML with table', async () => {
   const htmlStr = `
     <html>
       <body>
@@ -70,7 +70,7 @@ it('converts HTML with table', async () => {
   assert.strictEqual(actualContent.replaceAll(/\s/g, ''), expectedContent.replaceAll(/\s/g, ''));
 });
 
-it('converts HTML with percentage width table', async () => {
+test('converts HTML with percentage width table', async () => {
   const htmlStr = `
     <html>
       <body>

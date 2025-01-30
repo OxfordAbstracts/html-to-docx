@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises';
-import it from 'node:test';
+import { test } from 'node:test';
 import assert from 'assert';
 import JSZip from 'jszip';
 
-import HTMLtoDOCX from '../index.js';
+import HTMLtoDOCX from '../index.ts';
 
 const createdAt = new Date('2025-01-01');
 
@@ -52,7 +52,7 @@ function generateLargeHTML(sizeInMB = 2) {
   `;
 }
 
-it('handles a large HTML file', async () => {
+test('handles a large HTML file', async () => {
   const largeHTML = generateLargeHTML();
   const docxContent = await HTMLtoDOCX(largeHTML, null, {
     createdAt,
@@ -68,7 +68,7 @@ it('handles a large HTML file', async () => {
   assert.ok(docXml.includes('<w:t xml:space="preserve">This is a test paragraph'));
 });
 
-it('handles a large and complicated HTML file', async () => {
+test('handles a large and complicated HTML file', async () => {
   const largeHTML = await fs.readFile('tests/html5-test-page.html', 'utf8');
   const docxContent = await HTMLtoDOCX(largeHTML, null, {
     createdAt,

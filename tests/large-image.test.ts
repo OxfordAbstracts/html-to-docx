@@ -1,9 +1,9 @@
-import it from 'node:test';
+import { test } from 'node:test';
 import assert from 'assert';
 import JSZip from 'jszip';
 import { createCanvas } from 'canvas';
 
-import HTMLtoDOCX from '../index.js';
+import HTMLtoDOCX from '../index.ts';
 
 const createdAt = new Date('2025-01-01');
 
@@ -41,7 +41,7 @@ function generateHTMLWithImages(numberOfImages = 4, imgSizeInMb = 4) {
   return html;
 }
 
-it('handles large images in HTML file', async () => {
+test('handles large images in HTML file', async () => {
   const largeHTML = generateHTMLWithImages();
   const docxContent = await HTMLtoDOCX(largeHTML, null, {
     createdAt,

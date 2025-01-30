@@ -1,5 +1,5 @@
-import namespaces from '../namespaces.js';
-import { applicationName } from '../constants.js';
+import namespaces from '../namespaces.ts';
+import { applicationName } from '../constants.ts';
 
 const generateCoreXML = (
   title = '',

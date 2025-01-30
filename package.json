@@ -11,14 +11,10 @@
     "word"
   ],
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "npm run build && npm run test-unit",
-    "test-unit": "node tests/main.js",
-    "release": "standard-version",
-    "lint": "eslint --fix .",
-    "prettier:check": "prettier --check '**/*.{js}'",
-    "validate": "run-s lint prettier:check"
+    "start": "# ⚠️ Run `just start` instead",
+    "test": "# ⚠️ Run `just test` instead"
   },
   "repository": {
     "type": "git",
@@ -76,7 +72,7 @@
     "xmlbuilder2": "3.1.1"
   },
   "lint-staged": {
-    "src/**/*.js": [
+    "src/**/*.ts": [
       "prettier --write",
       "eslint --fix"
     ]

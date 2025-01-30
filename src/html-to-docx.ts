@@ -4,9 +4,9 @@ import VText from 'virtual-dom/vnode/vtext.js';
 import { default as HTMLToVDOM } from 'html-to-vdom';
 import { decode } from 'html-entities';
 
-import { relsXML } from './schemas/index.js';
-import DocxDocument from './docx-document.js';
-import { renderDocumentFile } from './helpers/index.js';
+import { relsXML } from './schemas/index.ts';
+import DocxDocument from './docx-document.ts';
+import { renderDocumentFile } from './helpers/index.ts';
 import {
   pixelRegex,
   pixelToTWIP,
@@ -16,7 +16,7 @@ import {
   inchToTWIP,
   pointRegex,
   pointToHIP,
-} from './utils/unit-conversion.js';
+} from './utils/unit-conversion.ts';
 import {
   defaultDocumentOptions,
   defaultHTMLString,
@@ -31,7 +31,7 @@ import {
   wordFolder,
   themeFolder,
   themeType,
-} from './constants.js';
+} from './constants.ts';
 
 const convertHTML = HTMLToVDOM({
   VNode,
