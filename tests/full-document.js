@@ -213,7 +213,7 @@ const htmlString = `<!DOCTYPE html>
   </body>
 </html>`;
 
-test('creates a valid DocX file from a full HTML document', async () => {
+test('creates a valid Docx file from a full HTML document', async () => {
   const fileBuffer = await HTMLtoDOCX(htmlString, null, {
     table: { row: { cantSplit: true } },
     footer: true,
@@ -222,7 +222,7 @@ test('creates a valid DocX file from a full HTML document', async () => {
 
   fs.writeFile(filePath, fileBuffer, (error) => {
     if (error) {
-      console.error('Docx file creation failed');
+      console.error('ERROR: Docx file creation failed');
       return;
     }
     console.log('Docx file created successfully');

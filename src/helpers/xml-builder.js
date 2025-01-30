@@ -5,8 +5,6 @@ import isVNode from 'virtual-dom/vnode/is-vnode.js';
 import isVText from 'virtual-dom/vnode/is-vtext.js';
 import colorNames from 'color-name';
 import lodash from 'lodash';
-import imageToBase64 from 'image-to-base64';
-import mimeTypes from 'mime-types';
 import sizeOf from 'image-size';
 
 import namespaces from '../namespaces.js';
@@ -49,7 +47,7 @@ import {
 } from '../constants.js';
 import { vNodeHasChildren } from '../utils/vnode.js';
 import { isValidUrl } from '../utils/url.js';
-import { extractBase64Data } from '../utils/base64.js';
+import { fetchImageToDataUrl, extractBase64Data } from '../utils/base64.js';
 
 const fixupColorCode = (colorCodeString) => {
   if (Object.prototype.hasOwnProperty.call(colorNames, colorCodeString.toLowerCase())) {
@@ -964,23 +962,10 @@ const buildParagraph = async (vNode, attributes, docxDocumentInstance) => {
       for (let index = 0; index < vNode.children.length; index++) {
         const childVNode = vNode.children[index];
         if (childVNode.tagName === 'img') {
-          let base64String;
-          const imageSource = childVNode.properties.src;
-          if (isValidUrl(imageSource)) {
-            base64String = await imageToBase64(imageSource).catch((error) => {
-              console.warning(`skipping image download and conversion due to ${error}`);
-            });
-
-            if (base64String && mimeTypes.lookup(imageSource)) {
-              childVNode.properties.src = `data:${mimeTypes.lookup(
-                imageSource,
-              )};base64, ${base64String}`;
-            } else {
-              break;
-            }
-          } else {
-            base64String = extractBase64Data(base64String).data;
+          if (isValidUrl(childVNode.properties.src)) {
+            childVNode.properties.src = await fetchImageToDataUrl(childVNode.properties.src);
           }
+          const base64String = extractBase64Data(childVNode.properties.src).base64Content;
           const imageBuffer = Buffer.from(decodeURIComponent(base64String), 'base64');
           const imageProperties = sizeOf(imageBuffer);
 
@@ -1018,23 +1003,10 @@ const buildParagraph = async (vNode, attributes, docxDocumentInstance) => {
     // Or in case the vNode is something like img
     if (isVNode(vNode) && vNode.tagName === 'img') {
       const imageSource = vNode.properties.src;
-      let base64String = imageSource;
-      if (isValidUrl(imageSource)) {
-        base64String = await imageToBase64(imageSource).catch((error) => {
-          console.warning(`skipping image download and conversion due to ${error}`);
-        });
-
-        if (base64String && mimeTypes.lookup(imageSource)) {
-          vNode.properties.src = `data:${mimeTypes.lookup(imageSource)};base64, ${base64String}`;
-        } else {
-          paragraphFragment.up();
-
-          return paragraphFragment;
-        }
-      } else {
-        base64String = extractBase64Data(base64String).data;
+      if (isValidUrl(vNode.properties.src)) {
+        vNode.properties.src = await fetchImageToDataUrl(vNode.properties.src);
       }
-
+      const base64String = extractBase64Data(imageSource).base64Content;
       const imageBuffer = Buffer.from(decodeURIComponent(base64String), 'base64');
       const imageProperties = sizeOf(imageBuffer);
 

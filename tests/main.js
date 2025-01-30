@@ -7,7 +7,7 @@ import HTMLtoDOCX from '../index.js';
 
 const createdAt = new Date('2025-01-01');
 
-it('creates a valid DocX file', async () => {
+it('creates a valid Docx file', async () => {
   const htmlStr = `
     <html>
       <head>

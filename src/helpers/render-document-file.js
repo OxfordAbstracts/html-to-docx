@@ -6,14 +6,13 @@ import isVNode from 'virtual-dom/vnode/is-vnode.js';
 import isVText from 'virtual-dom/vnode/is-vtext.js';
 import { default as HTMLToVDOM } from 'html-to-vdom';
 import sizeOf from 'image-size';
-import imageToBase64 from 'image-to-base64';
-import mimeTypes from 'mime-types';
 
 import * as xmlBuilder from './xml-builder.js';
 import namespaces from '../namespaces.js';
 import { imageType, internalRelationship } from '../constants.js';
 import { vNodeHasChildren } from '../utils/vnode.js';
 import { isValidUrl } from '../utils/url.js';
+import { fetchImageToDataUrl } from '../utils/base64.js';
 
 const convertHTML = HTMLToVDOM({
   VNode,
@@ -22,20 +21,11 @@ const convertHTML = HTMLToVDOM({
 
 export const buildImage = async (docxDocumentInstance, vNode, maximumWidth = null) => {
   let response = null;
-  let base64Uri = null;
   try {
-    const imageSource = vNode.properties.src;
-    if (isValidUrl(imageSource)) {
-      const base64String = await imageToBase64(imageSource).catch((error) => {
-        console.warning(`skipping image download and conversion due to ${error}`);
-      });
-
-      if (base64String) {
-        base64Uri = `data:${mimeTypes.lookup(imageSource)};base64, ${base64String}`;
-      }
-    } else {
-      base64Uri = decodeURIComponent(vNode.properties.src);
+    if (isValidUrl(vNode.properties.src)) {
+      vNode.properties.src = await fetchImageToDataUrl(vNode.properties.src);
     }
+    const base64Uri = decodeURIComponent(vNode.properties.src);
     if (base64Uri) {
       response = docxDocumentInstance.createMediaFile(base64Uri);
     }

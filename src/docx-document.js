@@ -36,6 +36,7 @@ import {
 } from './constants.js';
 import ListStyleBuilder from './utils/list.js';
 import { fontFamilyToTableObject } from './utils/font-family-conversion.js';
+import { extractBase64Data } from './utils/base64.js';
 
 function generateContentTypesFragments(contentTypesXML, type, objects) {
   if (objects && Array.isArray(objects)) {
@@ -452,23 +453,19 @@ class DocxDocument {
     return fontTableObject.fontName;
   }
 
-  createMediaFile(base64String) {
-    // eslint-disable-next-line no-useless-escape
-    const matches = base64String.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-    if (matches.length !== 3) {
-      throw new Error('Invalid base64 string');
+  createMediaFile(srcString) {
+    const fileData = extractBase64Data(srcString);
+    if (!fileData) {
+      throw new Error('Invalid data URL');
     }
 
-    const base64FileContent = matches[2];
-    // matches array contains file type in base64 format - image/jpeg and base64 stringified data
-    const fileExtension =
-      matches[1].match(/\/(.*?)$/)[1] === 'octet-stream' ? 'png' : matches[1].match(/\/(.*?)$/)[1];
+    const fileExtension = fileData.extension === 'octet-stream' ? 'png' : fileData.extension;
 
     const fileNameWithExtension = `image-${nanoid()}.${fileExtension}`;
 
     this.lastMediaId += 1;
 
-    return { id: this.lastMediaId, fileContent: base64FileContent, fileNameWithExtension };
+    return { id: this.lastMediaId, fileContent: fileData.base64Content, fileNameWithExtension };
   }
 
   createDocumentRelationships(fileName = 'document', type, target, targetMode = 'External') {

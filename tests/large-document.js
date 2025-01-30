@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import it from 'node:test';
 import assert from 'assert';
 import JSZip from 'jszip';
@@ -51,7 +52,7 @@ function generateLargeHTML(sizeInMB = 2) {
   `;
 }
 
-it('handles large HTML files', async () => {
+it('handles a large HTML file', async () => {
   const largeHTML = generateLargeHTML();
   const docxContent = await HTMLtoDOCX(largeHTML, null, {
     createdAt,
@@ -61,10 +62,25 @@ it('handles large HTML files', async () => {
   const zip = new JSZip();
   const zipContent = await zip.loadAsync(docxContent);
 
-  // Verify the document was created successfully
   assert.ok('word/document.xml' in zipContent.files);
 
-  // Check that the document contains our content
   const docXml = await zipContent.file('word/document.xml').async('string');
   assert.ok(docXml.includes('<w:t xml:space="preserve">This is a test paragraph'));
+});
+
+it('handles a large and complicated HTML file', async () => {
+  const largeHTML = await fs.readFile('tests/html5-test-page.html', 'utf8');
+  const docxContent = await HTMLtoDOCX(largeHTML, null, {
+    createdAt,
+    modifiedAt: createdAt,
+  });
+
+  const zip = new JSZip();
+  const zipContent = await zip.loadAsync(docxContent);
+
+  assert.ok('word/document.xml' in zipContent.files);
+
+  const docXml = await zipContent.file('word/document.xml').async('string');
+  assert.ok(docXml.includes('<w:body>'));
+  assert.ok(docXml.includes('</w:body>'));
 });

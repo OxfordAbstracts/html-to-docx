@@ -10,7 +10,7 @@ it('extracts file infos from a base64 data URL of a PNG', async () => {
   assert.deepEqual(fileObj, {
     type: 'image',
     extension: 'png',
-    data: dataStr,
+    base64Content: dataStr,
   });
 });
 
@@ -20,28 +20,28 @@ it('extracts file infos from a base64 data URL of an SVG', async () => {
   assert.deepEqual(fileObj, {
     type: 'image',
     extension: 'svg+xml',
-    data: dataStr,
+    base64Content: dataStr,
   });
 });
 
 it('extracts file infos from a simple data URL of an SVG', async () => {
   const dataStr =
-    "%3Csvg xmlns='http://www.w3.org/2000/svg'" + "%3E%3Ccircle r='50' fill='red'/%3E%3C/svg%3E";
+    "%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='50' fill='red'/%3E%3C/svg%3E";
   const fileObj = extractBase64Data(`data:image/svg+xml,${dataStr}`);
   assert.deepEqual(fileObj, {
     type: 'image',
     extension: 'svg+xml',
-    data: dataStr,
+    base64Content: dataStr,
   });
 });
 
 it('extracts file infos from an UTF-8 data URL of an SVG', async () => {
   const dataStr =
-    "%3Csvg xmlns='http://www.w3.org/2000/svg'" + "%3E%3Ccircle r='50' fill='red'/%3E%3C/svg%3E";
+    "%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle r='50' fill='red'/%3E%3C/svg%3E";
   const fileObj = extractBase64Data(`data:image/svg+xml;utf8,${dataStr}`);
   assert.deepEqual(fileObj, {
     type: 'image',
     extension: 'svg+xml',
-    data: dataStr,
+    base64Content: dataStr,
   });
 });

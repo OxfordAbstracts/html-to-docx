@@ -78,7 +78,6 @@
     "html-entities": "^2.5.2",
     "html-to-vdom": "^0.7.0",
     "image-size": "^1.2.0",
-    "image-to-base64": "^2.2.0",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
