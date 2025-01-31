@@ -19,7 +19,7 @@ lint:
 
 # Run the unit tests
 test-unit:
-  node --test
+  node --test --disable-warning=ExperimentalWarning
 
 
 # Run all the tests

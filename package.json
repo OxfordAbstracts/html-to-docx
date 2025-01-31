@@ -78,6 +78,7 @@
   },
   "overrides": {
     "@oozcitak/util": "8.3.9",
-    "@oozcitak/dom": "1.15.10"
+    "@oozcitak/dom": "1.15.10",
+    "uri-js": "npm:uri-js-replace"
   }
 }
