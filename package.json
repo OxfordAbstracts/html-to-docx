@@ -49,7 +49,6 @@
     "dprint": "^0.48.0",
     "eslint-config-javascript": "^3.0.0",
     "globals": "^15.14.0",
-    "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
     "standard-version": "^9.5.0"
   },
