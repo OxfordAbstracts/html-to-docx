@@ -34,3 +34,6 @@ jobs:
 
       - name: Run tests
         run: just test
+
+      - name: Bundle files
+        run: just build
