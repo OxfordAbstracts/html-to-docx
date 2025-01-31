@@ -1,11 +1,11 @@
-import fs from 'node:fs/promises';
-import { test } from 'node:test';
-import assert from 'assert';
-import JSZip from 'jszip';
+import assert from "assert"
+import JSZip from "jszip"
+import fs from "node:fs/promises"
+import { test } from "node:test"
 
-import HTMLtoDOCX from '../index.ts';
+import htmlToDocx from "../index.ts"
 
-const createdAt = new Date('2025-01-01');
+const createdAt = new Date("2025-01-01")
 
 function getSection(id = 0) {
   return `
@@ -29,13 +29,17 @@ function getSection(id = 0) {
         </tr>
       </table>
     </section>
-  `;
+  `
 }
 
 function generateLargeHTML(sizeInMB = 2) {
-  const bytesPerParagraph = getSection().length;
-  const targetBytes = sizeInMB * 1024 * 1024;
-  const paragraphCount = Math.ceil(targetBytes / bytesPerParagraph);
+  const bytesPerParagraph = getSection().length
+  const targetBytes = sizeInMB * 1024 * 1024
+  const paragraphCount = Math.ceil(targetBytes / bytesPerParagraph)
+  const body = Array(paragraphCount)
+    .fill("")
+    .map((_val, idx) => getSection(idx))
+    .join("")
 
   return `
     <html>
@@ -43,44 +47,45 @@ function generateLargeHTML(sizeInMB = 2) {
         <title>Test Document</title>
       </head>
       <body>
-      ${Array(paragraphCount)
-        .fill('')
-        .map((_, i) => getSection(i))
-        .join('')}
+        ${body}
       </body>
     </html>
-  `;
+  `
 }
 
-test('handles a large HTML file', async () => {
-  const largeHTML = generateLargeHTML();
-  const docxContent = await HTMLtoDOCX(largeHTML, null, {
+test("handles a large HTML file", async () => {
+  const largeHTML = generateLargeHTML()
+  const docxContent = await htmlToDocx(largeHTML, null, {
     createdAt,
     modifiedAt: createdAt,
-  });
+  })
 
-  const zip = new JSZip();
-  const zipContent = await zip.loadAsync(docxContent);
+  const zip = new JSZip()
+  const zipContent = await zip.loadAsync(docxContent)
 
-  assert.ok('word/document.xml' in zipContent.files);
+  assert.ok("word/document.xml" in zipContent.files)
 
-  const docXml = await zipContent.file('word/document.xml').async('string');
-  assert.ok(docXml.includes('<w:t xml:space="preserve">This is a test paragraph'));
-});
+  const docXml = await zipContent.file("word/document.xml")
+    ?.async("string") || ""
+  assert.ok(
+    docXml.includes('<w:t xml:space="preserve">This is a test paragraph'),
+  )
+})
 
-test('handles a large and complicated HTML file', async () => {
-  const largeHTML = await fs.readFile('tests/html5-test-page.html', 'utf8');
-  const docxContent = await HTMLtoDOCX(largeHTML, null, {
+test("handles a large and complicated HTML file", async () => {
+  const largeHTML = await fs.readFile("tests/html5-test-page.html", "utf8")
+  const docxContent = await htmlToDocx(largeHTML, null, {
     createdAt,
     modifiedAt: createdAt,
-  });
+  })
 
-  const zip = new JSZip();
-  const zipContent = await zip.loadAsync(docxContent);
+  const zip = new JSZip()
+  const zipContent = await zip.loadAsync(docxContent)
 
-  assert.ok('word/document.xml' in zipContent.files);
+  assert.ok("word/document.xml" in zipContent.files)
 
-  const docXml = await zipContent.file('word/document.xml').async('string');
-  assert.ok(docXml.includes('<w:body>'));
-  assert.ok(docXml.includes('</w:body>'));
-});
+  const docXml = await zipContent.file("word/document.xml")
+    ?.async("string") || ""
+  assert.ok(docXml.includes("<w:body>"))
+  assert.ok(docXml.includes("</w:body>"))
+})

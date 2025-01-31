@@ -43,18 +43,14 @@
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
-    "@eslint/js": "^9.19.0",
+    "@stylistic/eslint-plugin": "^3.0.1",
     "@types/virtual-dom": "^2.1.4",
     "canvas": "^3.1.0",
-    "eslint": "^9.19.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prettier": "^5.2.3",
+    "dprint": "^0.48.0",
+    "eslint-config-javascript": "^3.0.0",
     "globals": "^15.14.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
-    "prettier": "^3.4.2",
     "standard-version": "^9.5.0"
   },
   "dependencies": {
@@ -73,8 +69,7 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
+      "just lint"
     ]
   },
   "resolutions": {

@@ -1,9 +1,9 @@
-import lodash from 'lodash';
+import lodash from "lodash"
 
-const applicationName = 'html-to-docx';
-const defaultOrientation = 'portrait';
-const landscapeWidth = 15840;
-const landscapeHeight = 12240;
+const applicationName = "html-to-docx"
+const defaultOrientation = "portrait"
+const landscapeWidth = 15840
+const landscapeHeight = 12240
 const landscapeMargins = {
   top: 1800,
   right: 1440,
@@ -12,7 +12,7 @@ const landscapeMargins = {
   header: 720,
   footer: 720,
   gutter: 0,
-};
+}
 const portraitMargins = {
   top: 1440,
   right: 1800,
@@ -21,25 +21,25 @@ const portraitMargins = {
   header: 720,
   footer: 720,
   gutter: 0,
-};
-const defaultFont = 'Times New Roman';
-const defaultFontSize = 22;
-const defaultLang = 'en-US';
+}
+const defaultFont = "Times New Roman"
+const defaultFontSize = 22
+const defaultLang = "en-US"
 const defaultDocumentOptions = {
   orientation: defaultOrientation,
   margins: lodash.cloneDeep(portraitMargins),
-  title: '',
-  subject: '',
+  title: "",
+  subject: "",
   creator: applicationName,
   keywords: [applicationName],
-  description: '',
+  description: "",
   lastModifiedBy: applicationName,
   revision: 1,
   createdAt: new Date(),
   modifiedAt: new Date(),
-  headerType: 'default',
+  headerType: "default",
   header: false,
-  footerType: 'default',
+  footerType: "default",
   footer: false,
   font: defaultFont,
   fontSize: defaultFontSize,
@@ -59,79 +59,79 @@ const defaultDocumentOptions = {
   lineNumberOptions: {
     countBy: 1,
     start: 0,
-    restart: 'continuous',
+    restart: "continuous",
   },
   numbering: {
-    defaultOrderedListStyleType: 'decimal',
+    defaultOrderedListStyleType: "decimal",
   },
   decodeUnicode: false,
   defaultLang,
-};
-const defaultHTMLString = '<p></p>';
-const relsFolderName = '_rels';
-const headerFileName = 'header1';
-const footerFileName = 'footer1';
-const themeFileName = 'theme1';
-const documentFileName = 'document';
-const headerType = 'header';
-const footerType = 'footer';
-const themeType = 'theme';
-const hyperlinkType = 'hyperlink';
-const imageType = 'image';
-const internalRelationship = 'Internal';
-const wordFolder = 'word';
-const themeFolder = 'theme';
+}
+const defaultHTMLString = "<p></p>"
+const relsFolderName = "_rels"
+const headerFileName = "header1"
+const footerFileName = "footer1"
+const themeFileName = "theme1"
+const documentFileName = "document"
+const headerType = "header"
+const footerType = "footer"
+const themeType = "theme"
+const hyperlinkType = "hyperlink"
+const imageType = "image"
+const internalRelationship = "Internal"
+const wordFolder = "word"
+const themeFolder = "theme"
 const paragraphBordersObject = {
   top: {
     size: 0,
     spacing: 3,
-    color: 'FFFFFF',
+    color: "FFFFFF",
   },
   left: {
     size: 0,
     spacing: 3,
-    color: 'FFFFFF',
+    color: "FFFFFF",
   },
   bottom: {
     size: 0,
     spacing: 3,
-    color: 'FFFFFF',
+    color: "FFFFFF",
   },
   right: {
     size: 0,
     spacing: 3,
-    color: 'FFFFFF',
+    color: "FFFFFF",
   },
-};
-const colorlessColors = ['transparent', 'auto'];
-const verticalAlignValues = ['top', 'middle', 'bottom'];
+}
+const colorlessColors = ["transparent", "auto"]
+const verticalAlignValues = ["top", "middle", "bottom"]
 
 export {
-  defaultDocumentOptions,
-  defaultHTMLString,
-  relsFolderName,
-  headerFileName,
-  footerFileName,
-  themeFileName,
-  documentFileName,
-  headerType,
-  footerType,
-  themeType,
-  internalRelationship,
-  wordFolder,
-  themeFolder,
-  landscapeMargins,
-  portraitMargins,
-  defaultOrientation,
-  landscapeWidth,
-  landscapeHeight,
   applicationName,
+  colorlessColors,
+  defaultDocumentOptions,
   defaultFont,
   defaultFontSize,
+  defaultHTMLString,
+  defaultLang,
+  defaultOrientation,
+  documentFileName,
+  footerFileName,
+  footerType,
+  headerFileName,
+  headerType,
   hyperlinkType,
   imageType,
+  internalRelationship,
+  landscapeHeight,
+  landscapeMargins,
+  landscapeWidth,
   paragraphBordersObject,
-  colorlessColors,
+  portraitMargins,
+  relsFolderName,
+  themeFileName,
+  themeFolder,
+  themeType,
   verticalAlignValues,
-  defaultLang,
-};
+  wordFolder,
+}

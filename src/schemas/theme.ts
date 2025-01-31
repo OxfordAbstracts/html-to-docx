@@ -1,9 +1,13 @@
-import { defaultFont } from '../constants.ts';
+import { defaultFont } from "../constants.ts"
 
-const generateThemeXML = (font = defaultFont) => `
+export default function generateThemeXML(font = defaultFont) {
+  return `
     <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
-    <a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Office Theme">
+    <a:theme
+      xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+      name="Office Theme"
+    >
     <a:themeElements>
       <a:clrScheme name="Office">
         <a:dk1>
@@ -145,7 +149,13 @@ const generateThemeXML = (font = defaultFont) => `
           </a:effectStyle>
           <a:effectStyle>
             <a:effectLst>
-              <a:outerShdw blurRad="57150" dist="19050" dir="5400000" algn="ctr" rotWithShape="0">
+              <a:outerShdw
+                blurRad="57150"
+                dist="19050"
+                dir="5400000"
+                algn="ctr"
+                rotWithShape="0"
+              >
                 <a:srgbClr val="000000">
                   <a:alpha val="63000"/>
                 </a:srgbClr>
@@ -194,6 +204,5 @@ const generateThemeXML = (font = defaultFont) => `
       </a:fmtScheme>
     </a:themeElements>
   </a:theme>
-`;
-
-export default generateThemeXML;
+`
+}

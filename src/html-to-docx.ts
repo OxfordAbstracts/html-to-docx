@@ -1,226 +1,274 @@
-import { create } from 'xmlbuilder2';
-import VNode from 'virtual-dom/vnode/vnode.js';
-import VText from 'virtual-dom/vnode/vtext.js';
-import { default as HTMLToVDOM } from 'html-to-vdom';
-import { decode } from 'html-entities';
+import { decode } from "html-entities"
+import { default as HTMLToVDOM } from "html-to-vdom"
+import VNode from "virtual-dom/vnode/vnode.js"
+import VText from "virtual-dom/vnode/vtext.js"
+import { create } from "xmlbuilder2"
 
-import { relsXML } from './schemas/index.ts';
-import DocxDocument from './docx-document.ts';
-import { renderDocumentFile } from './helpers/index.ts';
 import {
-  pixelRegex,
-  pixelToTWIP,
+  defaultDocumentOptions,
+  defaultHTMLString,
+  documentFileName,
+  footerFileName,
+  footerType,
+  headerFileName,
+  headerType,
+  internalRelationship,
+  relsFolderName,
+  themeFileName,
+  themeFolder,
+  themeType,
+  wordFolder,
+} from "./constants.ts"
+import DocxDocument from "./docx-document.ts"
+import { renderDocumentFile } from "./helpers/index.ts"
+import { relsXML } from "./schemas/index.ts"
+import {
   cmRegex,
   cmToTWIP,
   inchRegex,
   inchToTWIP,
+  pixelRegex,
+  pixelToTWIP,
   pointRegex,
   pointToHIP,
-} from './utils/unit-conversion.ts';
-import {
-  defaultDocumentOptions,
-  defaultHTMLString,
-  relsFolderName,
-  headerFileName,
-  footerFileName,
-  themeFileName,
-  documentFileName,
-  headerType,
-  footerType,
-  internalRelationship,
-  wordFolder,
-  themeFolder,
-  themeType,
-} from './constants.ts';
+} from "./utils/unit-conversion.ts"
 
+/* eslint-disable new-cap */
 const convertHTML = HTMLToVDOM({
   VNode,
   VText,
-});
+})
 
-const mergeOptions = (options, patch) => ({ ...options, ...patch });
+function mergeOptions(options, patch) {
+  return { ...options, ...patch }
+}
 
-const fixupFontSize = (fontSize) => {
-  let normalizedFontSize;
+function fixupFontSize(fontSize) {
+  let normalizedFontSize: number | null
   if (pointRegex.test(fontSize)) {
-    const matchedParts = fontSize.match(pointRegex);
+    const matchedParts = fontSize.match(pointRegex)
 
-    normalizedFontSize = pointToHIP(matchedParts[1]);
-  } else if (fontSize) {
+    normalizedFontSize = pointToHIP(matchedParts[1])
+  }
+  else if (fontSize) {
     // assuming it is already in HIP
-    normalizedFontSize = fontSize;
-  } else {
-    normalizedFontSize = null;
+    normalizedFontSize = fontSize
+  }
+  else {
+    normalizedFontSize = null
   }
 
-  return normalizedFontSize;
-};
+  return normalizedFontSize
+}
 
-const normalizeUnits = (dimensioningObject, defaultDimensionsProperty) => {
-  let normalizedUnitResult = {};
-  if (typeof dimensioningObject === 'object' && dimensioningObject !== null) {
-    Object.keys(dimensioningObject).forEach((key) => {
-      if (pixelRegex.test(dimensioningObject[key])) {
-        const matchedParts = dimensioningObject[key].match(pixelRegex);
-        normalizedUnitResult[key] = pixelToTWIP(matchedParts[1]);
-      } else if (cmRegex.test(dimensioningObject[key])) {
-        const matchedParts = dimensioningObject[key].match(cmRegex);
-        normalizedUnitResult[key] = cmToTWIP(matchedParts[1]);
-      } else if (inchRegex.test(dimensioningObject[key])) {
-        const matchedParts = dimensioningObject[key].match(inchRegex);
-        normalizedUnitResult[key] = inchToTWIP(matchedParts[1]);
-      } else if (dimensioningObject[key]) {
-        normalizedUnitResult[key] = dimensioningObject[key];
-      } else {
-        // incase value is something like 0
-        normalizedUnitResult[key] = defaultDimensionsProperty[key];
+function normalizeUnits(dimensioningObject, defaultDimensionsProperty) {
+  const normalizedUnitResult = {}
+  if (typeof dimensioningObject === "object" && dimensioningObject !== null) {
+    Object.keys(dimensioningObject)
+      .forEach((key) => {
+        if (pixelRegex.test(dimensioningObject[key])) {
+          const matchedParts = dimensioningObject[key].match(pixelRegex)
+          normalizedUnitResult[key] = pixelToTWIP(matchedParts[1])
+        }
+        else if (cmRegex.test(dimensioningObject[key])) {
+          const matchedParts = dimensioningObject[key].match(cmRegex)
+          normalizedUnitResult[key] = cmToTWIP(matchedParts[1])
+        }
+        else if (inchRegex.test(dimensioningObject[key])) {
+          const matchedParts = dimensioningObject[key].match(inchRegex)
+          normalizedUnitResult[key] = inchToTWIP(matchedParts[1])
+        }
+        else if (dimensioningObject[key]) {
+          normalizedUnitResult[key] = dimensioningObject[key]
+        }
+        else {
+          // incase value is something like 0
+          normalizedUnitResult[key] = defaultDimensionsProperty[key]
+        }
+      })
+    return normalizedUnitResult
+  }
+  else {
+    return null
+  }
+}
+
+function normalizeDocumentOptions(documentOptions) {
+  const normalizedDocumentOptions = { ...documentOptions }
+  Object.keys(documentOptions)
+    .forEach((key) => {
+      switch (key) {
+        case "pageSize":
+        case "margins":
+          normalizedDocumentOptions[key] = normalizeUnits(
+            documentOptions[key],
+            defaultDocumentOptions[key],
+          )
+          break
+        case "fontSize":
+        case "complexScriptFontSize":
+          normalizedDocumentOptions[key] = fixupFontSize(documentOptions[key])
+          break
+        default:
+          break
       }
-    });
-  } else {
-    normalizedUnitResult = null;
-  }
+    })
 
-  return normalizedUnitResult;
-};
-
-const normalizeDocumentOptions = (documentOptions) => {
-  const normalizedDocumentOptions = { ...documentOptions };
-  Object.keys(documentOptions).forEach((key) => {
-    switch (key) {
-      case 'pageSize':
-      case 'margins':
-        normalizedDocumentOptions[key] = normalizeUnits(
-          documentOptions[key],
-          defaultDocumentOptions[key],
-        );
-        break;
-      case 'fontSize':
-      case 'complexScriptFontSize':
-        normalizedDocumentOptions[key] = fixupFontSize(documentOptions[key]);
-        break;
-    }
-  });
-
-  return normalizedDocumentOptions;
-};
+  return normalizedDocumentOptions
+}
 
 // Ref: https://en.wikipedia.org/wiki/Office_Open_XML_file_formats
 // http://officeopenxml.com/anatomyofOOXML.php
-async function addFilesToContainer(
+export default async function addFilesToContainer(
   zip,
   htmlString,
   suppliedDocumentOptions,
   headerHTMLString,
   footerHTMLString,
 ) {
-  const normalizedDocumentOptions = normalizeDocumentOptions(suppliedDocumentOptions);
-  const documentOptions = mergeOptions(defaultDocumentOptions, normalizedDocumentOptions);
+  const normalizedDocumentOptions = normalizeDocumentOptions(
+    suppliedDocumentOptions,
+  )
+  const documentOptions = mergeOptions(
+    defaultDocumentOptions,
+    normalizedDocumentOptions,
+  )
 
   if (documentOptions.header && !headerHTMLString) {
-    headerHTMLString = defaultHTMLString;
+    headerHTMLString = defaultHTMLString
   }
   if (documentOptions.footer && !footerHTMLString) {
-    footerHTMLString = defaultHTMLString;
+    footerHTMLString = defaultHTMLString
   }
   if (documentOptions.decodeUnicode) {
-    headerHTMLString = decode(headerHTMLString);
-    htmlString = decode(htmlString);
-    footerHTMLString = decode(footerHTMLString);
+    headerHTMLString = decode(headerHTMLString)
+    htmlString = decode(htmlString)
+    footerHTMLString = decode(footerHTMLString)
   }
 
-  const docxDocument = new DocxDocument({ zip, htmlString, ...documentOptions });
+  const docxDocument = new DocxDocument({
+    zip,
+    htmlString,
+    ...documentOptions,
+  })
   // Conversion to Word XML happens here
-  docxDocument.documentXML = await renderDocumentFile(docxDocument);
+  docxDocument.documentXML = await renderDocumentFile(docxDocument)
 
   zip
     .folder(relsFolderName)
     .file(
-      '.rels',
-      create({ encoding: 'UTF-8', standalone: true }, relsXML).toString({ prettyPrint: true }),
+      ".rels",
+      create({ encoding: "UTF-8", standalone: true }, relsXML)
+        .toString({ prettyPrint: true }),
       { createFolders: false },
-    );
+    )
 
-  zip.folder('docProps').file('core.xml', docxDocument.generateCoreXML(), {
-    createFolders: false,
-  });
+  zip.folder("docProps")
+    .file("core.xml", docxDocument.generateCoreXML(), {
+      createFolders: false,
+    })
 
   if (docxDocument.header && headerHTMLString) {
-    const vTree = convertHTML(headerHTMLString);
+    const vTree = convertHTML(headerHTMLString)
 
-    docxDocument.relationshipFilename = headerFileName;
-    const { headerId, headerXML } = await docxDocument.generateHeaderXML(vTree);
-    docxDocument.relationshipFilename = documentFileName;
-    const fileNameWithExt = `${headerType}${headerId}.xml`;
+    docxDocument.relationshipFilename = headerFileName
+    const { headerId, headerXML } = await docxDocument.generateHeaderXML(vTree)
+    docxDocument.relationshipFilename = documentFileName
+    const fileNameWithExt = `${headerType}${headerId}.xml`
 
     const relationshipId = docxDocument.createDocumentRelationships(
       docxDocument.relationshipFilename,
       headerType,
       fileNameWithExt,
       internalRelationship,
-    );
+    )
 
-    zip.folder(wordFolder).file(fileNameWithExt, headerXML.toString({ prettyPrint: true }), {
-      createFolders: false,
-    });
+    zip.folder(wordFolder)
+      .file(fileNameWithExt, headerXML.toString({ prettyPrint: true }), {
+        createFolders: false,
+      })
 
-    docxDocument.headerObjects.push({ headerId, relationshipId, type: docxDocument.headerType });
+    docxDocument.headerObjects.push({
+      headerId,
+      relationshipId,
+      type: docxDocument.headerType,
+    })
   }
   if (docxDocument.footer && footerHTMLString) {
-    const vTree = convertHTML(footerHTMLString);
+    const vTree = convertHTML(footerHTMLString)
 
-    docxDocument.relationshipFilename = footerFileName;
-    const { footerId, footerXML } = await docxDocument.generateFooterXML(vTree);
-    docxDocument.relationshipFilename = documentFileName;
-    const fileNameWithExt = `${footerType}${footerId}.xml`;
+    docxDocument.relationshipFilename = footerFileName
+    const { footerId, footerXML } = await docxDocument.generateFooterXML(vTree)
+    docxDocument.relationshipFilename = documentFileName
+    const fileNameWithExt = `${footerType}${footerId}.xml`
 
     const relationshipId = docxDocument.createDocumentRelationships(
       docxDocument.relationshipFilename,
       footerType,
       fileNameWithExt,
       internalRelationship,
-    );
+    )
 
-    zip.folder(wordFolder).file(fileNameWithExt, footerXML.toString({ prettyPrint: true }), {
-      createFolders: false,
-    });
+    zip.folder(wordFolder)
+      .file(fileNameWithExt, footerXML.toString({ prettyPrint: true }), {
+        createFolders: false,
+      })
 
-    docxDocument.footerObjects.push({ footerId, relationshipId, type: docxDocument.footerType });
+    docxDocument.footerObjects.push({
+      footerId,
+      relationshipId,
+      type: docxDocument.footerType,
+    })
   }
-  const themeFileNameWithExt = `${themeFileName}.xml`;
+  const themeFileNameWithExt = `${themeFileName}.xml`
   docxDocument.createDocumentRelationships(
     docxDocument.relationshipFilename,
     themeType,
     `${themeFolder}/${themeFileNameWithExt}`,
     internalRelationship,
-  );
+  )
   zip
     .folder(wordFolder)
     .folder(themeFolder)
     .file(themeFileNameWithExt, docxDocument.generateThemeXML(), {
       createFolders: false,
-    });
+    })
 
   zip
     .folder(wordFolder)
-    .file('document.xml', docxDocument.generateDocumentXML(), { createFolders: false })
-    .file('fontTable.xml', docxDocument.generateFontTableXML(), { createFolders: false })
-    .file('styles.xml', docxDocument.generateStylesXML(), { createFolders: false })
-    .file('numbering.xml', docxDocument.generateNumberingXML(), { createFolders: false })
-    .file('settings.xml', docxDocument.generateSettingsXML(), { createFolders: false })
-    .file('webSettings.xml', docxDocument.generateWebSettingsXML(), { createFolders: false });
+    .file("document.xml", docxDocument.generateDocumentXML(), {
+      createFolders: false,
+    })
+    .file("fontTable.xml", docxDocument.generateFontTableXML(), {
+      createFolders: false,
+    })
+    .file("styles.xml", docxDocument.generateStylesXML(), {
+      createFolders: false,
+    })
+    .file("numbering.xml", docxDocument.generateNumberingXML(), {
+      createFolders: false,
+    })
+    .file("settings.xml", docxDocument.generateSettingsXML(), {
+      createFolders: false,
+    })
+    .file("webSettings.xml", docxDocument.generateWebSettingsXML(), {
+      createFolders: false,
+    })
 
-  const relationshipXMLs = docxDocument.generateRelsXML();
+  const relationshipXMLs = docxDocument.generateRelsXML()
   if (relationshipXMLs && Array.isArray(relationshipXMLs)) {
     relationshipXMLs.forEach(({ fileName, xmlString }) => {
-      zip.folder(wordFolder).folder(relsFolderName).file(`${fileName}.xml.rels`, xmlString, {
-        createFolders: false,
-      });
-    });
+      zip.folder(wordFolder)
+        .folder(relsFolderName)
+        .file(`${fileName}.xml.rels`, xmlString, {
+          createFolders: false,
+        })
+    })
   }
 
-  zip.file('[Content_Types].xml', docxDocument.generateContentTypesXML(), { createFolders: false });
+  zip.file("[Content_Types].xml", docxDocument.generateContentTypesXML(), {
+    createFolders: false,
+  })
 
-  return zip;
+  return zip
 }
-
-export default addFilesToContainer;

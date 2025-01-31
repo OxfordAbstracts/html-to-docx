@@ -1,9 +1,9 @@
-import fs from 'fs';
-import { default as HTMLtoDOCX } from '../index.ts';
+import assert from "assert"
+import { test } from "node:test"
 
-import { test } from 'node:test';
-const filePath = 'tests/tmp/example.docx';
+import { default as htmlToDocx } from "../index.ts"
 
+/* eslint-disable max-len */
 const htmlString = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -211,20 +211,14 @@ const htmlString = `<!DOCTYPE html>
       </tbody>
     </table>
   </body>
-</html>`;
+</html>`
 
-test('creates a valid Docx file from a full HTML document', async () => {
-  const fileBuffer = await HTMLtoDOCX(htmlString, null, {
+test("creates a valid Docx file from a full HTML document", async () => {
+  const fileBuffer = await htmlToDocx(htmlString, null, {
     table: { row: { cantSplit: true } },
     footer: true,
     pageNumber: true,
-  });
+  })
 
-  fs.writeFile(filePath, fileBuffer, (error) => {
-    if (error) {
-      console.error('ERROR: Docx file creation failed');
-      return;
-    }
-    console.log('Docx file created successfully');
-  });
-});
+  assert.ok(fileBuffer)
+})

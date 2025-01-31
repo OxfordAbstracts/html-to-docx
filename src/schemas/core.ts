@@ -1,44 +1,46 @@
-import namespaces from '../namespaces.ts';
-import { applicationName } from '../constants.ts';
+import { applicationName } from "../constants.ts"
+import namespaces from "../namespaces.ts"
 
-const generateCoreXML = (
-  title = '',
-  subject = '',
+export default function generateCoreXML(
+  title = "",
+  subject = "",
   creator = applicationName,
   keywords = [applicationName],
-  description = '',
+  description = "",
   lastModifiedBy = applicationName,
   revision = 1,
   createdAt = new Date(),
   modifiedAt = new Date(),
-) => `
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+) {
+  const keyws = keywords && Array.isArray(keywords)
+    ? `<cp:keywords>${keywords.join(", ")}</cp:keywords>`
+    : ""
+  const crAt = createdAt instanceof Date ? createdAt.toISOString() : new Date()
+    .toISOString()
+  const modAt = modifiedAt instanceof Date
+    ? modifiedAt.toISOString()
+    : new Date()
+      .toISOString()
 
-        <cp:coreProperties
-          xmlns:cp="${namespaces.coreProperties}"
-          xmlns:dc="${namespaces.dc}"
-          xmlns:dcterms="${namespaces.dcterms}"
-          xmlns:dcmitype="${namespaces.dcmitype}"
-          xmlns:xsi="${namespaces.xsi}"
-          >
-            <dc:title>${title}</dc:title>
-            <dc:subject>${subject}</dc:subject>
-            <dc:creator>${creator}</dc:creator>
-            ${
-              keywords && Array.isArray(keywords)
-                ? `<cp:keywords>${keywords.join(', ')}</cp:keywords>`
-                : ''
-            }
-            <dc:description>${description}</dc:description>
-            <cp:lastModifiedBy>${lastModifiedBy}</cp:lastModifiedBy>
-            <cp:revision>${revision}</cp:revision>
-            <dcterms:created xsi:type="dcterms:W3CDTF">${
-              createdAt instanceof Date ? createdAt.toISOString() : new Date().toISOString()
-            }</dcterms:created>
-            <dcterms:modified xsi:type="dcterms:W3CDTF">${
-              modifiedAt instanceof Date ? modifiedAt.toISOString() : new Date().toISOString()
-            }</dcterms:modified>
-        </cp:coreProperties>
-    `;
+  return `
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
-export default generateCoreXML;
+    <cp:coreProperties
+      xmlns:cp="${namespaces.coreProperties}"
+      xmlns:dc="${namespaces.dc}"
+      xmlns:dcterms="${namespaces.dcterms}"
+      xmlns:dcmitype="${namespaces.dcmitype}"
+      xmlns:xsi="${namespaces.xsi}"
+    >
+      <dc:title>${title}</dc:title>
+      <dc:subject>${subject}</dc:subject>
+      <dc:creator>${creator}</dc:creator>
+      ${keyws}
+      <dc:description>${description}</dc:description>
+      <cp:lastModifiedBy>${lastModifiedBy}</cp:lastModifiedBy>
+      <cp:revision>${revision}</cp:revision>
+      <dcterms:created xsi:type="dcterms:W3CDTF">${crAt}</dcterms:created>
+      <dcterms:modified xsi:type="dcterms:W3CDTF">${modAt}</dcterms:modified>
+    </cp:coreProperties>
+  `
+}

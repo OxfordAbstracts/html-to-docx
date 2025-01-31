@@ -1,30 +1,25 @@
-import globals from 'globals';
-import js from '@eslint/js';
-import prettier from 'eslint-config-prettier';
-import eslintPluginPrettier from 'eslint-plugin-prettier';
+import stylistic from "@stylistic/eslint-plugin"
+import eslintConfJs from "eslint-config-javascript"
+import globals from "globals"
 
 export default [
-  js.configs.recommended,
+  ...eslintConfJs,
   {
-    files: ['**/*.ts'],
+    files: ["**/*.ts"],
     languageOptions: {
       ecmaVersion: 2021,
-      sourceType: 'module',
+      sourceType: "module",
       globals: {
         ...globals.browser,
         ...globals.node,
       },
     },
-    plugins: {
-      prettier: eslintPluginPrettier,
-    },
     rules: {
-      'prettier/prettier': 'error',
-      'default-case': 'off',
+      "space-before-function-paren": "off",
+      "id-length": "off",
+    },
+    plugins: {
+      "@stylistic": stylistic,
     },
   },
-  prettier,
-  {
-    ignores: ['dist', 'example'],
-  },
-];
+]
