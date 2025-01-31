@@ -11,7 +11,7 @@
     "word"
   ],
   "type": "module",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "start": "# ⚠️ Run `just start` instead",
     "test": "# ⚠️ Run `just test` instead"

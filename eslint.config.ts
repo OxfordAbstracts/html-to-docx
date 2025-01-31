@@ -22,4 +22,7 @@ export default [
       "@stylistic": stylistic,
     },
   },
+  {
+    ignores: ["dist/*"],
+  },
 ]

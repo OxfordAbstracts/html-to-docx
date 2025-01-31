@@ -26,6 +26,13 @@ test-unit:
 test: fmt lint test-unit
 
 
+build:
+  bun build \
+    --target node \
+    --outfile dist/index.js \
+    index.js
+
+
 # Bump the version and create a new release
 release:
   npx standard-version

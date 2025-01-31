@@ -21,6 +21,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Set up just
         uses: taiki-e/install-action@just
 
