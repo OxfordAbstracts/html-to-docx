@@ -10,8 +10,7 @@
     "office",
     "word"
   ],
-  "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index-cjs.js",
   "scripts": {
     "start": "# ⚠️ Run `just start` instead",
     "test": "# ⚠️ Run `just test` instead"

@@ -26,11 +26,22 @@ test-unit:
 test: fmt lint test-unit
 
 
-build:
+build-esm:
   bun build \
     --target node \
-    --outfile dist/index.js \
+    --outfile dist/index-esm.js \
     index.js
+
+
+build-cjs:
+  bun build \
+    --target node \
+    --format cjs \
+    --outfile dist/index-cjs.js \
+    index.js
+
+
+build: build-esm build-cjs
 
 
 # Bump the version and create a new release
