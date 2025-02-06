@@ -41,7 +41,8 @@ function generateHTMLWithImages(numberOfImages = 4, imgSizeInMb = 4) {
       </body>
     </html>
   `
-  return html.replaceAll(/>\s+</gm, "><")
+  return html.trim()
+    .replaceAll(/>\s+</gm, "><")
 }
 
 test("handles HTML file with an image", async () => {

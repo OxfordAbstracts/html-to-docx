@@ -19663,7 +19663,6 @@ var require_interfaces = __commonJS((exports) => {
     keepNullNodes: false,
     keepNullAttributes: false,
     ignoreConverters: false,
-    skipWhitespaceOnlyText: true,
     convert: {
       att: "@",
       ins: "?",
@@ -19683,8 +19682,7 @@ var require_interfaces = __commonJS((exports) => {
       svg: "http://www.w3.org/2000/svg",
       xlink: "http://www.w3.org/1999/xlink"
     },
-    invalidCharReplacement: undefined,
-    parser: undefined
+    invalidCharReplacement: undefined
   };
   exports.XMLBuilderOptionKeys = new Set(Object.keys(exports.DefaultBuilderOptions));
   exports.DefaultXMLBuilderCBOptions = {
@@ -20604,6 +20602,175 @@ var require_interfaces2 = __commonJS((exports) => {
   })(HowToCompare = exports.HowToCompare || (exports.HowToCompare = {}));
 });
 
+// node_modules/@oozcitak/dom/lib/util/Guard.js
+var require_Guard = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var interfaces_1 = require_interfaces2();
+  var Guard = function() {
+    function Guard2() {
+    }
+    Guard2.isNode = function(a) {
+      return !!a && a._nodeType !== undefined;
+    };
+    Guard2.isDocumentNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Document;
+    };
+    Guard2.isDocumentTypeNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.DocumentType;
+    };
+    Guard2.isDocumentFragmentNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.DocumentFragment;
+    };
+    Guard2.isAttrNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Attribute;
+    };
+    Guard2.isCharacterDataNode = function(a) {
+      if (!Guard2.isNode(a))
+        return false;
+      var type = a._nodeType;
+      return type === interfaces_1.NodeType.Text || type === interfaces_1.NodeType.ProcessingInstruction || type === interfaces_1.NodeType.Comment || type === interfaces_1.NodeType.CData;
+    };
+    Guard2.isTextNode = function(a) {
+      return Guard2.isNode(a) && (a._nodeType === interfaces_1.NodeType.Text || a._nodeType === interfaces_1.NodeType.CData);
+    };
+    Guard2.isExclusiveTextNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Text;
+    };
+    Guard2.isCDATASectionNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.CData;
+    };
+    Guard2.isCommentNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Comment;
+    };
+    Guard2.isProcessingInstructionNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.ProcessingInstruction;
+    };
+    Guard2.isElementNode = function(a) {
+      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Element;
+    };
+    Guard2.isCustomElementNode = function(a) {
+      return Guard2.isElementNode(a) && a._customElementState === "custom";
+    };
+    Guard2.isShadowRoot = function(a) {
+      return !!a && a.host !== undefined;
+    };
+    Guard2.isMouseEvent = function(a) {
+      return !!a && a.screenX !== undefined && a.screenY != null;
+    };
+    Guard2.isSlotable = function(a) {
+      return !!a && a._name !== undefined && a._assignedSlot !== undefined && (Guard2.isTextNode(a) || Guard2.isElementNode(a));
+    };
+    Guard2.isSlot = function(a) {
+      return !!a && a._name !== undefined && a._assignedNodes !== undefined && Guard2.isElementNode(a);
+    };
+    Guard2.isWindow = function(a) {
+      return !!a && a.navigator !== undefined;
+    };
+    Guard2.isEventListener = function(a) {
+      return !!a && a.handleEvent !== undefined;
+    };
+    Guard2.isRegisteredObserver = function(a) {
+      return !!a && a.observer !== undefined && a.options !== undefined;
+    };
+    Guard2.isTransientRegisteredObserver = function(a) {
+      return !!a && a.source !== undefined && Guard2.isRegisteredObserver(a);
+    };
+    return Guard2;
+  }();
+  exports.Guard = Guard;
+});
+
+// node_modules/@oozcitak/dom/lib/util/Cast.js
+var require_Cast = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var Guard_1 = require_Guard();
+  var Cast = function() {
+    function Cast2() {
+    }
+    Cast2.asNode = function(a) {
+      if (Guard_1.Guard.isNode(a)) {
+        return a;
+      } else {
+        throw new Error("Invalid object. Node expected.");
+      }
+    };
+    return Cast2;
+  }();
+  exports.Cast = Cast;
+});
+
+// node_modules/@oozcitak/dom/lib/util/EmptySet.js
+var require_EmptySet = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var EmptySet = function() {
+    function EmptySet2() {
+    }
+    Object.defineProperty(EmptySet2.prototype, "size", {
+      get: function() {
+        return 0;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    EmptySet2.prototype.add = function(value) {
+      throw new Error("Cannot add to an empty set.");
+    };
+    EmptySet2.prototype.clear = function() {
+    };
+    EmptySet2.prototype.delete = function(value) {
+      return false;
+    };
+    EmptySet2.prototype.forEach = function(callbackfn, thisArg) {
+    };
+    EmptySet2.prototype.has = function(value) {
+      return false;
+    };
+    EmptySet2.prototype[Symbol.iterator] = function() {
+      return new EmptySetIterator;
+    };
+    EmptySet2.prototype.entries = function() {
+      return new EmptySetIterator;
+    };
+    EmptySet2.prototype.keys = function() {
+      return new EmptySetIterator;
+    };
+    EmptySet2.prototype.values = function() {
+      return new EmptySetIterator;
+    };
+    Object.defineProperty(EmptySet2.prototype, Symbol.toStringTag, {
+      get: function() {
+        return "EmptySet";
+      },
+      enumerable: true,
+      configurable: true
+    });
+    return EmptySet2;
+  }();
+  exports.EmptySet = EmptySet;
+  var EmptySetIterator = function() {
+    function EmptySetIterator2() {
+    }
+    EmptySetIterator2.prototype[Symbol.iterator] = function() {
+      return this;
+    };
+    EmptySetIterator2.prototype.next = function() {
+      return { done: true, value: null };
+    };
+    return EmptySetIterator2;
+  }();
+});
+
+// node_modules/@oozcitak/dom/lib/util/index.js
+var require_util2 = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var Cast_1 = require_Cast();
+  exports.Cast = Cast_1.Cast;
+  var Guard_1 = require_Guard();
+  exports.Guard = Guard_1.Guard;
+  var EmptySet_1 = require_EmptySet();
+  exports.EmptySet = EmptySet_1.EmptySet;
+});
+
 // node_modules/@oozcitak/dom/lib/serializer/LocalNameSet.js
 var require_LocalNameSet = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
@@ -20695,7 +20862,330 @@ var require_NamespacePrefixMap = __commonJS((exports) => {
   exports.NamespacePrefixMap = NamespacePrefixMap;
 });
 
-// node_modules/@oozcitak/infra/lib/CodePoints.js
+// node_modules/@oozcitak/dom/lib/dom/DOMException.js
+var require_DOMException = __commonJS((exports) => {
+  var __extends = exports && exports.__extends || function() {
+    var extendStatics = function(d, b) {
+      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+        d2.__proto__ = b2;
+      } || function(d2, b2) {
+        for (var p in b2)
+          if (b2.hasOwnProperty(p))
+            d2[p] = b2[p];
+      };
+      return extendStatics(d, b);
+    };
+    return function(d, b) {
+      extendStatics(d, b);
+      function __() {
+        this.constructor = d;
+      }
+      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
+    };
+  }();
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var DOMException = function(_super) {
+    __extends(DOMException2, _super);
+    function DOMException2(name, message) {
+      if (message === undefined) {
+        message = "";
+      }
+      var _this = _super.call(this, message) || this;
+      _this.name = name;
+      return _this;
+    }
+    return DOMException2;
+  }(Error);
+  exports.DOMException = DOMException;
+  var DOMStringSizeError = function(_super) {
+    __extends(DOMStringSizeError2, _super);
+    function DOMStringSizeError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "DOMStringSizeError", message) || this;
+    }
+    return DOMStringSizeError2;
+  }(DOMException);
+  exports.DOMStringSizeError = DOMStringSizeError;
+  var WrongDocumentError = function(_super) {
+    __extends(WrongDocumentError2, _super);
+    function WrongDocumentError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "WrongDocumentError", "The object is in the wrong document. " + message) || this;
+    }
+    return WrongDocumentError2;
+  }(DOMException);
+  exports.WrongDocumentError = WrongDocumentError;
+  var NoDataAllowedError = function(_super) {
+    __extends(NoDataAllowedError2, _super);
+    function NoDataAllowedError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "NoDataAllowedError", message) || this;
+    }
+    return NoDataAllowedError2;
+  }(DOMException);
+  exports.NoDataAllowedError = NoDataAllowedError;
+  var NoModificationAllowedError = function(_super) {
+    __extends(NoModificationAllowedError2, _super);
+    function NoModificationAllowedError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "NoModificationAllowedError", "The object can not be modified. " + message) || this;
+    }
+    return NoModificationAllowedError2;
+  }(DOMException);
+  exports.NoModificationAllowedError = NoModificationAllowedError;
+  var NotSupportedError = function(_super) {
+    __extends(NotSupportedError2, _super);
+    function NotSupportedError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "NotSupportedError", "The operation is not supported. " + message) || this;
+    }
+    return NotSupportedError2;
+  }(DOMException);
+  exports.NotSupportedError = NotSupportedError;
+  var InUseAttributeError = function(_super) {
+    __extends(InUseAttributeError2, _super);
+    function InUseAttributeError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "InUseAttributeError", message) || this;
+    }
+    return InUseAttributeError2;
+  }(DOMException);
+  exports.InUseAttributeError = InUseAttributeError;
+  var InvalidStateError = function(_super) {
+    __extends(InvalidStateError2, _super);
+    function InvalidStateError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "InvalidStateError", "The object is in an invalid state. " + message) || this;
+    }
+    return InvalidStateError2;
+  }(DOMException);
+  exports.InvalidStateError = InvalidStateError;
+  var InvalidModificationError = function(_super) {
+    __extends(InvalidModificationError2, _super);
+    function InvalidModificationError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "InvalidModificationError", "The object can not be modified in this way. " + message) || this;
+    }
+    return InvalidModificationError2;
+  }(DOMException);
+  exports.InvalidModificationError = InvalidModificationError;
+  var NamespaceError = function(_super) {
+    __extends(NamespaceError2, _super);
+    function NamespaceError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "NamespaceError", "The operation is not allowed by Namespaces in XML. [XMLNS] " + message) || this;
+    }
+    return NamespaceError2;
+  }(DOMException);
+  exports.NamespaceError = NamespaceError;
+  var InvalidAccessError = function(_super) {
+    __extends(InvalidAccessError2, _super);
+    function InvalidAccessError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "InvalidAccessError", "The object does not support the operation or argument. " + message) || this;
+    }
+    return InvalidAccessError2;
+  }(DOMException);
+  exports.InvalidAccessError = InvalidAccessError;
+  var ValidationError = function(_super) {
+    __extends(ValidationError2, _super);
+    function ValidationError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "ValidationError", message) || this;
+    }
+    return ValidationError2;
+  }(DOMException);
+  exports.ValidationError = ValidationError;
+  var TypeMismatchError = function(_super) {
+    __extends(TypeMismatchError2, _super);
+    function TypeMismatchError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "TypeMismatchError", message) || this;
+    }
+    return TypeMismatchError2;
+  }(DOMException);
+  exports.TypeMismatchError = TypeMismatchError;
+  var SecurityError = function(_super) {
+    __extends(SecurityError2, _super);
+    function SecurityError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "SecurityError", "The operation is insecure. " + message) || this;
+    }
+    return SecurityError2;
+  }(DOMException);
+  exports.SecurityError = SecurityError;
+  var NetworkError = function(_super) {
+    __extends(NetworkError2, _super);
+    function NetworkError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "NetworkError", "A network error occurred. " + message) || this;
+    }
+    return NetworkError2;
+  }(DOMException);
+  exports.NetworkError = NetworkError;
+  var AbortError = function(_super) {
+    __extends(AbortError2, _super);
+    function AbortError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "AbortError", "The operation was aborted. " + message) || this;
+    }
+    return AbortError2;
+  }(DOMException);
+  exports.AbortError = AbortError;
+  var URLMismatchError = function(_super) {
+    __extends(URLMismatchError2, _super);
+    function URLMismatchError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "URLMismatchError", "The given URL does not match another URL. " + message) || this;
+    }
+    return URLMismatchError2;
+  }(DOMException);
+  exports.URLMismatchError = URLMismatchError;
+  var QuotaExceededError = function(_super) {
+    __extends(QuotaExceededError2, _super);
+    function QuotaExceededError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "QuotaExceededError", "The quota has been exceeded. " + message) || this;
+    }
+    return QuotaExceededError2;
+  }(DOMException);
+  exports.QuotaExceededError = QuotaExceededError;
+  var TimeoutError = function(_super) {
+    __extends(TimeoutError2, _super);
+    function TimeoutError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "TimeoutError", "The operation timed out. " + message) || this;
+    }
+    return TimeoutError2;
+  }(DOMException);
+  exports.TimeoutError = TimeoutError;
+  var InvalidNodeTypeError = function(_super) {
+    __extends(InvalidNodeTypeError2, _super);
+    function InvalidNodeTypeError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "InvalidNodeTypeError", "The supplied node is incorrect or has an incorrect ancestor for this operation. " + message) || this;
+    }
+    return InvalidNodeTypeError2;
+  }(DOMException);
+  exports.InvalidNodeTypeError = InvalidNodeTypeError;
+  var DataCloneError = function(_super) {
+    __extends(DataCloneError2, _super);
+    function DataCloneError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "DataCloneError", "The object can not be cloned. " + message) || this;
+    }
+    return DataCloneError2;
+  }(DOMException);
+  exports.DataCloneError = DataCloneError;
+  var NotImplementedError = function(_super) {
+    __extends(NotImplementedError2, _super);
+    function NotImplementedError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "NotImplementedError", "The DOM method is not implemented by this module. " + message) || this;
+    }
+    return NotImplementedError2;
+  }(DOMException);
+  exports.NotImplementedError = NotImplementedError;
+  var HierarchyRequestError = function(_super) {
+    __extends(HierarchyRequestError2, _super);
+    function HierarchyRequestError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "HierarchyRequestError", "The operation would yield an incorrect node tree. " + message) || this;
+    }
+    return HierarchyRequestError2;
+  }(DOMException);
+  exports.HierarchyRequestError = HierarchyRequestError;
+  var NotFoundError = function(_super) {
+    __extends(NotFoundError2, _super);
+    function NotFoundError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "NotFoundError", "The object can not be found here. " + message) || this;
+    }
+    return NotFoundError2;
+  }(DOMException);
+  exports.NotFoundError = NotFoundError;
+  var IndexSizeError = function(_super) {
+    __extends(IndexSizeError2, _super);
+    function IndexSizeError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "IndexSizeError", "The index is not in the allowed range. " + message) || this;
+    }
+    return IndexSizeError2;
+  }(DOMException);
+  exports.IndexSizeError = IndexSizeError;
+  var SyntaxError2 = function(_super) {
+    __extends(SyntaxError3, _super);
+    function SyntaxError3(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "SyntaxError", "The string did not match the expected pattern. " + message) || this;
+    }
+    return SyntaxError3;
+  }(DOMException);
+  exports.SyntaxError = SyntaxError2;
+  var InvalidCharacterError = function(_super) {
+    __extends(InvalidCharacterError2, _super);
+    function InvalidCharacterError2(message) {
+      if (message === undefined) {
+        message = "";
+      }
+      return _super.call(this, "InvalidCharacterError", "The string contains invalid characters. " + message) || this;
+    }
+    return InvalidCharacterError2;
+  }(DOMException);
+  exports.InvalidCharacterError = InvalidCharacterError;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/CodePoints.js
 var require_CodePoints = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.Surrogate = /[\uD800-\uDFFF]/;
@@ -20717,7 +21207,7 @@ var require_CodePoints = __commonJS((exports) => {
   exports.ASCIIAlphanumeric = /[0-9A-Za-z]/;
 });
 
-// node_modules/@oozcitak/infra/lib/Base64.js
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/Base64.js
 var require_Base64 = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var CodePoints_1 = require_CodePoints();
@@ -20745,7 +21235,7 @@ var require_Base64 = __commonJS((exports) => {
   exports.forgivingBase64Decode = forgivingBase64Decode;
 });
 
-// node_modules/@oozcitak/infra/lib/Byte.js
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/Byte.js
 var require_Byte = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   function isASCIIByte(byte) {
@@ -20754,8 +21244,822 @@ var require_Byte = __commonJS((exports) => {
   exports.isASCIIByte = isASCIIByte;
 });
 
-// node_modules/@oozcitak/infra/lib/ByteSequence.js
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/ByteSequence.js
 var require_ByteSequence = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  function length(list) {
+    return list.length;
+  }
+  exports.length = length;
+  function byteLowercase(list) {
+    for (let i = 0;i < list.length; i++) {
+      const c = list[i];
+      if (c >= 65 && c <= 90) {
+        list[i] = c + 32;
+      }
+    }
+  }
+  exports.byteLowercase = byteLowercase;
+  function byteUppercase(list) {
+    for (let i = 0;i < list.length; i++) {
+      const c = list[i];
+      if (c >= 97 && c <= 122) {
+        list[i] = c - 32;
+      }
+    }
+  }
+  exports.byteUppercase = byteUppercase;
+  function byteCaseInsensitiveMatch(listA, listB) {
+    if (listA.length !== listB.length)
+      return false;
+    for (let i = 0;i < listA.length; i++) {
+      let a = listA[i];
+      let b = listB[i];
+      if (a >= 65 && a <= 90)
+        a += 32;
+      if (b >= 65 && b <= 90)
+        b += 32;
+      if (a !== b)
+        return false;
+    }
+    return true;
+  }
+  exports.byteCaseInsensitiveMatch = byteCaseInsensitiveMatch;
+  function startsWith(listA, listB) {
+    let i = 0;
+    while (true) {
+      if (i >= listA.length)
+        return false;
+      if (i >= listB.length)
+        return true;
+      if (listA[i] !== listB[i])
+        return false;
+      i++;
+    }
+  }
+  exports.startsWith = startsWith;
+  function byteLessThan(listA, listB) {
+    let i = 0;
+    while (true) {
+      if (i >= listA.length)
+        return false;
+      if (i >= listB.length)
+        return true;
+      const a = listA[i];
+      const b = listB[i];
+      if (a < b)
+        return true;
+      else if (a > b)
+        return false;
+      i++;
+    }
+  }
+  exports.byteLessThan = byteLessThan;
+  function isomorphicDecode(list) {
+    return String.fromCodePoint(...list);
+  }
+  exports.isomorphicDecode = isomorphicDecode;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/JSON.js
+var require_JSON = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var util_1 = require_lib8();
+  function parseJSONFromBytes(bytes) {
+    const jsonText = util_1.utf8Decode(bytes);
+    return JSON.parse.call(undefined, jsonText);
+  }
+  exports.parseJSONFromBytes = parseJSONFromBytes;
+  function serializeJSONToBytes(value) {
+    const jsonString = JSON.stringify.call(undefined, value);
+    return util_1.utf8Encode(jsonString);
+  }
+  exports.serializeJSONToBytes = serializeJSONToBytes;
+  function parseJSONIntoInfraValues(jsonText) {
+    const jsValue = JSON.parse.call(undefined, jsonText);
+    return convertAJSONDerivedJavaScriptValueToAnInfraValue(jsValue);
+  }
+  exports.parseJSONIntoInfraValues = parseJSONIntoInfraValues;
+  function convertAJSONDerivedJavaScriptValueToAnInfraValue(jsValue) {
+    if (jsValue === null || util_1.isString(jsValue) || util_1.isNumber(jsValue))
+      return jsValue;
+    if (util_1.isArray(jsValue)) {
+      const result = new Array;
+      for (const jsValueAtIndex of jsValue) {
+        result.push(convertAJSONDerivedJavaScriptValueToAnInfraValue(jsValueAtIndex));
+      }
+      return result;
+    } else if (util_1.isObject(jsValue)) {
+      const result = new Map;
+      for (const key in jsValue) {
+        if (jsValue.hasOwnProperty(key)) {
+          const jsValueAtKey = jsValue[key];
+          result.set(key, convertAJSONDerivedJavaScriptValueToAnInfraValue(jsValueAtKey));
+        }
+      }
+      return result;
+    }
+    return jsValue;
+  }
+  exports.convertAJSONDerivedJavaScriptValueToAnInfraValue = convertAJSONDerivedJavaScriptValueToAnInfraValue;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/List.js
+var require_List = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var util_1 = require_lib8();
+  function append(list, item) {
+    list.push(item);
+  }
+  exports.append = append;
+  function extend(listA, listB) {
+    listA.push(...listB);
+  }
+  exports.extend = extend;
+  function prepend(list, item) {
+    list.unshift(item);
+  }
+  exports.prepend = prepend;
+  function replace(list, conditionOrItem, newItem) {
+    let i = 0;
+    for (const oldItem of list) {
+      if (util_1.isFunction(conditionOrItem)) {
+        if (!!conditionOrItem.call(null, oldItem)) {
+          list[i] = newItem;
+        }
+      } else if (oldItem === conditionOrItem) {
+        list[i] = newItem;
+        return;
+      }
+      i++;
+    }
+  }
+  exports.replace = replace;
+  function insert(list, item, index) {
+    list.splice(index, 0, item);
+  }
+  exports.insert = insert;
+  function remove(list, conditionOrItem) {
+    let i = list.length;
+    while (i--) {
+      const oldItem = list[i];
+      if (util_1.isFunction(conditionOrItem)) {
+        if (!!conditionOrItem.call(null, oldItem)) {
+          list.splice(i, 1);
+        }
+      } else if (oldItem === conditionOrItem) {
+        list.splice(i, 1);
+        return;
+      }
+    }
+  }
+  exports.remove = remove;
+  function empty(list) {
+    list.length = 0;
+  }
+  exports.empty = empty;
+  function contains(list, conditionOrItem) {
+    for (const oldItem of list) {
+      if (util_1.isFunction(conditionOrItem)) {
+        if (!!conditionOrItem.call(null, oldItem)) {
+          return true;
+        }
+      } else if (oldItem === conditionOrItem) {
+        return true;
+      }
+    }
+    return false;
+  }
+  exports.contains = contains;
+  function size(list, condition) {
+    if (condition === undefined) {
+      return list.length;
+    } else {
+      let count = 0;
+      for (const item of list) {
+        if (!!condition.call(null, item)) {
+          count++;
+        }
+      }
+      return count;
+    }
+  }
+  exports.size = size;
+  function isEmpty(list) {
+    return list.length === 0;
+  }
+  exports.isEmpty = isEmpty;
+  function* forEach(list, condition) {
+    if (condition === undefined) {
+      yield* list;
+    } else {
+      for (const item of list) {
+        if (!!condition.call(null, item)) {
+          yield item;
+        }
+      }
+    }
+  }
+  exports.forEach = forEach;
+  function clone(list) {
+    return new Array(...list);
+  }
+  exports.clone = clone;
+  function sortInAscendingOrder(list, lessThanAlgo) {
+    return list.sort((itemA, itemB) => lessThanAlgo.call(null, itemA, itemB) ? -1 : 1);
+  }
+  exports.sortInAscendingOrder = sortInAscendingOrder;
+  function sortInDescendingOrder(list, lessThanAlgo) {
+    return list.sort((itemA, itemB) => lessThanAlgo.call(null, itemA, itemB) ? 1 : -1);
+  }
+  exports.sortInDescendingOrder = sortInDescendingOrder;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/Map.js
+var require_Map = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var util_1 = require_lib8();
+  function get(map, key) {
+    return map.get(key);
+  }
+  exports.get = get;
+  function set(map, key, val) {
+    map.set(key, val);
+  }
+  exports.set = set;
+  function remove(map, conditionOrItem) {
+    if (!util_1.isFunction(conditionOrItem)) {
+      map.delete(conditionOrItem);
+    } else {
+      const toRemove = [];
+      for (const item of map) {
+        if (!!conditionOrItem.call(null, item)) {
+          toRemove.push(item[0]);
+        }
+      }
+      for (const key of toRemove) {
+        map.delete(key);
+      }
+    }
+  }
+  exports.remove = remove;
+  function contains(map, conditionOrItem) {
+    if (!util_1.isFunction(conditionOrItem)) {
+      return map.has(conditionOrItem);
+    } else {
+      for (const item of map) {
+        if (!!conditionOrItem.call(null, item)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+  exports.contains = contains;
+  function keys(map) {
+    return new Set(map.keys());
+  }
+  exports.keys = keys;
+  function values(map) {
+    return [...map.values()];
+  }
+  exports.values = values;
+  function size(map, condition) {
+    if (condition === undefined) {
+      return map.size;
+    } else {
+      let count = 0;
+      for (const item of map) {
+        if (!!condition.call(null, item)) {
+          count++;
+        }
+      }
+      return count;
+    }
+  }
+  exports.size = size;
+  function isEmpty(map) {
+    return map.size === 0;
+  }
+  exports.isEmpty = isEmpty;
+  function* forEach(map, condition) {
+    if (condition === undefined) {
+      yield* map;
+    } else {
+      for (const item of map) {
+        if (!!condition.call(null, item)) {
+          yield item;
+        }
+      }
+    }
+  }
+  exports.forEach = forEach;
+  function clone(map) {
+    return new Map(map);
+  }
+  exports.clone = clone;
+  function sortInAscendingOrder(map, lessThanAlgo) {
+    const list = new Array(...map);
+    list.sort((itemA, itemB) => lessThanAlgo.call(null, itemA, itemB) ? -1 : 1);
+    return new Map(list);
+  }
+  exports.sortInAscendingOrder = sortInAscendingOrder;
+  function sortInDescendingOrder(map, lessThanAlgo) {
+    const list = new Array(...map);
+    list.sort((itemA, itemB) => lessThanAlgo.call(null, itemA, itemB) ? 1 : -1);
+    return new Map(list);
+  }
+  exports.sortInDescendingOrder = sortInDescendingOrder;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/Namespace.js
+var require_Namespace = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.HTML = "http://www.w3.org/1999/xhtml";
+  exports.XML = "http://www.w3.org/XML/1998/namespace";
+  exports.XMLNS = "http://www.w3.org/2000/xmlns/";
+  exports.MathML = "http://www.w3.org/1998/Math/MathML";
+  exports.SVG = "http://www.w3.org/2000/svg";
+  exports.XLink = "http://www.w3.org/1999/xlink";
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/Queue.js
+var require_Queue = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  function enqueue(list, item) {
+    list.push(item);
+  }
+  exports.enqueue = enqueue;
+  function dequeue(list) {
+    return list.shift() || null;
+  }
+  exports.dequeue = dequeue;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/Set.js
+var require_Set = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var util_1 = require_lib8();
+  function append(set, item) {
+    set.add(item);
+  }
+  exports.append = append;
+  function extend(setA, setB) {
+    setB.forEach(setA.add, setA);
+  }
+  exports.extend = extend;
+  function prepend(set, item) {
+    const cloned = new Set(set);
+    set.clear();
+    set.add(item);
+    cloned.forEach(set.add, set);
+  }
+  exports.prepend = prepend;
+  function replace(set, conditionOrItem, newItem) {
+    const newSet = new Set;
+    for (const oldItem of set) {
+      if (util_1.isFunction(conditionOrItem)) {
+        if (!!conditionOrItem.call(null, oldItem)) {
+          newSet.add(newItem);
+        } else {
+          newSet.add(oldItem);
+        }
+      } else if (oldItem === conditionOrItem) {
+        newSet.add(newItem);
+      } else {
+        newSet.add(oldItem);
+      }
+    }
+    set.clear();
+    newSet.forEach(set.add, set);
+  }
+  exports.replace = replace;
+  function insert(set, item, index) {
+    const newSet = new Set;
+    let i = 0;
+    for (const oldItem of set) {
+      if (i === index)
+        newSet.add(item);
+      newSet.add(oldItem);
+      i++;
+    }
+    set.clear();
+    newSet.forEach(set.add, set);
+  }
+  exports.insert = insert;
+  function remove(set, conditionOrItem) {
+    if (!util_1.isFunction(conditionOrItem)) {
+      set.delete(conditionOrItem);
+    } else {
+      const toRemove = [];
+      for (const item of set) {
+        if (!!conditionOrItem.call(null, item)) {
+          toRemove.push(item);
+        }
+      }
+      for (const oldItem of toRemove) {
+        set.delete(oldItem);
+      }
+    }
+  }
+  exports.remove = remove;
+  function empty(set) {
+    set.clear();
+  }
+  exports.empty = empty;
+  function contains(set, conditionOrItem) {
+    if (!util_1.isFunction(conditionOrItem)) {
+      return set.has(conditionOrItem);
+    } else {
+      for (const oldItem of set) {
+        if (!!conditionOrItem.call(null, oldItem)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  exports.contains = contains;
+  function size(set, condition) {
+    if (condition === undefined) {
+      return set.size;
+    } else {
+      let count = 0;
+      for (const item of set) {
+        if (!!condition.call(null, item)) {
+          count++;
+        }
+      }
+      return count;
+    }
+  }
+  exports.size = size;
+  function isEmpty(set) {
+    return set.size === 0;
+  }
+  exports.isEmpty = isEmpty;
+  function* forEach(set, condition) {
+    if (condition === undefined) {
+      yield* set;
+    } else {
+      for (const item of set) {
+        if (!!condition.call(null, item)) {
+          yield item;
+        }
+      }
+    }
+  }
+  exports.forEach = forEach;
+  function clone(set) {
+    return new Set(set);
+  }
+  exports.clone = clone;
+  function sortInAscendingOrder(set, lessThanAlgo) {
+    const list = new Array(...set);
+    list.sort((itemA, itemB) => lessThanAlgo.call(null, itemA, itemB) ? -1 : 1);
+    return new Set(list);
+  }
+  exports.sortInAscendingOrder = sortInAscendingOrder;
+  function sortInDescendingOrder(set, lessThanAlgo) {
+    const list = new Array(...set);
+    list.sort((itemA, itemB) => lessThanAlgo.call(null, itemA, itemB) ? 1 : -1);
+    return new Set(list);
+  }
+  exports.sortInDescendingOrder = sortInDescendingOrder;
+  function isSubsetOf(subset, superset) {
+    for (const item of subset) {
+      if (!superset.has(item))
+        return false;
+    }
+    return true;
+  }
+  exports.isSubsetOf = isSubsetOf;
+  function isSupersetOf(superset, subset) {
+    return isSubsetOf(subset, superset);
+  }
+  exports.isSupersetOf = isSupersetOf;
+  function intersection(setA, setB) {
+    const newSet = new Set;
+    for (const item of setA) {
+      if (setB.has(item))
+        newSet.add(item);
+    }
+    return newSet;
+  }
+  exports.intersection = intersection;
+  function union(setA, setB) {
+    const newSet = new Set(setA);
+    setB.forEach(newSet.add, newSet);
+    return newSet;
+  }
+  exports.union = union;
+  function range(n, m) {
+    const newSet = new Set;
+    for (let i = n;i <= m; i++) {
+      newSet.add(i);
+    }
+    return newSet;
+  }
+  exports.range = range;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/Stack.js
+var require_Stack = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  function push(list, item) {
+    list.push(item);
+  }
+  exports.push = push;
+  function pop(list) {
+    return list.pop() || null;
+  }
+  exports.pop = pop;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/String.js
+var require_String = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var CodePoints_1 = require_CodePoints();
+  var ByteSequence_1 = require_ByteSequence();
+  var Byte_1 = require_Byte();
+  var util_1 = require_lib8();
+  function isCodeUnitPrefix(a, b) {
+    let i = 0;
+    while (true) {
+      const aCodeUnit = i < a.length ? a.charCodeAt(i) : null;
+      const bCodeUnit = i < b.length ? b.charCodeAt(i) : null;
+      if (aCodeUnit === null)
+        return true;
+      if (aCodeUnit !== bCodeUnit)
+        return false;
+      i++;
+    }
+  }
+  exports.isCodeUnitPrefix = isCodeUnitPrefix;
+  function isCodeUnitLessThan(a, b) {
+    if (isCodeUnitPrefix(b, a))
+      return false;
+    if (isCodeUnitPrefix(a, b))
+      return true;
+    for (let i = 0;i < Math.min(a.length, b.length); i++) {
+      const aCodeUnit = a.charCodeAt(i);
+      const bCodeUnit = b.charCodeAt(i);
+      if (aCodeUnit === bCodeUnit)
+        continue;
+      return aCodeUnit < bCodeUnit;
+    }
+    return false;
+  }
+  exports.isCodeUnitLessThan = isCodeUnitLessThan;
+  function isomorphicEncode(str) {
+    const codePoints = Array.from(str);
+    const bytes = new Uint8Array(codePoints.length);
+    let i = 0;
+    for (const codePoint of str) {
+      const byte = codePoint.codePointAt(0);
+      console.assert(byte !== undefined && byte <= 255, "isomorphicEncode requires string bytes to be less than or equal to 0x00FF.");
+      if (byte !== undefined && byte <= 255) {
+        bytes[i++] = byte;
+      }
+    }
+    return bytes;
+  }
+  exports.isomorphicEncode = isomorphicEncode;
+  function isASCIIString(str) {
+    return /^[\u0000-\u007F]*$/.test(str);
+  }
+  exports.isASCIIString = isASCIIString;
+  function asciiLowercase(str) {
+    let result = "";
+    for (const c of str) {
+      const code = c.codePointAt(0);
+      if (code !== undefined && code >= 65 && code <= 90) {
+        result += String.fromCodePoint(code + 32);
+      } else {
+        result += c;
+      }
+    }
+    return result;
+  }
+  exports.asciiLowercase = asciiLowercase;
+  function asciiUppercase(str) {
+    let result = "";
+    for (const c of str) {
+      const code = c.codePointAt(0);
+      if (code !== undefined && code >= 97 && code <= 122) {
+        result += String.fromCodePoint(code - 32);
+      } else {
+        result += c;
+      }
+    }
+    return result;
+  }
+  exports.asciiUppercase = asciiUppercase;
+  function asciiCaseInsensitiveMatch(a, b) {
+    return asciiLowercase(a) === asciiLowercase(b);
+  }
+  exports.asciiCaseInsensitiveMatch = asciiCaseInsensitiveMatch;
+  function asciiEncode(str) {
+    console.assert(isASCIIString(str), "asciiEncode requires an ASCII string.");
+    return isomorphicEncode(str);
+  }
+  exports.asciiEncode = asciiEncode;
+  function asciiDecode(bytes) {
+    for (const byte of bytes) {
+      console.assert(Byte_1.isASCIIByte(byte), "asciiDecode requires an ASCII byte sequence.");
+    }
+    return ByteSequence_1.isomorphicDecode(bytes);
+  }
+  exports.asciiDecode = asciiDecode;
+  function stripNewlines(str) {
+    return str.replace(/[\n\r]/g, "");
+  }
+  exports.stripNewlines = stripNewlines;
+  function normalizeNewlines(str) {
+    return str.replace(/\r\n/g, `
+`).replace(/\r/g, `
+`);
+  }
+  exports.normalizeNewlines = normalizeNewlines;
+  function stripLeadingAndTrailingASCIIWhitespace(str) {
+    return str.replace(/^[\t\n\f\r ]+/, "").replace(/[\t\n\f\r ]+$/, "");
+  }
+  exports.stripLeadingAndTrailingASCIIWhitespace = stripLeadingAndTrailingASCIIWhitespace;
+  function stripAndCollapseASCIIWhitespace(str) {
+    return stripLeadingAndTrailingASCIIWhitespace(str.replace(/[\t\n\f\r ]{2,}/g, " "));
+  }
+  exports.stripAndCollapseASCIIWhitespace = stripAndCollapseASCIIWhitespace;
+  function collectASequenceOfCodePoints(condition, input, options) {
+    if (!util_1.isArray(input))
+      return collectASequenceOfCodePoints(condition, Array.from(input), options);
+    let result = "";
+    while (options.position < input.length && !!condition.call(null, input[options.position])) {
+      result += input[options.position];
+      options.position++;
+    }
+    return result;
+  }
+  exports.collectASequenceOfCodePoints = collectASequenceOfCodePoints;
+  function skipASCIIWhitespace(input, options) {
+    collectASequenceOfCodePoints((str) => CodePoints_1.ASCIIWhiteSpace.test(str), input, options);
+  }
+  exports.skipASCIIWhitespace = skipASCIIWhitespace;
+  function strictlySplit(input, delimiter) {
+    if (!util_1.isArray(input))
+      return strictlySplit(Array.from(input), delimiter);
+    const options = { position: 0 };
+    const tokens = [];
+    let token = collectASequenceOfCodePoints((str) => delimiter !== str, input, options);
+    tokens.push(token);
+    while (options.position < input.length) {
+      console.assert(input[options.position] === delimiter, "strictlySplit found no delimiter in input string.");
+      options.position++;
+      token = collectASequenceOfCodePoints((str) => delimiter !== str, input, options);
+      tokens.push(token);
+    }
+    return tokens;
+  }
+  exports.strictlySplit = strictlySplit;
+  function splitAStringOnASCIIWhitespace(input) {
+    if (!util_1.isArray(input))
+      return splitAStringOnASCIIWhitespace(Array.from(input));
+    const options = { position: 0 };
+    const tokens = [];
+    skipASCIIWhitespace(input, options);
+    while (options.position < input.length) {
+      const token = collectASequenceOfCodePoints((str) => !CodePoints_1.ASCIIWhiteSpace.test(str), input, options);
+      tokens.push(token);
+      skipASCIIWhitespace(input, options);
+    }
+    return tokens;
+  }
+  exports.splitAStringOnASCIIWhitespace = splitAStringOnASCIIWhitespace;
+  function splitAStringOnCommas(input) {
+    if (!util_1.isArray(input))
+      return splitAStringOnCommas(Array.from(input));
+    const options = { position: 0 };
+    const tokens = [];
+    while (options.position < input.length) {
+      const token = collectASequenceOfCodePoints((str) => str !== ",", input, options);
+      tokens.push(stripLeadingAndTrailingASCIIWhitespace(token));
+      if (options.position < input.length) {
+        console.assert(input[options.position] === ",", "splitAStringOnCommas found no delimiter in input string.");
+        options.position++;
+      }
+    }
+    return tokens;
+  }
+  exports.splitAStringOnCommas = splitAStringOnCommas;
+  function concatenate(list, separator = "") {
+    if (list.length === 0)
+      return "";
+    return list.join(separator);
+  }
+  exports.concatenate = concatenate;
+});
+
+// node_modules/xmlbuilder2/node_modules/@oozcitak/infra/lib/index.js
+var require_lib9 = __commonJS((exports) => {
+  var __importStar = exports && exports.__importStar || function(mod) {
+    if (mod && mod.__esModule)
+      return mod;
+    var result = {};
+    if (mod != null) {
+      for (var k in mod)
+        if (Object.hasOwnProperty.call(mod, k))
+          result[k] = mod[k];
+    }
+    result["default"] = mod;
+    return result;
+  };
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var base64 = __importStar(require_Base64());
+  exports.base64 = base64;
+  var byte = __importStar(require_Byte());
+  exports.byte = byte;
+  var byteSequence = __importStar(require_ByteSequence());
+  exports.byteSequence = byteSequence;
+  var codePoint = __importStar(require_CodePoints());
+  exports.codePoint = codePoint;
+  var json = __importStar(require_JSON());
+  exports.json = json;
+  var list = __importStar(require_List());
+  exports.list = list;
+  var map = __importStar(require_Map());
+  exports.map = map;
+  var namespace = __importStar(require_Namespace());
+  exports.namespace = namespace;
+  var queue = __importStar(require_Queue());
+  exports.queue = queue;
+  var set = __importStar(require_Set());
+  exports.set = set;
+  var stack = __importStar(require_Stack());
+  exports.stack = stack;
+  var string = __importStar(require_String());
+  exports.string = string;
+});
+
+// node_modules/@oozcitak/infra/lib/CodePoints.js
+var require_CodePoints2 = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  exports.Surrogate = /[\uD800-\uDFFF]/;
+  exports.ScalarValue = /[\uD800-\uDFFF]/;
+  exports.NonCharacter = /[\uFDD0-\uFDEF\uFFFE\uFFFF]|[\uD83F\uD87F\uD8BF\uD8FF\uD93F\uD97F\uD9BF\uD9FF\uDA3F\uDA7F\uDABF\uDAFF\uDB3F\uDB7F\uDBBF\uDBFF][\uDFFE\uDFFF]/;
+  exports.ASCIICodePoint = /[\u0000-\u007F]/;
+  exports.ASCIITabOrNewLine = /[\t\n\r]/;
+  exports.ASCIIWhiteSpace = /[\t\n\f\r ]/;
+  exports.C0Control = /[\u0000-\u001F]/;
+  exports.C0ControlOrSpace = /[\u0000-\u001F ]/;
+  exports.Control = /[\u0000-\u001F\u007F-\u009F]/;
+  exports.ASCIIDigit = /[0-9]/;
+  exports.ASCIIUpperHexDigit = /[0-9A-F]/;
+  exports.ASCIILowerHexDigit = /[0-9a-f]/;
+  exports.ASCIIHexDigit = /[0-9A-Fa-f]/;
+  exports.ASCIIUpperAlpha = /[A-Z]/;
+  exports.ASCIILowerAlpha = /[a-z]/;
+  exports.ASCIIAlpha = /[A-Za-z]/;
+  exports.ASCIIAlphanumeric = /[0-9A-Za-z]/;
+});
+
+// node_modules/@oozcitak/infra/lib/Base64.js
+var require_Base642 = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  var CodePoints_1 = require_CodePoints2();
+  function forgivingBase64Encode(input) {
+    return Buffer.from(input).toString("base64");
+  }
+  exports.forgivingBase64Encode = forgivingBase64Encode;
+  function forgivingBase64Decode(input) {
+    if (input === "")
+      return "";
+    input = input.replace(CodePoints_1.ASCIIWhiteSpace, "");
+    if (input.length % 4 === 0) {
+      if (input.endsWith("==")) {
+        input = input.substr(0, input.length - 2);
+      } else if (input.endsWith("=")) {
+        input = input.substr(0, input.length - 1);
+      }
+    }
+    if (input.length % 4 === 1)
+      return null;
+    if (!/[0-9A-Za-z+/]/.test(input))
+      return null;
+    return Buffer.from(input, "base64").toString("utf8");
+  }
+  exports.forgivingBase64Decode = forgivingBase64Decode;
+});
+
+// node_modules/@oozcitak/infra/lib/Byte.js
+var require_Byte2 = __commonJS((exports) => {
+  Object.defineProperty(exports, "__esModule", { value: true });
+  function isASCIIByte(byte) {
+    return byte >= 0 && byte <= 127;
+  }
+  exports.isASCIIByte = isASCIIByte;
+});
+
+// node_modules/@oozcitak/infra/lib/ByteSequence.js
+var require_ByteSequence2 = __commonJS((exports) => {
   var __read = exports && exports.__read || function(o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m)
@@ -20858,7 +22162,7 @@ var require_ByteSequence = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/JSON.js
-var require_JSON = __commonJS((exports) => {
+var require_JSON2 = __commonJS((exports) => {
   var __values = exports && exports.__values || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m)
@@ -20929,7 +22233,7 @@ var require_JSON = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/List.js
-var require_List = __commonJS((exports) => {
+var require_List2 = __commonJS((exports) => {
   var __generator = exports && exports.__generator || function(thisArg, body) {
     var _ = { label: 0, sent: function() {
       if (t[0] & 1)
@@ -21240,7 +22544,7 @@ var require_List = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/Map.js
-var require_Map = __commonJS((exports) => {
+var require_Map2 = __commonJS((exports) => {
   var __generator = exports && exports.__generator || function(thisArg, body) {
     var _ = { label: 0, sent: function() {
       if (t[0] & 1)
@@ -21550,7 +22854,7 @@ var require_Map = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/Namespace.js
-var require_Namespace = __commonJS((exports) => {
+var require_Namespace2 = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.HTML = "http://www.w3.org/1999/xhtml";
   exports.XML = "http://www.w3.org/XML/1998/namespace";
@@ -21561,7 +22865,7 @@ var require_Namespace = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/Queue.js
-var require_Queue = __commonJS((exports) => {
+var require_Queue2 = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   function enqueue(list, item) {
     list.push(item);
@@ -21574,7 +22878,7 @@ var require_Queue = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/Set.js
-var require_Set = __commonJS((exports) => {
+var require_Set2 = __commonJS((exports) => {
   var __generator = exports && exports.__generator || function(thisArg, body) {
     var _ = { label: 0, sent: function() {
       if (t[0] & 1)
@@ -22010,7 +23314,7 @@ var require_Set = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/Stack.js
-var require_Stack = __commonJS((exports) => {
+var require_Stack2 = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   function push(list, item) {
     list.push(item);
@@ -22023,7 +23327,7 @@ var require_Stack = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/String.js
-var require_String = __commonJS((exports) => {
+var require_String2 = __commonJS((exports) => {
   var __values = exports && exports.__values || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m)
@@ -22039,9 +23343,9 @@ var require_String = __commonJS((exports) => {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
   };
   Object.defineProperty(exports, "__esModule", { value: true });
-  var CodePoints_1 = require_CodePoints();
-  var ByteSequence_1 = require_ByteSequence();
-  var Byte_1 = require_Byte();
+  var CodePoints_1 = require_CodePoints2();
+  var ByteSequence_1 = require_ByteSequence2();
+  var Byte_1 = require_Byte2();
   var util_1 = require_lib8();
   function isCodeUnitPrefix(a, b) {
     var i = 0;
@@ -22288,7 +23592,7 @@ var require_String = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/infra/lib/index.js
-var require_lib9 = __commonJS((exports) => {
+var require_lib10 = __commonJS((exports) => {
   var __importStar = exports && exports.__importStar || function(mod) {
     if (mod && mod.__esModule)
       return mod;
@@ -22302,29 +23606,29 @@ var require_lib9 = __commonJS((exports) => {
     return result;
   };
   Object.defineProperty(exports, "__esModule", { value: true });
-  var base64 = __importStar(require_Base64());
+  var base64 = __importStar(require_Base642());
   exports.base64 = base64;
-  var byte = __importStar(require_Byte());
+  var byte = __importStar(require_Byte2());
   exports.byte = byte;
-  var byteSequence = __importStar(require_ByteSequence());
+  var byteSequence = __importStar(require_ByteSequence2());
   exports.byteSequence = byteSequence;
-  var codePoint = __importStar(require_CodePoints());
+  var codePoint = __importStar(require_CodePoints2());
   exports.codePoint = codePoint;
-  var json = __importStar(require_JSON());
+  var json = __importStar(require_JSON2());
   exports.json = json;
-  var list = __importStar(require_List());
+  var list = __importStar(require_List2());
   exports.list = list;
-  var map = __importStar(require_Map());
+  var map = __importStar(require_Map2());
   exports.map = map;
-  var namespace = __importStar(require_Namespace());
+  var namespace = __importStar(require_Namespace2());
   exports.namespace = namespace;
-  var queue = __importStar(require_Queue());
+  var queue = __importStar(require_Queue2());
   exports.queue = queue;
-  var set = __importStar(require_Set());
+  var set = __importStar(require_Set2());
   exports.set = set;
-  var stack = __importStar(require_Stack());
+  var stack = __importStar(require_Stack2());
   exports.stack = stack;
-  var string = __importStar(require_String());
+  var string = __importStar(require_String2());
   exports.string = string;
 });
 
@@ -22341,7 +23645,7 @@ var require_WebIDLAlgorithm = __commonJS((exports) => {
 var require_DOMImplementationImpl = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var DOMImpl_1 = require_DOMImpl();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var algorithm_1 = require_algorithm();
   var WebIDLAlgorithm_1 = require_WebIDLAlgorithm();
   var DOMImplementationImpl = function() {
@@ -22404,498 +23708,6 @@ var require_DOMImplementationImpl = __commonJS((exports) => {
   }();
   exports.DOMImplementationImpl = DOMImplementationImpl;
   WebIDLAlgorithm_1.idl_defineConst(DOMImplementationImpl.prototype, "_ID", "@oozcitak/dom");
-});
-
-// node_modules/@oozcitak/dom/lib/dom/DOMException.js
-var require_DOMException = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var DOMException = function(_super) {
-    __extends(DOMException2, _super);
-    function DOMException2(name, message) {
-      if (message === undefined) {
-        message = "";
-      }
-      var _this = _super.call(this, message) || this;
-      _this.name = name;
-      return _this;
-    }
-    return DOMException2;
-  }(Error);
-  exports.DOMException = DOMException;
-  var DOMStringSizeError = function(_super) {
-    __extends(DOMStringSizeError2, _super);
-    function DOMStringSizeError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "DOMStringSizeError", message) || this;
-    }
-    return DOMStringSizeError2;
-  }(DOMException);
-  exports.DOMStringSizeError = DOMStringSizeError;
-  var WrongDocumentError = function(_super) {
-    __extends(WrongDocumentError2, _super);
-    function WrongDocumentError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "WrongDocumentError", "The object is in the wrong document. " + message) || this;
-    }
-    return WrongDocumentError2;
-  }(DOMException);
-  exports.WrongDocumentError = WrongDocumentError;
-  var NoDataAllowedError = function(_super) {
-    __extends(NoDataAllowedError2, _super);
-    function NoDataAllowedError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "NoDataAllowedError", message) || this;
-    }
-    return NoDataAllowedError2;
-  }(DOMException);
-  exports.NoDataAllowedError = NoDataAllowedError;
-  var NoModificationAllowedError = function(_super) {
-    __extends(NoModificationAllowedError2, _super);
-    function NoModificationAllowedError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "NoModificationAllowedError", "The object can not be modified. " + message) || this;
-    }
-    return NoModificationAllowedError2;
-  }(DOMException);
-  exports.NoModificationAllowedError = NoModificationAllowedError;
-  var NotSupportedError = function(_super) {
-    __extends(NotSupportedError2, _super);
-    function NotSupportedError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "NotSupportedError", "The operation is not supported. " + message) || this;
-    }
-    return NotSupportedError2;
-  }(DOMException);
-  exports.NotSupportedError = NotSupportedError;
-  var InUseAttributeError = function(_super) {
-    __extends(InUseAttributeError2, _super);
-    function InUseAttributeError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "InUseAttributeError", message) || this;
-    }
-    return InUseAttributeError2;
-  }(DOMException);
-  exports.InUseAttributeError = InUseAttributeError;
-  var InvalidStateError = function(_super) {
-    __extends(InvalidStateError2, _super);
-    function InvalidStateError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "InvalidStateError", "The object is in an invalid state. " + message) || this;
-    }
-    return InvalidStateError2;
-  }(DOMException);
-  exports.InvalidStateError = InvalidStateError;
-  var InvalidModificationError = function(_super) {
-    __extends(InvalidModificationError2, _super);
-    function InvalidModificationError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "InvalidModificationError", "The object can not be modified in this way. " + message) || this;
-    }
-    return InvalidModificationError2;
-  }(DOMException);
-  exports.InvalidModificationError = InvalidModificationError;
-  var NamespaceError = function(_super) {
-    __extends(NamespaceError2, _super);
-    function NamespaceError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "NamespaceError", "The operation is not allowed by Namespaces in XML. [XMLNS] " + message) || this;
-    }
-    return NamespaceError2;
-  }(DOMException);
-  exports.NamespaceError = NamespaceError;
-  var InvalidAccessError = function(_super) {
-    __extends(InvalidAccessError2, _super);
-    function InvalidAccessError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "InvalidAccessError", "The object does not support the operation or argument. " + message) || this;
-    }
-    return InvalidAccessError2;
-  }(DOMException);
-  exports.InvalidAccessError = InvalidAccessError;
-  var ValidationError = function(_super) {
-    __extends(ValidationError2, _super);
-    function ValidationError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "ValidationError", message) || this;
-    }
-    return ValidationError2;
-  }(DOMException);
-  exports.ValidationError = ValidationError;
-  var TypeMismatchError = function(_super) {
-    __extends(TypeMismatchError2, _super);
-    function TypeMismatchError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "TypeMismatchError", message) || this;
-    }
-    return TypeMismatchError2;
-  }(DOMException);
-  exports.TypeMismatchError = TypeMismatchError;
-  var SecurityError = function(_super) {
-    __extends(SecurityError2, _super);
-    function SecurityError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "SecurityError", "The operation is insecure. " + message) || this;
-    }
-    return SecurityError2;
-  }(DOMException);
-  exports.SecurityError = SecurityError;
-  var NetworkError = function(_super) {
-    __extends(NetworkError2, _super);
-    function NetworkError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "NetworkError", "A network error occurred. " + message) || this;
-    }
-    return NetworkError2;
-  }(DOMException);
-  exports.NetworkError = NetworkError;
-  var AbortError = function(_super) {
-    __extends(AbortError2, _super);
-    function AbortError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "AbortError", "The operation was aborted. " + message) || this;
-    }
-    return AbortError2;
-  }(DOMException);
-  exports.AbortError = AbortError;
-  var URLMismatchError = function(_super) {
-    __extends(URLMismatchError2, _super);
-    function URLMismatchError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "URLMismatchError", "The given URL does not match another URL. " + message) || this;
-    }
-    return URLMismatchError2;
-  }(DOMException);
-  exports.URLMismatchError = URLMismatchError;
-  var QuotaExceededError = function(_super) {
-    __extends(QuotaExceededError2, _super);
-    function QuotaExceededError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "QuotaExceededError", "The quota has been exceeded. " + message) || this;
-    }
-    return QuotaExceededError2;
-  }(DOMException);
-  exports.QuotaExceededError = QuotaExceededError;
-  var TimeoutError = function(_super) {
-    __extends(TimeoutError2, _super);
-    function TimeoutError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "TimeoutError", "The operation timed out. " + message) || this;
-    }
-    return TimeoutError2;
-  }(DOMException);
-  exports.TimeoutError = TimeoutError;
-  var InvalidNodeTypeError = function(_super) {
-    __extends(InvalidNodeTypeError2, _super);
-    function InvalidNodeTypeError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "InvalidNodeTypeError", "The supplied node is incorrect or has an incorrect ancestor for this operation. " + message) || this;
-    }
-    return InvalidNodeTypeError2;
-  }(DOMException);
-  exports.InvalidNodeTypeError = InvalidNodeTypeError;
-  var DataCloneError = function(_super) {
-    __extends(DataCloneError2, _super);
-    function DataCloneError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "DataCloneError", "The object can not be cloned. " + message) || this;
-    }
-    return DataCloneError2;
-  }(DOMException);
-  exports.DataCloneError = DataCloneError;
-  var NotImplementedError = function(_super) {
-    __extends(NotImplementedError2, _super);
-    function NotImplementedError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "NotImplementedError", "The DOM method is not implemented by this module. " + message) || this;
-    }
-    return NotImplementedError2;
-  }(DOMException);
-  exports.NotImplementedError = NotImplementedError;
-  var HierarchyRequestError = function(_super) {
-    __extends(HierarchyRequestError2, _super);
-    function HierarchyRequestError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "HierarchyRequestError", "The operation would yield an incorrect node tree. " + message) || this;
-    }
-    return HierarchyRequestError2;
-  }(DOMException);
-  exports.HierarchyRequestError = HierarchyRequestError;
-  var NotFoundError = function(_super) {
-    __extends(NotFoundError2, _super);
-    function NotFoundError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "NotFoundError", "The object can not be found here. " + message) || this;
-    }
-    return NotFoundError2;
-  }(DOMException);
-  exports.NotFoundError = NotFoundError;
-  var IndexSizeError = function(_super) {
-    __extends(IndexSizeError2, _super);
-    function IndexSizeError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "IndexSizeError", "The index is not in the allowed range. " + message) || this;
-    }
-    return IndexSizeError2;
-  }(DOMException);
-  exports.IndexSizeError = IndexSizeError;
-  var SyntaxError2 = function(_super) {
-    __extends(SyntaxError3, _super);
-    function SyntaxError3(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "SyntaxError", "The string did not match the expected pattern. " + message) || this;
-    }
-    return SyntaxError3;
-  }(DOMException);
-  exports.SyntaxError = SyntaxError2;
-  var InvalidCharacterError = function(_super) {
-    __extends(InvalidCharacterError2, _super);
-    function InvalidCharacterError2(message) {
-      if (message === undefined) {
-        message = "";
-      }
-      return _super.call(this, "InvalidCharacterError", "The string contains invalid characters. " + message) || this;
-    }
-    return InvalidCharacterError2;
-  }(DOMException);
-  exports.InvalidCharacterError = InvalidCharacterError;
-});
-
-// node_modules/@oozcitak/dom/lib/util/Guard.js
-var require_Guard = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var interfaces_1 = require_interfaces2();
-  var Guard = function() {
-    function Guard2() {
-    }
-    Guard2.isNode = function(a) {
-      return !!a && a._nodeType !== undefined;
-    };
-    Guard2.isDocumentNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Document;
-    };
-    Guard2.isDocumentTypeNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.DocumentType;
-    };
-    Guard2.isDocumentFragmentNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.DocumentFragment;
-    };
-    Guard2.isAttrNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Attribute;
-    };
-    Guard2.isCharacterDataNode = function(a) {
-      if (!Guard2.isNode(a))
-        return false;
-      var type = a._nodeType;
-      return type === interfaces_1.NodeType.Text || type === interfaces_1.NodeType.ProcessingInstruction || type === interfaces_1.NodeType.Comment || type === interfaces_1.NodeType.CData;
-    };
-    Guard2.isTextNode = function(a) {
-      return Guard2.isNode(a) && (a._nodeType === interfaces_1.NodeType.Text || a._nodeType === interfaces_1.NodeType.CData);
-    };
-    Guard2.isExclusiveTextNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Text;
-    };
-    Guard2.isCDATASectionNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.CData;
-    };
-    Guard2.isCommentNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Comment;
-    };
-    Guard2.isProcessingInstructionNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.ProcessingInstruction;
-    };
-    Guard2.isElementNode = function(a) {
-      return Guard2.isNode(a) && a._nodeType === interfaces_1.NodeType.Element;
-    };
-    Guard2.isCustomElementNode = function(a) {
-      return Guard2.isElementNode(a) && a._customElementState === "custom";
-    };
-    Guard2.isShadowRoot = function(a) {
-      return !!a && a.host !== undefined;
-    };
-    Guard2.isMouseEvent = function(a) {
-      return !!a && a.screenX !== undefined && a.screenY != null;
-    };
-    Guard2.isSlotable = function(a) {
-      return !!a && a._name !== undefined && a._assignedSlot !== undefined && (Guard2.isTextNode(a) || Guard2.isElementNode(a));
-    };
-    Guard2.isSlot = function(a) {
-      return !!a && a._name !== undefined && a._assignedNodes !== undefined && Guard2.isElementNode(a);
-    };
-    Guard2.isWindow = function(a) {
-      return !!a && a.navigator !== undefined;
-    };
-    Guard2.isEventListener = function(a) {
-      return !!a && a.handleEvent !== undefined;
-    };
-    Guard2.isRegisteredObserver = function(a) {
-      return !!a && a.observer !== undefined && a.options !== undefined;
-    };
-    Guard2.isTransientRegisteredObserver = function(a) {
-      return !!a && a.source !== undefined && Guard2.isRegisteredObserver(a);
-    };
-    return Guard2;
-  }();
-  exports.Guard = Guard;
-});
-
-// node_modules/@oozcitak/dom/lib/util/Cast.js
-var require_Cast = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var Guard_1 = require_Guard();
-  var Cast = function() {
-    function Cast2() {
-    }
-    Cast2.asNode = function(a) {
-      if (Guard_1.Guard.isNode(a)) {
-        return a;
-      } else {
-        throw new Error("Invalid object. Node expected.");
-      }
-    };
-    return Cast2;
-  }();
-  exports.Cast = Cast;
-});
-
-// node_modules/@oozcitak/dom/lib/util/EmptySet.js
-var require_EmptySet = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var EmptySet = function() {
-    function EmptySet2() {
-    }
-    Object.defineProperty(EmptySet2.prototype, "size", {
-      get: function() {
-        return 0;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    EmptySet2.prototype.add = function(value) {
-      throw new Error("Cannot add to an empty set.");
-    };
-    EmptySet2.prototype.clear = function() {
-    };
-    EmptySet2.prototype.delete = function(value) {
-      return false;
-    };
-    EmptySet2.prototype.forEach = function(callbackfn, thisArg) {
-    };
-    EmptySet2.prototype.has = function(value) {
-      return false;
-    };
-    EmptySet2.prototype[Symbol.iterator] = function() {
-      return new EmptySetIterator;
-    };
-    EmptySet2.prototype.entries = function() {
-      return new EmptySetIterator;
-    };
-    EmptySet2.prototype.keys = function() {
-      return new EmptySetIterator;
-    };
-    EmptySet2.prototype.values = function() {
-      return new EmptySetIterator;
-    };
-    Object.defineProperty(EmptySet2.prototype, Symbol.toStringTag, {
-      get: function() {
-        return "EmptySet";
-      },
-      enumerable: true,
-      configurable: true
-    });
-    return EmptySet2;
-  }();
-  exports.EmptySet = EmptySet;
-  var EmptySetIterator = function() {
-    function EmptySetIterator2() {
-    }
-    EmptySetIterator2.prototype[Symbol.iterator] = function() {
-      return this;
-    };
-    EmptySetIterator2.prototype.next = function() {
-      return { done: true, value: null };
-    };
-    return EmptySetIterator2;
-  }();
-});
-
-// node_modules/@oozcitak/dom/lib/util/index.js
-var require_util2 = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var Cast_1 = require_Cast();
-  exports.Cast = Cast_1.Cast;
-  var Guard_1 = require_Guard();
-  exports.Guard = Guard_1.Guard;
-  var EmptySet_1 = require_EmptySet();
-  exports.EmptySet = EmptySet_1.EmptySet;
 });
 
 // node_modules/@oozcitak/dom/lib/dom/EventTargetImpl.js
@@ -23127,7 +23939,7 @@ var require_URLAlgorithm = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var util_1 = require_lib8();
   var interfaces_1 = require_interfaces3();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var url_1 = __require("url");
   var _validationErrorCallback;
   var _defaultPorts = {
@@ -25056,7 +25868,7 @@ var require_DocumentImpl = __commonJS((exports) => {
   var NodeImpl_1 = require_NodeImpl();
   var util_1 = require_util2();
   var util_2 = require_lib8();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var URLAlgorithm_1 = require_URLAlgorithm();
   var algorithm_1 = require_algorithm();
   var WebIDLAlgorithm_1 = require_WebIDLAlgorithm();
@@ -25658,7 +26470,7 @@ var require_ElementImpl = __commonJS((exports) => {
   var interfaces_1 = require_interfaces2();
   var NodeImpl_1 = require_NodeImpl();
   var DOMException_1 = require_DOMException();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var algorithm_1 = require_algorithm();
   var WebIDLAlgorithm_1 = require_WebIDLAlgorithm();
   var ElementImpl = function(_super) {
@@ -26694,7 +27506,7 @@ var require_ProcessingInstructionImpl = __commonJS((exports) => {
 // node_modules/@oozcitak/dom/lib/dom/HTMLCollectionImpl.js
 var require_HTMLCollectionImpl = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var algorithm_1 = require_algorithm();
   var util_1 = require_util2();
   var util_2 = require_lib8();
@@ -28053,7 +28865,7 @@ var require_DOMTokenListImpl = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var DOMImpl_1 = require_DOMImpl();
   var DOMException_1 = require_DOMException();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var algorithm_1 = require_algorithm();
   var DOMTokenListImpl = function() {
     function DOMTokenListImpl2(element, attribute) {
@@ -29333,7 +30145,7 @@ var require_MutationObserverAlgorithm = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var DOMImpl_1 = require_DOMImpl();
   var util_1 = require_util2();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var CreateAlgorithm_1 = require_CreateAlgorithm();
   var TreeAlgorithm_1 = require_TreeAlgorithm();
   var EventAlgorithm_1 = require_EventAlgorithm();
@@ -30682,7 +31494,7 @@ var require_XMLAlgorithm = __commonJS((exports) => {
 var require_NamespaceAlgorithm = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var DOMException_1 = require_DOMException();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var XMLAlgorithm_1 = require_XMLAlgorithm();
   function namespace_validate(qualifiedName) {
     if (!XMLAlgorithm_1.xml_isName(qualifiedName))
@@ -30877,7 +31689,7 @@ var require_MutationAlgorithm = __commonJS((exports) => {
   var interfaces_1 = require_interfaces2();
   var util_1 = require_util2();
   var util_2 = require_lib8();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var CustomElementAlgorithm_1 = require_CustomElementAlgorithm();
   var TreeAlgorithm_1 = require_TreeAlgorithm();
   var NodeIteratorAlgorithm_1 = require_NodeIteratorAlgorithm();
@@ -31577,7 +32389,7 @@ var require_MutationAlgorithm = __commonJS((exports) => {
 var require_ElementAlgorithm = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var DOMImpl_1 = require_DOMImpl();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var util_1 = require_util2();
   var DOMException_1 = require_DOMException();
   var CreateAlgorithm_1 = require_CreateAlgorithm();
@@ -32034,7 +32846,7 @@ var require_OrderedSetAlgorithm = __commonJS((exports) => {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
   };
   Object.defineProperty(exports, "__esModule", { value: true });
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   function orderedSet_parse(value) {
     var inputTokens = infra_1.string.splitAStringOnASCIIWhitespace(value);
     return new Set(inputTokens);
@@ -32221,7 +33033,7 @@ var require_NodeAlgorithm = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var DOMImpl_1 = require_DOMImpl();
   var util_1 = require_util2();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var CreateAlgorithm_1 = require_CreateAlgorithm();
   var OrderedSetAlgorithm_1 = require_OrderedSetAlgorithm();
   var DOMAlgorithm_1 = require_DOMAlgorithm();
@@ -33310,199 +34122,145 @@ var require_algorithm = __commonJS((exports) => {
   __export(require_XMLAlgorithm());
 });
 
-// node_modules/xmlbuilder2/lib/constants.js
-var require_constants2 = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  exports.nonEntityAmpersandRegex = /&(?![A-Za-z]+;|#\d+;)/g;
-});
-
 // node_modules/xmlbuilder2/lib/writers/BaseWriter.js
 var require_BaseWriter = __commonJS((exports) => {
-  var __values = exports && exports.__values || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m)
-      return m.call(o);
-    if (o && typeof o.length === "number")
-      return {
-        next: function() {
-          if (o && i >= o.length)
-            o = undefined;
-          return { value: o && o[i++], done: !o };
-        }
-      };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-  };
-  var __read = exports && exports.__read || function(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m)
-      return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-      while ((n === undefined || n-- > 0) && !(r = i.next()).done)
-        ar.push(r.value);
-    } catch (error) {
-      e = { error };
-    } finally {
-      try {
-        if (r && !r.done && (m = i["return"]))
-          m.call(i);
-      } finally {
-        if (e)
-          throw e.error;
-      }
-    }
-    return ar;
-  };
-  var __spread = exports && exports.__spread || function() {
-    for (var ar = [], i = 0;i < arguments.length; i++)
-      ar = ar.concat(__read(arguments[i]));
-    return ar;
-  };
   Object.defineProperty(exports, "__esModule", { value: true });
   var interfaces_1 = require_interfaces2();
   var LocalNameSet_1 = require_LocalNameSet();
   var NamespacePrefixMap_1 = require_NamespacePrefixMap();
+  var DOMException_1 = require_DOMException();
   var infra_1 = require_lib9();
   var algorithm_1 = require_algorithm();
-  var constants_1 = require_constants2();
-  var BaseWriter = function() {
-    function BaseWriter2(builderOptions) {
+
+  class BaseWriter {
+    constructor(builderOptions) {
       this.level = 0;
       this._builderOptions = builderOptions;
     }
-    BaseWriter2.prototype.declaration = function(version, encoding, standalone) {
-    };
-    BaseWriter2.prototype.docType = function(name, publicId, systemId) {
-    };
-    BaseWriter2.prototype.comment = function(data) {
-    };
-    BaseWriter2.prototype.text = function(data) {
-    };
-    BaseWriter2.prototype.instruction = function(target, data) {
-    };
-    BaseWriter2.prototype.cdata = function(data) {
-    };
-    BaseWriter2.prototype.openTagBegin = function(name) {
-    };
-    BaseWriter2.prototype.openTagEnd = function(name, selfClosing, voidElement) {
-    };
-    BaseWriter2.prototype.closeTag = function(name) {
-    };
-    BaseWriter2.prototype.attributes = function(attributes) {
-      var e_1, _a;
-      try {
-        for (var attributes_1 = __values(attributes), attributes_1_1 = attributes_1.next();!attributes_1_1.done; attributes_1_1 = attributes_1.next()) {
-          var attr = attributes_1_1.value;
-          this.attribute(attr[1] === null ? attr[2] : attr[1] + ":" + attr[2], attr[3]);
-        }
-      } catch (e_1_1) {
-        e_1 = { error: e_1_1 };
-      } finally {
-        try {
-          if (attributes_1_1 && !attributes_1_1.done && (_a = attributes_1.return))
-            _a.call(attributes_1);
-        } finally {
-          if (e_1)
-            throw e_1.error;
-        }
+    docType(name, publicId, systemId) {
+    }
+    comment(data) {
+    }
+    text(data) {
+    }
+    instruction(target, data) {
+    }
+    cdata(data) {
+    }
+    openTagBegin(name) {
+    }
+    openTagEnd(name, selfClosing, voidElement) {
+    }
+    closeTag(name) {
+    }
+    attributes(attributes) {
+      for (const attr of attributes) {
+        this.attribute(attr[1] === null ? attr[2] : attr[1] + ":" + attr[2], attr[3]);
       }
-    };
-    BaseWriter2.prototype.attribute = function(name, value) {
-    };
-    BaseWriter2.prototype.beginElement = function(name) {
-    };
-    BaseWriter2.prototype.endElement = function(name) {
-    };
-    BaseWriter2.prototype.serializeNode = function(node, requireWellFormed) {
-      var hasNamespaces = node._nodeDocument !== undefined && node._nodeDocument._hasNamespaces;
+    }
+    attribute(name, value) {
+    }
+    beginElement(name) {
+    }
+    endElement(name) {
+    }
+    serializeNode(node, requireWellFormed, noDoubleEncoding) {
+      const hasNamespaces = node._nodeDocument !== undefined && node._nodeDocument._hasNamespaces;
       this.level = 0;
       this.currentNode = node;
       if (hasNamespaces) {
-        var namespace = null;
-        var prefixMap = new NamespacePrefixMap_1.NamespacePrefixMap;
+        let namespace = null;
+        const prefixMap = new NamespacePrefixMap_1.NamespacePrefixMap;
         prefixMap.set("xml", infra_1.namespace.XML);
-        var prefixIndex = { value: 1 };
-        this._serializeNodeNS(node, namespace, prefixMap, prefixIndex, requireWellFormed);
+        const prefixIndex = { value: 1 };
+        try {
+          this._serializeNodeNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding);
+        } catch (e) {
+          throw new DOMException_1.InvalidStateError(e.message);
+        }
       } else {
-        this._serializeNode(node, requireWellFormed);
+        try {
+          this._serializeNode(node, requireWellFormed, noDoubleEncoding);
+        } catch (e) {
+          throw new DOMException_1.InvalidStateError(e.message);
+        }
       }
-    };
-    BaseWriter2.prototype._serializeNodeNS = function(node, namespace, prefixMap, prefixIndex, requireWellFormed) {
+    }
+    _serializeNodeNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding) {
       this.currentNode = node;
       switch (node.nodeType) {
         case interfaces_1.NodeType.Element:
-          this._serializeElementNS(node, namespace, prefixMap, prefixIndex, requireWellFormed);
+          this._serializeElementNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.Document:
-          this._serializeDocumentNS(node, namespace, prefixMap, prefixIndex, requireWellFormed);
+          this._serializeDocumentNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.Comment:
-          this._serializeComment(node, requireWellFormed);
+          this._serializeComment(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.Text:
-          this._serializeText(node, requireWellFormed);
+          this._serializeText(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.DocumentFragment:
-          this._serializeDocumentFragmentNS(node, namespace, prefixMap, prefixIndex, requireWellFormed);
+          this._serializeDocumentFragmentNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.DocumentType:
-          this._serializeDocumentType(node, requireWellFormed);
+          this._serializeDocumentType(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.ProcessingInstruction:
-          this._serializeProcessingInstruction(node, requireWellFormed);
+          this._serializeProcessingInstruction(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.CData:
-          this._serializeCData(node, requireWellFormed);
+          this._serializeCData(node, requireWellFormed, noDoubleEncoding);
           break;
         default:
-          throw new Error("Unknown node type: " + node.nodeType);
+          throw new Error(`Unknown node type: ${node.nodeType}`);
       }
-    };
-    BaseWriter2.prototype._serializeNode = function(node, requireWellFormed) {
+    }
+    _serializeNode(node, requireWellFormed, noDoubleEncoding) {
       this.currentNode = node;
       switch (node.nodeType) {
         case interfaces_1.NodeType.Element:
-          this._serializeElement(node, requireWellFormed);
+          this._serializeElement(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.Document:
-          this._serializeDocument(node, requireWellFormed);
+          this._serializeDocument(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.Comment:
-          this._serializeComment(node, requireWellFormed);
+          this._serializeComment(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.Text:
-          this._serializeText(node, requireWellFormed);
+          this._serializeText(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.DocumentFragment:
-          this._serializeDocumentFragment(node, requireWellFormed);
+          this._serializeDocumentFragment(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.DocumentType:
-          this._serializeDocumentType(node, requireWellFormed);
+          this._serializeDocumentType(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.ProcessingInstruction:
-          this._serializeProcessingInstruction(node, requireWellFormed);
+          this._serializeProcessingInstruction(node, requireWellFormed, noDoubleEncoding);
           break;
         case interfaces_1.NodeType.CData:
-          this._serializeCData(node, requireWellFormed);
+          this._serializeCData(node, requireWellFormed, noDoubleEncoding);
           break;
         default:
-          throw new Error("Unknown node type: " + node.nodeType);
+          throw new Error(`Unknown node type: ${node.nodeType}`);
       }
-    };
-    BaseWriter2.prototype._serializeElementNS = function(node, namespace, prefixMap, prefixIndex, requireWellFormed) {
-      var e_2, _a;
-      var attributes = [];
+    }
+    _serializeElementNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding) {
+      const attributes = [];
       if (requireWellFormed && (node.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(node.localName))) {
         throw new Error("Node local name contains invalid characters (well-formed required).");
       }
-      var qualifiedName = "";
-      var skipEndTag = false;
-      var ignoreNamespaceDefinitionAttribute = false;
-      var map = prefixMap.copy();
-      var localPrefixesMap = {};
-      var localDefaultNamespace = this._recordNamespaceInformation(node, map, localPrefixesMap);
-      var inheritedNS = namespace;
-      var ns = node.namespaceURI;
+      let qualifiedName = "";
+      let skipEndTag = false;
+      let ignoreNamespaceDefinitionAttribute = false;
+      let map = prefixMap.copy();
+      let localPrefixesMap = {};
+      let localDefaultNamespace = this._recordNamespaceInformation(node, map, localPrefixesMap);
+      let inheritedNS = namespace;
+      let ns = node.namespaceURI;
       if (inheritedNS === ns) {
         if (localDefaultNamespace !== null) {
           ignoreNamespaceDefinitionAttribute = true;
@@ -33515,8 +34273,8 @@ var require_BaseWriter = __commonJS((exports) => {
         this.beginElement(qualifiedName);
         this.openTagBegin(qualifiedName);
       } else {
-        var prefix = node.prefix;
-        var candidatePrefix = null;
+        let prefix = node.prefix;
+        let candidatePrefix = null;
         if (prefix !== null || ns !== localDefaultNamespace) {
           candidatePrefix = map.get(prefix, ns);
         }
@@ -33545,7 +34303,7 @@ var require_BaseWriter = __commonJS((exports) => {
             null,
             "xmlns",
             prefix,
-            this._serializeAttributeValue(ns, requireWellFormed)
+            this._serializeAttributeValue(ns, requireWellFormed, noDoubleEncoding)
           ]);
           if (localDefaultNamespace !== null) {
             inheritedNS = localDefaultNamespace || null;
@@ -33560,7 +34318,7 @@ var require_BaseWriter = __commonJS((exports) => {
             null,
             null,
             "xmlns",
-            this._serializeAttributeValue(ns, requireWellFormed)
+            this._serializeAttributeValue(ns, requireWellFormed, noDoubleEncoding)
           ]);
         } else {
           qualifiedName += node.localName;
@@ -33569,10 +34327,10 @@ var require_BaseWriter = __commonJS((exports) => {
           this.openTagBegin(qualifiedName);
         }
       }
-      attributes.push.apply(attributes, __spread(this._serializeAttributesNS(node, map, prefixIndex, localPrefixesMap, ignoreNamespaceDefinitionAttribute, requireWellFormed)));
+      attributes.push(...this._serializeAttributesNS(node, map, prefixIndex, localPrefixesMap, ignoreNamespaceDefinitionAttribute, requireWellFormed, noDoubleEncoding));
       this.attributes(attributes);
-      var isHTML = ns === infra_1.namespace.HTML;
-      if (isHTML && node.childNodes.length === 0 && BaseWriter2._VoidElementNames.has(node.localName)) {
+      const isHTML = ns === infra_1.namespace.HTML;
+      if (isHTML && node.childNodes.length === 0 && BaseWriter._VoidElementNames.has(node.localName)) {
         this.openTagEnd(qualifiedName, true, true);
         this.endElement(qualifiedName);
         skipEndTag = true;
@@ -33587,38 +34345,24 @@ var require_BaseWriter = __commonJS((exports) => {
         return;
       if (isHTML && node.localName === "template") {
       } else {
-        try {
-          for (var _b = __values(node.childNodes), _c = _b.next();!_c.done; _c = _b.next()) {
-            var childNode = _c.value;
-            this.level++;
-            this._serializeNodeNS(childNode, inheritedNS, map, prefixIndex, requireWellFormed);
-            this.level--;
-          }
-        } catch (e_2_1) {
-          e_2 = { error: e_2_1 };
-        } finally {
-          try {
-            if (_c && !_c.done && (_a = _b.return))
-              _a.call(_b);
-          } finally {
-            if (e_2)
-              throw e_2.error;
-          }
+        for (const childNode of node.childNodes) {
+          this.level++;
+          this._serializeNodeNS(childNode, inheritedNS, map, prefixIndex, requireWellFormed, noDoubleEncoding);
+          this.level--;
         }
       }
       this.closeTag(qualifiedName);
       this.endElement(qualifiedName);
-    };
-    BaseWriter2.prototype._serializeElement = function(node, requireWellFormed) {
-      var e_3, _a;
+    }
+    _serializeElement(node, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && (node.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(node.localName))) {
         throw new Error("Node local name contains invalid characters (well-formed required).");
       }
-      var skipEndTag = false;
-      var qualifiedName = node.localName;
+      let skipEndTag = false;
+      const qualifiedName = node.localName;
       this.beginElement(qualifiedName);
       this.openTagBegin(qualifiedName);
-      var attributes = this._serializeAttributes(node, requireWellFormed);
+      const attributes = this._serializeAttributes(node, requireWellFormed, noDoubleEncoding);
       this.attributes(attributes);
       if (!node.hasChildNodes()) {
         this.openTagEnd(qualifiedName, true, false);
@@ -33629,123 +34373,69 @@ var require_BaseWriter = __commonJS((exports) => {
       }
       if (skipEndTag)
         return;
-      try {
-        for (var _b = __values(node._children), _c = _b.next();!_c.done; _c = _b.next()) {
-          var childNode = _c.value;
-          this.level++;
-          this._serializeNode(childNode, requireWellFormed);
-          this.level--;
-        }
-      } catch (e_3_1) {
-        e_3 = { error: e_3_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_3)
-            throw e_3.error;
-        }
+      for (const childNode of node._children) {
+        this.level++;
+        this._serializeNode(childNode, requireWellFormed, noDoubleEncoding);
+        this.level--;
       }
       this.closeTag(qualifiedName);
       this.endElement(qualifiedName);
-    };
-    BaseWriter2.prototype._serializeDocumentNS = function(node, namespace, prefixMap, prefixIndex, requireWellFormed) {
-      var e_4, _a;
+    }
+    _serializeDocumentNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && node.documentElement === null) {
         throw new Error("Missing document element (well-formed required).");
       }
-      try {
-        for (var _b = __values(node.childNodes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var childNode = _c.value;
-          this._serializeNodeNS(childNode, namespace, prefixMap, prefixIndex, requireWellFormed);
-        }
-      } catch (e_4_1) {
-        e_4 = { error: e_4_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_4)
-            throw e_4.error;
-        }
+      for (const childNode of node.childNodes) {
+        this._serializeNodeNS(childNode, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding);
       }
-    };
-    BaseWriter2.prototype._serializeDocument = function(node, requireWellFormed) {
-      var e_5, _a;
+    }
+    _serializeDocument(node, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && node.documentElement === null) {
         throw new Error("Missing document element (well-formed required).");
       }
-      try {
-        for (var _b = __values(node._children), _c = _b.next();!_c.done; _c = _b.next()) {
-          var childNode = _c.value;
-          this._serializeNode(childNode, requireWellFormed);
-        }
-      } catch (e_5_1) {
-        e_5 = { error: e_5_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_5)
-            throw e_5.error;
-        }
+      for (const childNode of node._children) {
+        this._serializeNode(childNode, requireWellFormed, noDoubleEncoding);
       }
-    };
-    BaseWriter2.prototype._serializeComment = function(node, requireWellFormed) {
+    }
+    _serializeComment(node, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && (!algorithm_1.xml_isLegalChar(node.data) || node.data.indexOf("--") !== -1 || node.data.endsWith("-"))) {
         throw new Error("Comment data contains invalid characters (well-formed required).");
       }
       this.comment(node.data);
-    };
-    BaseWriter2.prototype._serializeText = function(node, requireWellFormed) {
+    }
+    _serializeText(node, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && !algorithm_1.xml_isLegalChar(node.data)) {
         throw new Error("Text data contains invalid characters (well-formed required).");
       }
-      var markup = node.data.replace(constants_1.nonEntityAmpersandRegex, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      let markup = "";
+      if (noDoubleEncoding) {
+        markup = node.data.replace(/(?!&(lt|gt|amp|apos|quot);)&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\r/g, "&#xD;");
+      } else {
+        for (let i = 0;i < node.data.length; i++) {
+          const c = node.data[i];
+          if (c === "&")
+            markup += "&amp;";
+          else if (c === "<")
+            markup += "&lt;";
+          else if (c === ">")
+            markup += "&gt;";
+          else
+            markup += c;
+        }
+      }
       this.text(markup);
-    };
-    BaseWriter2.prototype._serializeDocumentFragmentNS = function(node, namespace, prefixMap, prefixIndex, requireWellFormed) {
-      var e_6, _a;
-      try {
-        for (var _b = __values(node.childNodes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var childNode = _c.value;
-          this._serializeNodeNS(childNode, namespace, prefixMap, prefixIndex, requireWellFormed);
-        }
-      } catch (e_6_1) {
-        e_6 = { error: e_6_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_6)
-            throw e_6.error;
-        }
+    }
+    _serializeDocumentFragmentNS(node, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding) {
+      for (const childNode of node.childNodes) {
+        this._serializeNodeNS(childNode, namespace, prefixMap, prefixIndex, requireWellFormed, noDoubleEncoding);
       }
-    };
-    BaseWriter2.prototype._serializeDocumentFragment = function(node, requireWellFormed) {
-      var e_7, _a;
-      try {
-        for (var _b = __values(node._children), _c = _b.next();!_c.done; _c = _b.next()) {
-          var childNode = _c.value;
-          this._serializeNode(childNode, requireWellFormed);
-        }
-      } catch (e_7_1) {
-        e_7 = { error: e_7_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_7)
-            throw e_7.error;
-        }
+    }
+    _serializeDocumentFragment(node, requireWellFormed, noDoubleEncoding) {
+      for (const childNode of node._children) {
+        this._serializeNode(childNode, requireWellFormed, noDoubleEncoding);
       }
-    };
-    BaseWriter2.prototype._serializeDocumentType = function(node, requireWellFormed) {
+    }
+    _serializeDocumentType(node, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && !algorithm_1.xml_isPubidChar(node.publicId)) {
         throw new Error("DocType public identifier does not match PubidChar construct (well-formed required).");
       }
@@ -33753,8 +34443,8 @@ var require_BaseWriter = __commonJS((exports) => {
         throw new Error("DocType system identifier contains invalid characters (well-formed required).");
       }
       this.docType(node.name, node.publicId, node.systemId);
-    };
-    BaseWriter2.prototype._serializeProcessingInstruction = function(node, requireWellFormed) {
+    }
+    _serializeProcessingInstruction(node, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && (node.target.indexOf(":") !== -1 || /^xml$/i.test(node.target))) {
         throw new Error("Processing instruction target contains invalid characters (well-formed required).");
       }
@@ -33762,287 +34452,224 @@ var require_BaseWriter = __commonJS((exports) => {
         throw new Error("Processing instruction data contains invalid characters (well-formed required).");
       }
       this.instruction(node.target, node.data);
-    };
-    BaseWriter2.prototype._serializeCData = function(node, requireWellFormed) {
+    }
+    _serializeCData(node, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && node.data.indexOf("]]>") !== -1) {
         throw new Error("CDATA contains invalid characters (well-formed required).");
       }
       this.cdata(node.data);
-    };
-    BaseWriter2.prototype._serializeAttributesNS = function(node, map, prefixIndex, localPrefixesMap, ignoreNamespaceDefinitionAttribute, requireWellFormed) {
-      var e_8, _a;
-      var result = [];
-      var localNameSet = requireWellFormed ? new LocalNameSet_1.LocalNameSet : undefined;
-      try {
-        for (var _b = __values(node.attributes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var attr = _c.value;
-          if (!requireWellFormed && !ignoreNamespaceDefinitionAttribute && attr.namespaceURI === null) {
-            result.push([
-              null,
-              null,
-              attr.localName,
-              this._serializeAttributeValue(attr.value, requireWellFormed)
-            ]);
-            continue;
-          }
-          if (requireWellFormed && localNameSet && localNameSet.has(attr.namespaceURI, attr.localName)) {
-            throw new Error("Element contains duplicate attributes (well-formed required).");
-          }
-          if (requireWellFormed && localNameSet)
-            localNameSet.set(attr.namespaceURI, attr.localName);
-          var attributeNamespace = attr.namespaceURI;
-          var candidatePrefix = null;
-          if (attributeNamespace !== null) {
-            candidatePrefix = map.get(attr.prefix, attributeNamespace);
-            if (attributeNamespace === infra_1.namespace.XMLNS) {
-              if (attr.value === infra_1.namespace.XML || attr.prefix === null && ignoreNamespaceDefinitionAttribute || attr.prefix !== null && (!(attr.localName in localPrefixesMap) || localPrefixesMap[attr.localName] !== attr.value) && map.has(attr.localName, attr.value))
-                continue;
-              if (requireWellFormed && attr.value === infra_1.namespace.XMLNS) {
-                throw new Error("XMLNS namespace is reserved (well-formed required).");
-              }
-              if (requireWellFormed && attr.value === "") {
-                throw new Error("Namespace prefix declarations cannot be used to undeclare a namespace (well-formed required).");
-              }
-              if (attr.prefix === "xmlns")
-                candidatePrefix = "xmlns";
-            } else if (candidatePrefix === null) {
-              if (attr.prefix !== null && (!map.hasPrefix(attr.prefix) || map.has(attr.prefix, attributeNamespace))) {
-                candidatePrefix = attr.prefix;
-              } else {
-                candidatePrefix = this._generatePrefix(attributeNamespace, map, prefixIndex);
-              }
-              result.push([
-                null,
-                "xmlns",
-                candidatePrefix,
-                this._serializeAttributeValue(attributeNamespace, requireWellFormed)
-              ]);
-            }
-          }
-          var attrName = "";
-          if (candidatePrefix !== null) {
-            attrName = candidatePrefix;
-          }
-          if (requireWellFormed && (attr.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(attr.localName) || attr.localName === "xmlns" && attributeNamespace === null)) {
-            throw new Error("Attribute local name contains invalid characters (well-formed required).");
-          }
-          result.push([
-            attributeNamespace,
-            candidatePrefix,
-            attr.localName,
-            this._serializeAttributeValue(attr.value, requireWellFormed)
-          ]);
-        }
-      } catch (e_8_1) {
-        e_8 = { error: e_8_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_8)
-            throw e_8.error;
-        }
-      }
-      return result;
-    };
-    BaseWriter2.prototype._serializeAttributes = function(node, requireWellFormed) {
-      var e_9, _a;
-      var result = [];
-      var localNameSet = requireWellFormed ? {} : undefined;
-      try {
-        for (var _b = __values(node.attributes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var attr = _c.value;
-          if (!requireWellFormed) {
-            result.push([
-              null,
-              null,
-              attr.localName,
-              this._serializeAttributeValue(attr.value, requireWellFormed)
-            ]);
-            continue;
-          }
-          if (requireWellFormed && localNameSet && attr.localName in localNameSet) {
-            throw new Error("Element contains duplicate attributes (well-formed required).");
-          }
-          if (requireWellFormed && localNameSet)
-            localNameSet[attr.localName] = true;
-          if (requireWellFormed && (attr.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(attr.localName))) {
-            throw new Error("Attribute local name contains invalid characters (well-formed required).");
-          }
+    }
+    _serializeAttributesNS(node, map, prefixIndex, localPrefixesMap, ignoreNamespaceDefinitionAttribute, requireWellFormed, noDoubleEncoding) {
+      const result = [];
+      const localNameSet = requireWellFormed ? new LocalNameSet_1.LocalNameSet : undefined;
+      for (const attr of node.attributes) {
+        if (!requireWellFormed && !ignoreNamespaceDefinitionAttribute && attr.namespaceURI === null) {
           result.push([
             null,
             null,
             attr.localName,
-            this._serializeAttributeValue(attr.value, requireWellFormed)
+            this._serializeAttributeValue(attr.value, requireWellFormed, noDoubleEncoding)
           ]);
+          continue;
         }
-      } catch (e_9_1) {
-        e_9 = { error: e_9_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_9)
-            throw e_9.error;
+        if (requireWellFormed && localNameSet && localNameSet.has(attr.namespaceURI, attr.localName)) {
+          throw new Error("Element contains duplicate attributes (well-formed required).");
         }
-      }
-      return result;
-    };
-    BaseWriter2.prototype._recordNamespaceInformation = function(node, map, localPrefixesMap) {
-      var e_10, _a;
-      var defaultNamespaceAttrValue = null;
-      try {
-        for (var _b = __values(node.attributes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var attr = _c.value;
-          var attributeNamespace = attr.namespaceURI;
-          var attributePrefix = attr.prefix;
+        if (requireWellFormed && localNameSet)
+          localNameSet.set(attr.namespaceURI, attr.localName);
+        let attributeNamespace = attr.namespaceURI;
+        let candidatePrefix = null;
+        if (attributeNamespace !== null) {
+          candidatePrefix = map.get(attr.prefix, attributeNamespace);
           if (attributeNamespace === infra_1.namespace.XMLNS) {
-            if (attributePrefix === null) {
-              defaultNamespaceAttrValue = attr.value;
+            if (attr.value === infra_1.namespace.XML || attr.prefix === null && ignoreNamespaceDefinitionAttribute || attr.prefix !== null && (!(attr.localName in localPrefixesMap) || localPrefixesMap[attr.localName] !== attr.value) && map.has(attr.localName, attr.value))
               continue;
-            } else {
-              var prefixDefinition = attr.localName;
-              var namespaceDefinition = attr.value;
-              if (namespaceDefinition === infra_1.namespace.XML) {
-                continue;
-              }
-              if (namespaceDefinition === "") {
-                namespaceDefinition = null;
-              }
-              if (map.has(prefixDefinition, namespaceDefinition)) {
-                continue;
-              }
-              map.set(prefixDefinition, namespaceDefinition);
-              localPrefixesMap[prefixDefinition] = namespaceDefinition || "";
+            if (requireWellFormed && attr.value === infra_1.namespace.XMLNS) {
+              throw new Error("XMLNS namespace is reserved (well-formed required).");
             }
+            if (requireWellFormed && attr.value === "") {
+              throw new Error("Namespace prefix declarations cannot be used to undeclare a namespace (well-formed required).");
+            }
+            if (attr.prefix === "xmlns")
+              candidatePrefix = "xmlns";
+          } else if (candidatePrefix === null) {
+            if (attr.prefix !== null && (!map.hasPrefix(attr.prefix) || map.has(attr.prefix, attributeNamespace))) {
+              candidatePrefix = attr.prefix;
+            } else {
+              candidatePrefix = this._generatePrefix(attributeNamespace, map, prefixIndex);
+            }
+            result.push([
+              null,
+              "xmlns",
+              candidatePrefix,
+              this._serializeAttributeValue(attributeNamespace, requireWellFormed, noDoubleEncoding)
+            ]);
           }
         }
-      } catch (e_10_1) {
-        e_10 = { error: e_10_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_10)
-            throw e_10.error;
+        let attrName = "";
+        if (candidatePrefix !== null) {
+          attrName = candidatePrefix;
+        }
+        if (requireWellFormed && (attr.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(attr.localName) || attr.localName === "xmlns" && attributeNamespace === null)) {
+          throw new Error("Attribute local name contains invalid characters (well-formed required).");
+        }
+        result.push([
+          attributeNamespace,
+          candidatePrefix,
+          attr.localName,
+          this._serializeAttributeValue(attr.value, requireWellFormed, noDoubleEncoding)
+        ]);
+      }
+      return result;
+    }
+    _serializeAttributes(node, requireWellFormed, noDoubleEncoding) {
+      const result = [];
+      const localNameSet = requireWellFormed ? {} : undefined;
+      for (const attr of node.attributes) {
+        if (!requireWellFormed) {
+          result.push([
+            null,
+            null,
+            attr.localName,
+            this._serializeAttributeValue(attr.value, requireWellFormed, noDoubleEncoding)
+          ]);
+          continue;
+        }
+        if (requireWellFormed && localNameSet && attr.localName in localNameSet) {
+          throw new Error("Element contains duplicate attributes (well-formed required).");
+        }
+        if (requireWellFormed && localNameSet)
+          localNameSet[attr.localName] = true;
+        if (requireWellFormed && (attr.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(attr.localName))) {
+          throw new Error("Attribute local name contains invalid characters (well-formed required).");
+        }
+        result.push([
+          null,
+          null,
+          attr.localName,
+          this._serializeAttributeValue(attr.value, requireWellFormed, noDoubleEncoding)
+        ]);
+      }
+      return result;
+    }
+    _recordNamespaceInformation(node, map, localPrefixesMap) {
+      let defaultNamespaceAttrValue = null;
+      for (const attr of node.attributes) {
+        let attributeNamespace = attr.namespaceURI;
+        let attributePrefix = attr.prefix;
+        if (attributeNamespace === infra_1.namespace.XMLNS) {
+          if (attributePrefix === null) {
+            defaultNamespaceAttrValue = attr.value;
+            continue;
+          } else {
+            let prefixDefinition = attr.localName;
+            let namespaceDefinition = attr.value;
+            if (namespaceDefinition === infra_1.namespace.XML) {
+              continue;
+            }
+            if (namespaceDefinition === "") {
+              namespaceDefinition = null;
+            }
+            if (map.has(prefixDefinition, namespaceDefinition)) {
+              continue;
+            }
+            map.set(prefixDefinition, namespaceDefinition);
+            localPrefixesMap[prefixDefinition] = namespaceDefinition || "";
+          }
         }
       }
       return defaultNamespaceAttrValue;
-    };
-    BaseWriter2.prototype._generatePrefix = function(newNamespace, prefixMap, prefixIndex) {
-      var generatedPrefix = "ns" + prefixIndex.value.toString();
+    }
+    _generatePrefix(newNamespace, prefixMap, prefixIndex) {
+      const generatedPrefix = "ns" + prefixIndex.value.toString();
       prefixIndex.value++;
       prefixMap.set(generatedPrefix, newNamespace);
       return generatedPrefix;
-    };
-    BaseWriter2.prototype._serializeAttributeValue = function(value, requireWellFormed) {
+    }
+    _serializeAttributeValue(value, requireWellFormed, noDoubleEncoding) {
       if (requireWellFormed && value !== null && !algorithm_1.xml_isLegalChar(value)) {
         throw new Error("Invalid characters in attribute value.");
       }
       if (value === null)
         return "";
-      return value.replace(constants_1.nonEntityAmpersandRegex, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    };
-    BaseWriter2._VoidElementNames = new Set([
-      "area",
-      "base",
-      "basefont",
-      "bgsound",
-      "br",
-      "col",
-      "embed",
-      "frame",
-      "hr",
-      "img",
-      "input",
-      "keygen",
-      "link",
-      "menuitem",
-      "meta",
-      "param",
-      "source",
-      "track",
-      "wbr"
-    ]);
-    return BaseWriter2;
-  }();
+      if (noDoubleEncoding) {
+        return value.replace(/(?!&(lt|gt|amp|apos|quot);)&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;").replace(/\t/g, "&#x9;").replace(/\n/g, "&#xA;").replace(/\r/g, "&#xD;");
+      } else {
+        let result = "";
+        for (let i = 0;i < value.length; i++) {
+          const c = value[i];
+          if (c === '"')
+            result += "&quot;";
+          else if (c === "&")
+            result += "&amp;";
+          else if (c === "<")
+            result += "&lt;";
+          else if (c === ">")
+            result += "&gt;";
+          else
+            result += c;
+        }
+        return result;
+      }
+    }
+  }
   exports.BaseWriter = BaseWriter;
+  BaseWriter._VoidElementNames = new Set([
+    "area",
+    "base",
+    "basefont",
+    "bgsound",
+    "br",
+    "col",
+    "embed",
+    "frame",
+    "hr",
+    "img",
+    "input",
+    "keygen",
+    "link",
+    "menuitem",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr"
+  ]);
 });
 
 // node_modules/xmlbuilder2/lib/writers/ObjectWriter.js
 var require_ObjectWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  var __values = exports && exports.__values || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m)
-      return m.call(o);
-    if (o && typeof o.length === "number")
-      return {
-        next: function() {
-          if (o && i >= o.length)
-            o = undefined;
-          return { value: o && o[i++], done: !o };
-        }
-      };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-  };
   Object.defineProperty(exports, "__esModule", { value: true });
   var util_1 = require_lib8();
   var interfaces_1 = require_interfaces2();
   var BaseWriter_1 = require_BaseWriter();
-  var ObjectWriter = function(_super) {
-    __extends(ObjectWriter2, _super);
-    function ObjectWriter2(builderOptions, writerOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._writerOptions = util_1.applyDefaults(writerOptions, {
+
+  class ObjectWriter extends BaseWriter_1.BaseWriter {
+    serialize(node, writerOptions) {
+      const options = util_1.applyDefaults(writerOptions, {
         format: "object",
         wellFormed: false,
-        group: false,
-        verbose: false
+        noDoubleEncoding: false,
+        group: false
       });
-      return _this;
-    }
-    ObjectWriter2.prototype.serialize = function(node) {
       this._currentList = [];
       this._currentIndex = 0;
       this._listRegister = [this._currentList];
-      this.serializeNode(node, this._writerOptions.wellFormed);
-      return this._process(this._currentList, this._writerOptions);
-    };
-    ObjectWriter2.prototype._process = function(items, options) {
-      var _a, _b, _c, _d, _e, _f, _g;
+      this.serializeNode(node, options.wellFormed, options.noDoubleEncoding);
+      return this._process(this._currentList, options);
+    }
+    _process(items, options) {
       if (items.length === 0)
         return {};
-      var namesSeen = {};
-      var hasNonUniqueNames = false;
-      var textCount = 0;
-      var commentCount = 0;
-      var instructionCount = 0;
-      var cdataCount = 0;
-      for (var i = 0;i < items.length; i++) {
-        var item = items[i];
-        var key = Object.keys(item)[0];
+      const namesSeen = {};
+      let hasNonUniqueNames = false;
+      let textCount = 0;
+      let commentCount = 0;
+      let instructionCount = 0;
+      let cdataCount = 0;
+      for (let i = 0;i < items.length; i++) {
+        const item = items[i];
+        const key = Object.keys(item)[0];
         switch (key) {
           case "@":
             continue;
@@ -34067,83 +34694,72 @@ var require_ObjectWriter = __commonJS((exports) => {
             break;
         }
       }
-      var defAttrKey = this._getAttrKey();
-      var defTextKey = this._getNodeKey(interfaces_1.NodeType.Text);
-      var defCommentKey = this._getNodeKey(interfaces_1.NodeType.Comment);
-      var defInstructionKey = this._getNodeKey(interfaces_1.NodeType.ProcessingInstruction);
-      var defCdataKey = this._getNodeKey(interfaces_1.NodeType.CData);
+      const defAttrKey = this._getAttrKey();
+      const defTextKey = this._getNodeKey(interfaces_1.NodeType.Text);
+      const defCommentKey = this._getNodeKey(interfaces_1.NodeType.Comment);
+      const defInstructionKey = this._getNodeKey(interfaces_1.NodeType.ProcessingInstruction);
+      const defCdataKey = this._getNodeKey(interfaces_1.NodeType.CData);
       if (textCount === 1 && items.length === 1 && util_1.isString(items[0]["#"])) {
         return items[0]["#"];
       } else if (hasNonUniqueNames) {
-        var obj = {};
-        for (var i = 0;i < items.length; i++) {
-          var item = items[i];
-          var key = Object.keys(item)[0];
-          if (key === "@") {
-            var attrs = item["@"];
-            var attrKeys = Object.keys(attrs);
-            if (attrKeys.length === 1) {
-              obj[defAttrKey + attrKeys[0]] = attrs[attrKeys[0]];
-            } else {
-              obj[defAttrKey] = item["@"];
-            }
-          }
-        }
-        var result = [];
-        for (var i = 0;i < items.length; i++) {
-          var item = items[i];
-          var key = Object.keys(item)[0];
+        const result = [];
+        const obj = { [defTextKey]: result };
+        for (let i = 0;i < items.length; i++) {
+          const item = items[i];
+          const key = Object.keys(item)[0];
           switch (key) {
             case "@":
+              const attrs = item["@"];
+              const attrKeys = Object.keys(attrs);
+              if (attrKeys.length === 1) {
+                result.push({ [defAttrKey + attrKeys[0]]: attrs[attrKeys[0]] });
+              } else {
+                result.push({ [defAttrKey]: item["@"] });
+              }
               break;
             case "#":
-              result.push((_a = {}, _a[defTextKey] = item["#"], _a));
+              result.push({ [defTextKey]: item["#"] });
               break;
             case "!":
-              result.push((_b = {}, _b[defCommentKey] = item["!"], _b));
+              result.push({ [defCommentKey]: item["!"] });
               break;
             case "?":
-              result.push((_c = {}, _c[defInstructionKey] = item["?"], _c));
+              result.push({ [defInstructionKey]: item["?"] });
               break;
             case "$":
-              result.push((_d = {}, _d[defCdataKey] = item["$"], _d));
+              result.push({ [defCdataKey]: item["$"] });
               break;
             default:
-              var ele = item;
+              const ele = item;
               if (ele[key].length !== 0 && util_1.isArray(ele[key][0])) {
-                var eleGroup = [];
-                var listOfLists = ele[key];
-                for (var i_1 = 0;i_1 < listOfLists.length; i_1++) {
-                  eleGroup.push(this._process(listOfLists[i_1], options));
+                const eleGroup = [];
+                const listOfLists = ele[key];
+                for (let i2 = 0;i2 < listOfLists.length; i2++) {
+                  eleGroup.push(this._process(listOfLists[i2], options));
                 }
-                result.push((_e = {}, _e[key] = eleGroup, _e));
+                result.push({ [key]: eleGroup });
               } else {
-                if (options.verbose) {
-                  result.push((_f = {}, _f[key] = [this._process(ele[key], options)], _f));
-                } else {
-                  result.push((_g = {}, _g[key] = this._process(ele[key], options), _g));
-                }
+                result.push({ [key]: this._process(ele[key], options) });
               }
               break;
           }
         }
-        obj[defTextKey] = result;
         return obj;
       } else {
-        var textId = 1;
-        var commentId = 1;
-        var instructionId = 1;
-        var cdataId = 1;
-        var obj = {};
-        for (var i = 0;i < items.length; i++) {
-          var item = items[i];
-          var key = Object.keys(item)[0];
+        let textId = 1;
+        let commentId = 1;
+        let instructionId = 1;
+        let cdataId = 1;
+        const obj = {};
+        for (let i = 0;i < items.length; i++) {
+          const item = items[i];
+          const key = Object.keys(item)[0];
           switch (key) {
             case "@":
-              var attrs = item["@"];
-              var attrKeys = Object.keys(attrs);
+              const attrs = item["@"];
+              const attrKeys = Object.keys(attrs);
               if (!options.group || attrKeys.length === 1) {
-                for (var attrName in attrs) {
+                for (const attrName in attrs) {
                   obj[defAttrKey + attrName] = attrs[attrName];
                 }
               } else {
@@ -34163,69 +34779,50 @@ var require_ObjectWriter = __commonJS((exports) => {
               cdataId = this._processSpecItem(item["$"], obj, options.group, defCdataKey, cdataCount, cdataId);
               break;
             default:
-              var ele = item;
+              const ele = item;
               if (ele[key].length !== 0 && util_1.isArray(ele[key][0])) {
-                var eleGroup = [];
-                var listOfLists = ele[key];
-                for (var i_2 = 0;i_2 < listOfLists.length; i_2++) {
-                  eleGroup.push(this._process(listOfLists[i_2], options));
+                const eleGroup = [];
+                const listOfLists = ele[key];
+                for (let i2 = 0;i2 < listOfLists.length; i2++) {
+                  eleGroup.push(this._process(listOfLists[i2], options));
                 }
                 obj[key] = eleGroup;
               } else {
-                if (options.verbose) {
-                  obj[key] = [this._process(ele[key], options)];
-                } else {
-                  obj[key] = this._process(ele[key], options);
-                }
+                obj[key] = this._process(ele[key], options);
               }
               break;
           }
         }
         return obj;
       }
-    };
-    ObjectWriter2.prototype._processSpecItem = function(item, obj, group, defKey, count, id) {
-      var e_1, _a;
+    }
+    _processSpecItem(item, obj, group, defKey, count, id) {
       if (!group && util_1.isArray(item) && count + item.length > 2) {
-        try {
-          for (var item_1 = __values(item), item_1_1 = item_1.next();!item_1_1.done; item_1_1 = item_1.next()) {
-            var subItem = item_1_1.value;
-            var key = defKey + (id++).toString();
-            obj[key] = subItem;
-          }
-        } catch (e_1_1) {
-          e_1 = { error: e_1_1 };
-        } finally {
-          try {
-            if (item_1_1 && !item_1_1.done && (_a = item_1.return))
-              _a.call(item_1);
-          } finally {
-            if (e_1)
-              throw e_1.error;
-          }
+        for (const subItem of item) {
+          const key = defKey + (id++).toString();
+          obj[key] = subItem;
         }
       } else {
-        var key = count > 1 ? defKey + (id++).toString() : defKey;
+        const key = count > 1 ? defKey + (id++).toString() : defKey;
         obj[key] = item;
       }
       return id;
-    };
-    ObjectWriter2.prototype.beginElement = function(name) {
-      var _a, _b;
-      var childItems = [];
+    }
+    beginElement(name) {
+      const childItems = [];
       if (this._currentList.length === 0) {
-        this._currentList.push((_a = {}, _a[name] = childItems, _a));
+        this._currentList.push({ [name]: childItems });
       } else {
-        var lastItem = this._currentList[this._currentList.length - 1];
+        const lastItem = this._currentList[this._currentList.length - 1];
         if (this._isElementNode(lastItem, name)) {
           if (lastItem[name].length !== 0 && util_1.isArray(lastItem[name][0])) {
-            var listOfLists = lastItem[name];
+            const listOfLists = lastItem[name];
             listOfLists.push(childItems);
           } else {
             lastItem[name] = [lastItem[name], childItems];
           }
         } else {
-          this._currentList.push((_b = {}, _b[name] = childItems, _b));
+          this._currentList.push({ [name]: childItems });
         }
       }
       this._currentIndex++;
@@ -34235,28 +34832,27 @@ var require_ObjectWriter = __commonJS((exports) => {
         this._listRegister.push(childItems);
       }
       this._currentList = childItems;
-    };
-    ObjectWriter2.prototype.endElement = function() {
+    }
+    endElement() {
       this._currentList = this._listRegister[--this._currentIndex];
-    };
-    ObjectWriter2.prototype.attribute = function(name, value) {
-      var _a, _b;
+    }
+    attribute(name, value) {
       if (this._currentList.length === 0) {
-        this._currentList.push({ "@": (_a = {}, _a[name] = value, _a) });
+        this._currentList.push({ "@": { [name]: value } });
       } else {
-        var lastItem = this._currentList[this._currentList.length - 1];
+        const lastItem = this._currentList[this._currentList.length - 1];
         if (this._isAttrNode(lastItem)) {
           lastItem["@"][name] = value;
         } else {
-          this._currentList.push({ "@": (_b = {}, _b[name] = value, _b) });
+          this._currentList.push({ "@": { [name]: value } });
         }
       }
-    };
-    ObjectWriter2.prototype.comment = function(data) {
+    }
+    comment(data) {
       if (this._currentList.length === 0) {
         this._currentList.push({ "!": data });
       } else {
-        var lastItem = this._currentList[this._currentList.length - 1];
+        const lastItem = this._currentList[this._currentList.length - 1];
         if (this._isCommentNode(lastItem)) {
           if (util_1.isArray(lastItem["!"])) {
             lastItem["!"].push(data);
@@ -34267,12 +34863,12 @@ var require_ObjectWriter = __commonJS((exports) => {
           this._currentList.push({ "!": data });
         }
       }
-    };
-    ObjectWriter2.prototype.text = function(data) {
+    }
+    text(data) {
       if (this._currentList.length === 0) {
         this._currentList.push({ "#": data });
       } else {
-        var lastItem = this._currentList[this._currentList.length - 1];
+        const lastItem = this._currentList[this._currentList.length - 1];
         if (this._isTextNode(lastItem)) {
           if (util_1.isArray(lastItem["#"])) {
             lastItem["#"].push(data);
@@ -34283,13 +34879,13 @@ var require_ObjectWriter = __commonJS((exports) => {
           this._currentList.push({ "#": data });
         }
       }
-    };
-    ObjectWriter2.prototype.instruction = function(target, data) {
-      var value = data === "" ? target : target + " " + data;
+    }
+    instruction(target, data) {
+      const value = data === "" ? target : target + " " + data;
       if (this._currentList.length === 0) {
         this._currentList.push({ "?": value });
       } else {
-        var lastItem = this._currentList[this._currentList.length - 1];
+        const lastItem = this._currentList[this._currentList.length - 1];
         if (this._isInstructionNode(lastItem)) {
           if (util_1.isArray(lastItem["?"])) {
             lastItem["?"].push(value);
@@ -34300,12 +34896,12 @@ var require_ObjectWriter = __commonJS((exports) => {
           this._currentList.push({ "?": value });
         }
       }
-    };
-    ObjectWriter2.prototype.cdata = function(data) {
+    }
+    cdata(data) {
       if (this._currentList.length === 0) {
         this._currentList.push({ $: data });
       } else {
-        var lastItem = this._currentList[this._currentList.length - 1];
+        const lastItem = this._currentList[this._currentList.length - 1];
         if (this._isCDATANode(lastItem)) {
           if (util_1.isArray(lastItem["$"])) {
             lastItem["$"].push(data);
@@ -34316,29 +34912,29 @@ var require_ObjectWriter = __commonJS((exports) => {
           this._currentList.push({ $: data });
         }
       }
-    };
-    ObjectWriter2.prototype._isAttrNode = function(x) {
+    }
+    _isAttrNode(x) {
       return "@" in x;
-    };
-    ObjectWriter2.prototype._isTextNode = function(x) {
+    }
+    _isTextNode(x) {
       return "#" in x;
-    };
-    ObjectWriter2.prototype._isCommentNode = function(x) {
+    }
+    _isCommentNode(x) {
       return "!" in x;
-    };
-    ObjectWriter2.prototype._isInstructionNode = function(x) {
+    }
+    _isInstructionNode(x) {
       return "?" in x;
-    };
-    ObjectWriter2.prototype._isCDATANode = function(x) {
+    }
+    _isCDATANode(x) {
       return "$" in x;
-    };
-    ObjectWriter2.prototype._isElementNode = function(x, name) {
+    }
+    _isElementNode(x, name) {
       return name in x;
-    };
-    ObjectWriter2.prototype._getAttrKey = function() {
+    }
+    _getAttrKey() {
       return this._builderOptions.convert.att;
-    };
-    ObjectWriter2.prototype._getNodeKey = function(nodeType) {
+    }
+    _getNodeKey(nodeType) {
       switch (nodeType) {
         case interfaces_1.NodeType.Comment:
           return this._builderOptions.convert.comment;
@@ -34351,114 +34947,73 @@ var require_ObjectWriter = __commonJS((exports) => {
         default:
           throw new Error("Invalid node type.");
       }
-    };
-    return ObjectWriter2;
-  }(BaseWriter_1.BaseWriter);
+    }
+  }
   exports.ObjectWriter = ObjectWriter;
 });
 
 // node_modules/xmlbuilder2/lib/writers/MapWriter.js
 var require_MapWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
   Object.defineProperty(exports, "__esModule", { value: true });
   var util_1 = require_lib8();
   var ObjectWriter_1 = require_ObjectWriter();
   var BaseWriter_1 = require_BaseWriter();
-  var MapWriter = function(_super) {
-    __extends(MapWriter2, _super);
-    function MapWriter2(builderOptions, writerOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._writerOptions = util_1.applyDefaults(writerOptions, {
+
+  class MapWriter extends BaseWriter_1.BaseWriter {
+    serialize(node, writerOptions) {
+      const options = util_1.applyDefaults(writerOptions, {
         format: "map",
         wellFormed: false,
-        group: false,
-        verbose: false
+        noDoubleEncoding: false,
+        group: false
       });
-      return _this;
-    }
-    MapWriter2.prototype.serialize = function(node) {
-      var objectWriterOptions = util_1.applyDefaults(this._writerOptions, {
+      const objectWriterOptions = util_1.applyDefaults(options, {
         format: "object",
         wellFormed: false,
-        verbose: false
+        noDoubleEncoding: false
       });
-      var objectWriter = new ObjectWriter_1.ObjectWriter(this._builderOptions, objectWriterOptions);
-      var val = objectWriter.serialize(node);
+      const objectWriter = new ObjectWriter_1.ObjectWriter(this._builderOptions);
+      const val = objectWriter.serialize(node, objectWriterOptions);
       return this._convertObject(val);
-    };
-    MapWriter2.prototype._convertObject = function(obj) {
+    }
+    _convertObject(obj) {
       if (util_1.isArray(obj)) {
-        for (var i = 0;i < obj.length; i++) {
+        for (let i = 0;i < obj.length; i++) {
           obj[i] = this._convertObject(obj[i]);
         }
         return obj;
       } else if (util_1.isObject(obj)) {
-        var map = new Map;
-        for (var key in obj) {
+        const map = new Map;
+        for (const key in obj) {
           map.set(key, this._convertObject(obj[key]));
         }
         return map;
       } else {
         return obj;
       }
-    };
-    return MapWriter2;
-  }(BaseWriter_1.BaseWriter);
+    }
+  }
   exports.MapWriter = MapWriter;
 });
 
 // node_modules/xmlbuilder2/lib/writers/XMLWriter.js
 var require_XMLWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
   Object.defineProperty(exports, "__esModule", { value: true });
   var util_1 = require_lib8();
   var interfaces_1 = require_interfaces2();
   var BaseWriter_1 = require_BaseWriter();
   var util_2 = require_util2();
-  var XMLWriter = function(_super) {
-    __extends(XMLWriter2, _super);
-    function XMLWriter2(builderOptions, writerOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._indentation = {};
-      _this._lengthToLastNewline = 0;
-      _this._writerOptions = util_1.applyDefaults(writerOptions, {
+
+  class XMLWriter extends BaseWriter_1.BaseWriter {
+    constructor() {
+      super(...arguments);
+      this._indentation = {};
+      this._lengthToLastNewline = 0;
+    }
+    serialize(node, writerOptions) {
+      this._options = util_1.applyDefaults(writerOptions, {
         wellFormed: false,
+        noDoubleEncoding: false,
         headless: false,
         prettyPrint: false,
         indent: "  ",
@@ -34470,32 +35025,27 @@ var require_XMLWriter = __commonJS((exports) => {
         indentTextOnlyNodes: false,
         spaceBeforeSlash: false
       });
-      return _this;
-    }
-    XMLWriter2.prototype.serialize = function(node) {
       this._refs = { suppressPretty: false, emptyNode: false, markup: "" };
-      if (node.nodeType === interfaces_1.NodeType.Document && !this._writerOptions.headless) {
-        this.declaration(this._builderOptions.version, this._builderOptions.encoding, this._builderOptions.standalone);
+      if (node.nodeType === interfaces_1.NodeType.Document && !this._options.headless) {
+        this._beginLine();
+        this._refs.markup = "<?xml";
+        this._refs.markup += ' version="' + this._builderOptions.version + '"';
+        if (this._builderOptions.encoding !== undefined) {
+          this._refs.markup += ' encoding="' + this._builderOptions.encoding + '"';
+        }
+        if (this._builderOptions.standalone !== undefined) {
+          this._refs.markup += ' standalone="' + (this._builderOptions.standalone ? "yes" : "no") + '"';
+        }
+        this._refs.markup += "?>";
+        this._endLine();
       }
-      this.serializeNode(node, this._writerOptions.wellFormed);
-      if (this._writerOptions.prettyPrint && this._refs.markup.slice(-this._writerOptions.newline.length) === this._writerOptions.newline) {
-        this._refs.markup = this._refs.markup.slice(0, -this._writerOptions.newline.length);
+      this.serializeNode(node, this._options.wellFormed, this._options.noDoubleEncoding);
+      if (this._options.prettyPrint && this._refs.markup.slice(-this._options.newline.length) === this._options.newline) {
+        this._refs.markup = this._refs.markup.slice(0, -this._options.newline.length);
       }
       return this._refs.markup;
-    };
-    XMLWriter2.prototype.declaration = function(version, encoding, standalone) {
-      this._beginLine();
-      this._refs.markup += '<?xml version="' + version + '"';
-      if (encoding !== undefined) {
-        this._refs.markup += ' encoding="' + encoding + '"';
-      }
-      if (standalone !== undefined) {
-        this._refs.markup += ' standalone="' + (standalone ? "yes" : "no") + '"';
-      }
-      this._refs.markup += "?>";
-      this._endLine();
-    };
-    XMLWriter2.prototype.docType = function(name, publicId, systemId) {
+    }
+    docType(name, publicId, systemId) {
       this._beginLine();
       if (publicId && systemId) {
         this._refs.markup += "<!DOCTYPE " + name + ' PUBLIC "' + publicId + '" "' + systemId + '">';
@@ -34507,20 +35057,20 @@ var require_XMLWriter = __commonJS((exports) => {
         this._refs.markup += "<!DOCTYPE " + name + ">";
       }
       this._endLine();
-    };
-    XMLWriter2.prototype.openTagBegin = function(name) {
+    }
+    openTagBegin(name) {
       this._beginLine();
       this._refs.markup += "<" + name;
-    };
-    XMLWriter2.prototype.openTagEnd = function(name, selfClosing, voidElement) {
+    }
+    openTagEnd(name, selfClosing, voidElement) {
       this._refs.suppressPretty = false;
       this._refs.emptyNode = false;
-      if (this._writerOptions.prettyPrint && !selfClosing && !voidElement) {
-        var textOnlyNode = true;
-        var emptyNode = true;
-        var childNode = this.currentNode.firstChild;
-        var cdataCount = 0;
-        var textCount = 0;
+      if (this._options.prettyPrint && !selfClosing && !voidElement) {
+        let textOnlyNode = true;
+        let emptyNode = true;
+        let childNode = this.currentNode.firstChild;
+        let cdataCount = 0;
+        let textCount = 0;
         while (childNode) {
           if (util_2.Guard.isExclusiveTextNode(childNode)) {
             textCount++;
@@ -34536,17 +35086,17 @@ var require_XMLWriter = __commonJS((exports) => {
           }
           childNode = childNode.nextSibling;
         }
-        this._refs.suppressPretty = !this._writerOptions.indentTextOnlyNodes && textOnlyNode && (cdataCount <= 1 && textCount === 0 || cdataCount === 0);
+        this._refs.suppressPretty = !this._options.indentTextOnlyNodes && textOnlyNode && (cdataCount <= 1 && textCount === 0 || cdataCount === 0);
         this._refs.emptyNode = emptyNode;
       }
-      if ((voidElement || selfClosing || this._refs.emptyNode) && this._writerOptions.allowEmptyTags) {
+      if ((voidElement || selfClosing || this._refs.emptyNode) && this._options.allowEmptyTags) {
         this._refs.markup += "></" + name + ">";
       } else {
-        this._refs.markup += voidElement ? " />" : selfClosing || this._refs.emptyNode ? this._writerOptions.spaceBeforeSlash ? " />" : "/>" : ">";
+        this._refs.markup += voidElement ? " />" : selfClosing || this._refs.emptyNode ? this._options.spaceBeforeSlash ? " />" : "/>" : ">";
       }
       this._endLine();
-    };
-    XMLWriter2.prototype.closeTag = function(name) {
+    }
+    closeTag(name) {
       if (!this._refs.emptyNode) {
         this._beginLine();
         this._refs.markup += "</" + name + ">";
@@ -34554,185 +35104,130 @@ var require_XMLWriter = __commonJS((exports) => {
       this._refs.suppressPretty = false;
       this._refs.emptyNode = false;
       this._endLine();
-    };
-    XMLWriter2.prototype.attribute = function(name, value) {
-      var str = name + '="' + value + '"';
-      if (this._writerOptions.prettyPrint && this._writerOptions.width > 0 && this._refs.markup.length - this._lengthToLastNewline + 1 + str.length > this._writerOptions.width) {
+    }
+    attribute(name, value) {
+      const str = name + '="' + value + '"';
+      if (this._options.prettyPrint && this._options.width > 0 && this._refs.markup.length - this._lengthToLastNewline + 1 + str.length > this._options.width) {
         this._endLine();
         this._beginLine();
         this._refs.markup += this._indent(1) + str;
       } else {
         this._refs.markup += " " + str;
       }
-    };
-    XMLWriter2.prototype.text = function(data) {
+    }
+    text(data) {
       if (data !== "") {
         this._beginLine();
         this._refs.markup += data;
         this._endLine();
       }
-    };
-    XMLWriter2.prototype.cdata = function(data) {
+    }
+    cdata(data) {
       if (data !== "") {
         this._beginLine();
         this._refs.markup += "<![CDATA[" + data + "]]>";
         this._endLine();
       }
-    };
-    XMLWriter2.prototype.comment = function(data) {
+    }
+    comment(data) {
       this._beginLine();
       this._refs.markup += "<!--" + data + "-->";
       this._endLine();
-    };
-    XMLWriter2.prototype.instruction = function(target, data) {
+    }
+    instruction(target, data) {
       this._beginLine();
       this._refs.markup += "<?" + (data === "" ? target : target + " " + data) + "?>";
       this._endLine();
-    };
-    XMLWriter2.prototype._beginLine = function() {
-      if (this._writerOptions.prettyPrint && !this._refs.suppressPretty) {
-        this._refs.markup += this._indent(this._writerOptions.offset + this.level);
+    }
+    _beginLine() {
+      if (this._options.prettyPrint && !this._refs.suppressPretty) {
+        this._refs.markup += this._indent(this._options.offset + this.level);
       }
-    };
-    XMLWriter2.prototype._endLine = function() {
-      if (this._writerOptions.prettyPrint && !this._refs.suppressPretty) {
-        this._refs.markup += this._writerOptions.newline;
+    }
+    _endLine() {
+      if (this._options.prettyPrint && !this._refs.suppressPretty) {
+        this._refs.markup += this._options.newline;
         this._lengthToLastNewline = this._refs.markup.length;
       }
-    };
-    XMLWriter2.prototype._indent = function(level) {
+    }
+    _indent(level) {
       if (level <= 0) {
         return "";
       } else if (this._indentation[level] !== undefined) {
         return this._indentation[level];
       } else {
-        var str = this._writerOptions.indent.repeat(level);
+        const str = this._options.indent.repeat(level);
         this._indentation[level] = str;
         return str;
       }
-    };
-    return XMLWriter2;
-  }(BaseWriter_1.BaseWriter);
+    }
+  }
   exports.XMLWriter = XMLWriter;
 });
 
 // node_modules/xmlbuilder2/lib/writers/JSONWriter.js
 var require_JSONWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  var __values = exports && exports.__values || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m)
-      return m.call(o);
-    if (o && typeof o.length === "number")
-      return {
-        next: function() {
-          if (o && i >= o.length)
-            o = undefined;
-          return { value: o && o[i++], done: !o };
-        }
-      };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-  };
   Object.defineProperty(exports, "__esModule", { value: true });
   var ObjectWriter_1 = require_ObjectWriter();
   var util_1 = require_lib8();
   var BaseWriter_1 = require_BaseWriter();
-  var JSONWriter = function(_super) {
-    __extends(JSONWriter2, _super);
-    function JSONWriter2(builderOptions, writerOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._writerOptions = util_1.applyDefaults(writerOptions, {
+
+  class JSONWriter extends BaseWriter_1.BaseWriter {
+    serialize(node, writerOptions) {
+      const options = util_1.applyDefaults(writerOptions, {
         wellFormed: false,
+        noDoubleEncoding: false,
         prettyPrint: false,
         indent: "  ",
         newline: `
 `,
         offset: 0,
-        group: false,
-        verbose: false
+        group: false
       });
-      return _this;
-    }
-    JSONWriter2.prototype.serialize = function(node) {
-      var objectWriterOptions = util_1.applyDefaults(this._writerOptions, {
+      const objectWriterOptions = util_1.applyDefaults(options, {
         format: "object",
-        wellFormed: false
+        wellFormed: false,
+        noDoubleEncoding: false
       });
-      var objectWriter = new ObjectWriter_1.ObjectWriter(this._builderOptions, objectWriterOptions);
-      var val = objectWriter.serialize(node);
-      return this._beginLine(this._writerOptions, 0) + this._convertObject(val, this._writerOptions);
-    };
-    JSONWriter2.prototype._convertObject = function(obj, options, level) {
-      var e_1, _a;
-      var _this = this;
-      if (level === undefined) {
-        level = 0;
-      }
-      var markup = "";
-      var isLeaf = this._isLeafNode(obj);
+      const objectWriter = new ObjectWriter_1.ObjectWriter(this._builderOptions);
+      const val = objectWriter.serialize(node, objectWriterOptions);
+      return this._beginLine(options, 0) + this._convertObject(val, options);
+    }
+    _convertObject(obj, options, level = 0) {
+      let markup = "";
+      const isLeaf = this._isLeafNode(obj);
       if (util_1.isArray(obj)) {
         markup += "[";
-        var len = obj.length;
-        var i = 0;
-        try {
-          for (var obj_1 = __values(obj), obj_1_1 = obj_1.next();!obj_1_1.done; obj_1_1 = obj_1.next()) {
-            var val = obj_1_1.value;
-            markup += this._endLine(options, level + 1) + this._beginLine(options, level + 1) + this._convertObject(val, options, level + 1);
-            if (i < len - 1) {
-              markup += ",";
-            }
-            i++;
+        const len = obj.length;
+        let i = 0;
+        for (const val of obj) {
+          markup += this._endLine(options, level + 1) + this._beginLine(options, level + 1) + this._convertObject(val, options, level + 1);
+          if (i < len - 1) {
+            markup += ",";
           }
-        } catch (e_1_1) {
-          e_1 = { error: e_1_1 };
-        } finally {
-          try {
-            if (obj_1_1 && !obj_1_1.done && (_a = obj_1.return))
-              _a.call(obj_1);
-          } finally {
-            if (e_1)
-              throw e_1.error;
-          }
+          i++;
         }
         markup += this._endLine(options, level) + this._beginLine(options, level);
         markup += "]";
       } else if (util_1.isObject(obj)) {
         markup += "{";
-        var len_1 = util_1.objectLength(obj);
-        var i_1 = 0;
-        util_1.forEachObject(obj, function(key, val2) {
+        const len = util_1.objectLength(obj);
+        let i = 0;
+        util_1.forEachObject(obj, (key, val) => {
           if (isLeaf && options.prettyPrint) {
             markup += " ";
           } else {
-            markup += _this._endLine(options, level + 1) + _this._beginLine(options, level + 1);
+            markup += this._endLine(options, level + 1) + this._beginLine(options, level + 1);
           }
-          markup += _this._key(key);
+          markup += '"' + key + '":';
           if (options.prettyPrint) {
             markup += " ";
           }
-          markup += _this._convertObject(val2, options, level + 1);
-          if (i_1 < len_1 - 1) {
+          markup += this._convertObject(val, options, level + 1);
+          if (i < len - 1) {
             markup += ",";
           }
-          i_1++;
+          i++;
         }, this);
         if (isLeaf && options.prettyPrint) {
           markup += " ";
@@ -34741,207 +35236,43 @@ var require_JSONWriter = __commonJS((exports) => {
         }
         markup += "}";
       } else {
-        markup += this._val(obj);
+        markup += '"' + obj + '"';
       }
       return markup;
-    };
-    JSONWriter2.prototype._beginLine = function(options, level) {
+    }
+    _beginLine(options, level) {
       if (!options.prettyPrint) {
         return "";
       } else {
-        var indentLevel = options.offset + level + 1;
+        const indentLevel = options.offset + level + 1;
         if (indentLevel > 0) {
           return new Array(indentLevel).join(options.indent);
         }
       }
       return "";
-    };
-    JSONWriter2.prototype._endLine = function(options, level) {
+    }
+    _endLine(options, level) {
       if (!options.prettyPrint) {
         return "";
       } else {
         return options.newline;
       }
-    };
-    JSONWriter2.prototype._key = function(key) {
-      return '"' + key + '":';
-    };
-    JSONWriter2.prototype._val = function(val) {
-      return JSON.stringify(val);
-    };
-    JSONWriter2.prototype._isLeafNode = function(obj) {
+    }
+    _isLeafNode(obj) {
       return this._descendantCount(obj) <= 1;
-    };
-    JSONWriter2.prototype._descendantCount = function(obj, count) {
-      var _this = this;
-      if (count === undefined) {
-        count = 0;
-      }
+    }
+    _descendantCount(obj, count = 0) {
       if (util_1.isArray(obj)) {
-        util_1.forEachArray(obj, function(val) {
-          return count += _this._descendantCount(val, count);
-        }, this);
+        util_1.forEachArray(obj, (val) => count += this._descendantCount(val, count), this);
       } else if (util_1.isObject(obj)) {
-        util_1.forEachObject(obj, function(key, val) {
-          return count += _this._descendantCount(val, count);
-        }, this);
+        util_1.forEachObject(obj, (key, val) => count += this._descendantCount(val, count), this);
       } else {
         count++;
       }
       return count;
-    };
-    return JSONWriter2;
-  }(BaseWriter_1.BaseWriter);
-  exports.JSONWriter = JSONWriter;
-});
-
-// node_modules/xmlbuilder2/lib/writers/YAMLWriter.js
-var require_YAMLWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  var __values = exports && exports.__values || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m)
-      return m.call(o);
-    if (o && typeof o.length === "number")
-      return {
-        next: function() {
-          if (o && i >= o.length)
-            o = undefined;
-          return { value: o && o[i++], done: !o };
-        }
-      };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-  };
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var ObjectWriter_1 = require_ObjectWriter();
-  var util_1 = require_lib8();
-  var BaseWriter_1 = require_BaseWriter();
-  var YAMLWriter = function(_super) {
-    __extends(YAMLWriter2, _super);
-    function YAMLWriter2(builderOptions, writerOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._writerOptions = util_1.applyDefaults(writerOptions, {
-        wellFormed: false,
-        indent: "  ",
-        newline: `
-`,
-        offset: 0,
-        group: false,
-        verbose: false
-      });
-      if (_this._writerOptions.indent.length < 2) {
-        throw new Error("YAML indententation string must be at least two characters long.");
-      }
-      if (_this._writerOptions.offset < 0) {
-        throw new Error("YAML offset should be zero or a positive number.");
-      }
-      return _this;
     }
-    YAMLWriter2.prototype.serialize = function(node) {
-      var objectWriterOptions = util_1.applyDefaults(this._writerOptions, {
-        format: "object",
-        wellFormed: false
-      });
-      var objectWriter = new ObjectWriter_1.ObjectWriter(this._builderOptions, objectWriterOptions);
-      var val = objectWriter.serialize(node);
-      var markup = this._beginLine(this._writerOptions, 0) + "---" + this._endLine(this._writerOptions) + this._convertObject(val, this._writerOptions, 0);
-      if (markup.slice(-this._writerOptions.newline.length) === this._writerOptions.newline) {
-        markup = markup.slice(0, -this._writerOptions.newline.length);
-      }
-      return markup;
-    };
-    YAMLWriter2.prototype._convertObject = function(obj, options, level, suppressIndent) {
-      var e_1, _a;
-      var _this = this;
-      if (suppressIndent === undefined) {
-        suppressIndent = false;
-      }
-      var markup = "";
-      if (util_1.isArray(obj)) {
-        try {
-          for (var obj_1 = __values(obj), obj_1_1 = obj_1.next();!obj_1_1.done; obj_1_1 = obj_1.next()) {
-            var val = obj_1_1.value;
-            markup += this._beginLine(options, level, true);
-            if (!util_1.isObject(val)) {
-              markup += this._val(val) + this._endLine(options);
-            } else if (util_1.isEmpty(val)) {
-              markup += '""' + this._endLine(options);
-            } else {
-              markup += this._convertObject(val, options, level, true);
-            }
-          }
-        } catch (e_1_1) {
-          e_1 = { error: e_1_1 };
-        } finally {
-          try {
-            if (obj_1_1 && !obj_1_1.done && (_a = obj_1.return))
-              _a.call(obj_1);
-          } finally {
-            if (e_1)
-              throw e_1.error;
-          }
-        }
-      } else {
-        util_1.forEachObject(obj, function(key, val2) {
-          if (suppressIndent) {
-            markup += _this._key(key);
-            suppressIndent = false;
-          } else {
-            markup += _this._beginLine(options, level) + _this._key(key);
-          }
-          if (!util_1.isObject(val2)) {
-            markup += " " + _this._val(val2) + _this._endLine(options);
-          } else if (util_1.isEmpty(val2)) {
-            markup += ' ""' + _this._endLine(options);
-          } else {
-            markup += _this._endLine(options) + _this._convertObject(val2, options, level + 1);
-          }
-        }, this);
-      }
-      return markup;
-    };
-    YAMLWriter2.prototype._beginLine = function(options, level, isArray) {
-      if (isArray === undefined) {
-        isArray = false;
-      }
-      var indentLevel = options.offset + level + 1;
-      var chars = new Array(indentLevel).join(options.indent);
-      if (isArray) {
-        return chars.substr(0, chars.length - 2) + "-" + chars.substr(-1, 1);
-      } else {
-        return chars;
-      }
-    };
-    YAMLWriter2.prototype._endLine = function(options) {
-      return options.newline;
-    };
-    YAMLWriter2.prototype._key = function(key) {
-      return '"' + key + '":';
-    };
-    YAMLWriter2.prototype._val = function(val) {
-      return JSON.stringify(val);
-    };
-    return YAMLWriter2;
-  }(BaseWriter_1.BaseWriter);
-  exports.YAMLWriter = YAMLWriter;
+  }
+  exports.JSONWriter = JSONWriter;
 });
 
 // node_modules/xmlbuilder2/lib/writers/index.js
@@ -34955,8 +35286,6 @@ var require_writers = __commonJS((exports) => {
   exports.ObjectWriter = ObjectWriter_1.ObjectWriter;
   var JSONWriter_1 = require_JSONWriter();
   exports.JSONWriter = JSONWriter_1.JSONWriter;
-  var YAMLWriter_1 = require_YAMLWriter();
-  exports.YAMLWriter = YAMLWriter_1.YAMLWriter;
 });
 
 // node_modules/@oozcitak/dom/lib/dom/ChildNodeImpl.js
@@ -35091,7 +35420,7 @@ var require_MutationObserverImpl = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var DOMImpl_1 = require_DOMImpl();
   var util_1 = require_util2();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var MutationObserverImpl = function() {
     function MutationObserverImpl2(callback) {
       this._nodeList = [];
@@ -36004,7 +36333,7 @@ var require_XMLParserImpl = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var XMLStringLexer_1 = require_XMLStringLexer();
   var interfaces_1 = require_interfaces4();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var algorithm_1 = require_algorithm();
   var LocalNameSet_1 = require_LocalNameSet();
   var XMLParserImpl = function() {
@@ -36240,7 +36569,7 @@ var require_XMLSerializerImpl = __commonJS((exports) => {
   var LocalNameSet_1 = require_LocalNameSet();
   var NamespacePrefixMap_1 = require_NamespacePrefixMap();
   var DOMException_1 = require_DOMException();
-  var infra_1 = require_lib9();
+  var infra_1 = require_lib10();
   var algorithm_1 = require_algorithm();
   var XMLSerializerImpl = function() {
     function XMLSerializerImpl2() {
@@ -36779,7 +37108,7 @@ var require_serializer = __commonJS((exports) => {
 });
 
 // node_modules/@oozcitak/dom/lib/index.js
-var require_lib10 = __commonJS((exports) => {
+var require_lib11 = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
   var dom_1 = require_dom();
   dom_1.dom.setFeatures(true);
@@ -36794,36 +37123,57 @@ var require_lib10 = __commonJS((exports) => {
 // node_modules/xmlbuilder2/lib/builder/dom.js
 var require_dom2 = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
-  var dom_1 = require_lib10();
+  var dom_1 = require_lib11();
   var dom_2 = require_dom();
-  var util_1 = require_lib8();
+  var util_1 = __require("util");
   dom_2.dom.setFeatures(false);
+  function throwIfParserError(doc) {
+    const root = doc.documentElement;
+    if (root !== null && root.localName === "parsererror" && root.namespaceURI === "http://www.mozilla.org/newlayout/xml/parsererror.xml") {
+      const msgElement = root.firstElementChild;
+      if (msgElement === null)
+        throw new Error("Error parsing XML string.");
+      const msg = msgElement.getAttribute("message");
+      if (msg === null)
+        throw new Error("Error parsing XML string.");
+      throw new Error(msg);
+    }
+  }
+  exports.throwIfParserError = throwIfParserError;
   function createDocument() {
-    var impl = new dom_1.DOMImplementation;
-    var doc = impl.createDocument(null, "root", null);
+    const impl = new dom_1.DOMImplementation;
+    const doc = impl.createDocument(null, "root", null);
     if (doc.documentElement) {
       doc.removeChild(doc.documentElement);
     }
     return doc;
   }
   exports.createDocument = createDocument;
+  function createParser() {
+    return new dom_1.DOMParser;
+  }
+  exports.createParser = createParser;
   function sanitizeInput(str, replacement) {
     if (str == null) {
       return str;
     } else if (replacement === undefined) {
       return str + "";
     } else {
-      var result = "";
+      let result = "";
       str = str + "";
-      for (var i = 0;i < str.length; i++) {
-        var n = str.charCodeAt(i);
+      for (let i = 0;i < str.length; i++) {
+        let n = str.charCodeAt(i);
         if (n === 9 || n === 10 || n === 13 || n >= 32 && n <= 55295 || n >= 57344 && n <= 65533) {
           result += str.charAt(i);
         } else if (n >= 55296 && n <= 56319 && i < str.length - 1) {
-          var n2 = str.charCodeAt(i + 1);
+          const n2 = str.charCodeAt(i + 1);
           if (n2 >= 56320 && n2 <= 57343) {
             n = (n - 55296) * 1024 + n2 - 56320 + 65536;
-            result += String.fromCodePoint(n);
+            if (n >= 65536 && n <= 1114111) {
+              result += String.fromCodePoint(n);
+            } else {
+              result += util_1.isString(replacement) ? replacement : replacement(String.fromCodePoint(n), i, str);
+            }
             i++;
           } else {
             result += util_1.isString(replacement) ? replacement : replacement(str.charAt(i), i, str);
@@ -36838,3366 +37188,8 @@ var require_dom2 = __commonJS((exports) => {
   exports.sanitizeInput = sanitizeInput;
 });
 
-// node_modules/xmlbuilder2/lib/readers/BaseReader.js
-var require_BaseReader = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var dom_1 = require_dom2();
-  var BaseReader = function() {
-    function BaseReader2(builderOptions) {
-      this._builderOptions = builderOptions;
-      if (builderOptions.parser) {
-        Object.assign(this, builderOptions.parser);
-      }
-    }
-    BaseReader2.prototype._docType = function(parent, name, publicId, systemId) {
-      return parent.dtd({ name, pubID: publicId, sysID: systemId });
-    };
-    BaseReader2.prototype._comment = function(parent, data) {
-      return parent.com(data);
-    };
-    BaseReader2.prototype._text = function(parent, data) {
-      return parent.txt(data);
-    };
-    BaseReader2.prototype._instruction = function(parent, target, data) {
-      return parent.ins(target, data);
-    };
-    BaseReader2.prototype._cdata = function(parent, data) {
-      return parent.dat(data);
-    };
-    BaseReader2.prototype._element = function(parent, namespace, name) {
-      return namespace === undefined ? parent.ele(name) : parent.ele(namespace, name);
-    };
-    BaseReader2.prototype._attribute = function(parent, namespace, name, value) {
-      return namespace === undefined ? parent.att(name, value) : parent.att(namespace, name, value);
-    };
-    BaseReader2.prototype._sanitize = function(str) {
-      return dom_1.sanitizeInput(str, this._builderOptions.invalidCharReplacement);
-    };
-    BaseReader2.prototype._decodeText = function(text) {
-      if (text == null)
-        return text;
-      return text.replace(/&(quot|amp|apos|lt|gt);/g, function(_match, tag) {
-        return BaseReader2._entityTable[tag];
-      }).replace(/&#(?:x([a-fA-F0-9]+)|([0-9]+));/g, function(_match, hexStr, numStr) {
-        return String.fromCodePoint(parseInt(hexStr || numStr, hexStr ? 16 : 10));
-      });
-    };
-    BaseReader2.prototype._decodeAttributeValue = function(text) {
-      return this._decodeText(text);
-    };
-    BaseReader2.prototype.parse = function(node, obj) {
-      return this._parse(node, obj);
-    };
-    BaseReader2.prototype.docType = function(parent, name, publicId, systemId) {
-      return this._docType(parent, name, publicId, systemId);
-    };
-    BaseReader2.prototype.comment = function(parent, data) {
-      return this._comment(parent, data);
-    };
-    BaseReader2.prototype.text = function(parent, data) {
-      return this._text(parent, data);
-    };
-    BaseReader2.prototype.instruction = function(parent, target, data) {
-      return this._instruction(parent, target, data);
-    };
-    BaseReader2.prototype.cdata = function(parent, data) {
-      return this._cdata(parent, data);
-    };
-    BaseReader2.prototype.element = function(parent, namespace, name) {
-      return this._element(parent, namespace, name);
-    };
-    BaseReader2.prototype.attribute = function(parent, namespace, name, value) {
-      return this._attribute(parent, namespace, name, value);
-    };
-    BaseReader2.prototype.sanitize = function(str) {
-      return this._sanitize(str);
-    };
-    BaseReader2._entityTable = {
-      lt: "<",
-      gt: ">",
-      amp: "&",
-      quot: '"',
-      apos: "'"
-    };
-    return BaseReader2;
-  }();
-  exports.BaseReader = BaseReader;
-});
-
-// node_modules/xmlbuilder2/lib/readers/XMLReader.js
-var require_XMLReader = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  var __read = exports && exports.__read || function(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m)
-      return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-      while ((n === undefined || n-- > 0) && !(r = i.next()).done)
-        ar.push(r.value);
-    } catch (error) {
-      e = { error };
-    } finally {
-      try {
-        if (r && !r.done && (m = i["return"]))
-          m.call(i);
-      } finally {
-        if (e)
-          throw e.error;
-      }
-    }
-    return ar;
-  };
-  var __values = exports && exports.__values || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m)
-      return m.call(o);
-    if (o && typeof o.length === "number")
-      return {
-        next: function() {
-          if (o && i >= o.length)
-            o = undefined;
-          return { value: o && o[i++], done: !o };
-        }
-      };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-  };
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var XMLStringLexer_1 = require_XMLStringLexer();
-  var interfaces_1 = require_interfaces4();
-  var interfaces_2 = require_interfaces2();
-  var infra_1 = require_lib9();
-  var algorithm_1 = require_algorithm();
-  var BaseReader_1 = require_BaseReader();
-  var XMLReader = function(_super) {
-    __extends(XMLReader2, _super);
-    function XMLReader2() {
-      return _super !== null && _super.apply(this, arguments) || this;
-    }
-    XMLReader2.prototype._parse = function(node, str) {
-      var e_1, _a, e_2, _b;
-      var lexer = new XMLStringLexer_1.XMLStringLexer(str, { skipWhitespaceOnlyText: this._builderOptions.skipWhitespaceOnlyText });
-      var lastChild = node;
-      var context = node;
-      var token = lexer.nextToken();
-      while (token.type !== interfaces_1.TokenType.EOF) {
-        switch (token.type) {
-          case interfaces_1.TokenType.Declaration:
-            var declaration = token;
-            var version = this.sanitize(declaration.version);
-            if (version !== "1.0") {
-              throw new Error("Invalid xml version: " + version);
-            }
-            var builderOptions = {
-              version
-            };
-            if (declaration.encoding) {
-              builderOptions.encoding = this.sanitize(declaration.encoding);
-            }
-            if (declaration.standalone) {
-              builderOptions.standalone = this.sanitize(declaration.standalone) === "yes";
-            }
-            context.set(builderOptions);
-            break;
-          case interfaces_1.TokenType.DocType:
-            var doctype = token;
-            context = this.docType(context, this.sanitize(doctype.name), this.sanitize(doctype.pubId), this.sanitize(doctype.sysId)) || context;
-            break;
-          case interfaces_1.TokenType.CDATA:
-            var cdata = token;
-            context = this.cdata(context, this.sanitize(cdata.data)) || context;
-            break;
-          case interfaces_1.TokenType.Comment:
-            var comment = token;
-            context = this.comment(context, this.sanitize(comment.data)) || context;
-            break;
-          case interfaces_1.TokenType.PI:
-            var pi = token;
-            context = this.instruction(context, this.sanitize(pi.target), this.sanitize(pi.data)) || context;
-            break;
-          case interfaces_1.TokenType.Text:
-            if (context.node.nodeType === interfaces_2.NodeType.Document)
-              break;
-            var text = token;
-            context = this.text(context, this._decodeText(this.sanitize(text.data))) || context;
-            break;
-          case interfaces_1.TokenType.Element:
-            var element = token;
-            var elementName = this.sanitize(element.name);
-            var _c = __read(algorithm_1.namespace_extractQName(elementName), 1), prefix = _c[0];
-            var namespace = context.node.lookupNamespaceURI(prefix);
-            var nsDeclarations = {};
-            try {
-              for (var _d = (e_1 = undefined, __values(element.attributes)), _e = _d.next();!_e.done; _e = _d.next()) {
-                var _f = __read(_e.value, 2), attName = _f[0], attValue = _f[1];
-                attName = this.sanitize(attName);
-                attValue = this.sanitize(attValue);
-                if (attName === "xmlns") {
-                  namespace = attValue;
-                } else {
-                  var _g = __read(algorithm_1.namespace_extractQName(attName), 2), attPrefix = _g[0], attLocalName = _g[1];
-                  if (attPrefix === "xmlns") {
-                    if (attLocalName === prefix) {
-                      namespace = attValue;
-                    }
-                    nsDeclarations[attLocalName] = attValue;
-                  }
-                }
-              }
-            } catch (e_1_1) {
-              e_1 = { error: e_1_1 };
-            } finally {
-              try {
-                if (_e && !_e.done && (_a = _d.return))
-                  _a.call(_d);
-              } finally {
-                if (e_1)
-                  throw e_1.error;
-              }
-            }
-            var elementNode = namespace !== null ? this.element(context, namespace, elementName) : this.element(context, undefined, elementName);
-            if (elementNode === undefined)
-              break;
-            if (context.node === node.node)
-              lastChild = elementNode;
-            try {
-              for (var _h = (e_2 = undefined, __values(element.attributes)), _j = _h.next();!_j.done; _j = _h.next()) {
-                var _k = __read(_j.value, 2), attName = _k[0], attValue = _k[1];
-                attName = this.sanitize(attName);
-                attValue = this.sanitize(attValue);
-                var _l = __read(algorithm_1.namespace_extractQName(attName), 2), attPrefix = _l[0], attLocalName = _l[1];
-                var attNamespace = null;
-                if (attPrefix === "xmlns" || attPrefix === null && attLocalName === "xmlns") {
-                  attNamespace = infra_1.namespace.XMLNS;
-                } else {
-                  attNamespace = elementNode.node.lookupNamespaceURI(attPrefix);
-                  if (attNamespace !== null && elementNode.node.isDefaultNamespace(attNamespace)) {
-                    attNamespace = null;
-                  } else if (attNamespace === null && attPrefix !== null) {
-                    attNamespace = nsDeclarations[attPrefix] || null;
-                  }
-                }
-                if (attNamespace !== null)
-                  this.attribute(elementNode, attNamespace, attName, this._decodeAttributeValue(attValue));
-                else
-                  this.attribute(elementNode, undefined, attName, this._decodeAttributeValue(attValue));
-              }
-            } catch (e_2_1) {
-              e_2 = { error: e_2_1 };
-            } finally {
-              try {
-                if (_j && !_j.done && (_b = _h.return))
-                  _b.call(_h);
-              } finally {
-                if (e_2)
-                  throw e_2.error;
-              }
-            }
-            if (!element.selfClosing) {
-              context = elementNode;
-            }
-            break;
-          case interfaces_1.TokenType.ClosingTag:
-            if (context.node.parentNode) {
-              context = context.up();
-            }
-            break;
-        }
-        token = lexer.nextToken();
-      }
-      return lastChild;
-    };
-    return XMLReader2;
-  }(BaseReader_1.BaseReader);
-  exports.XMLReader = XMLReader;
-});
-
-// node_modules/xmlbuilder2/lib/readers/ObjectReader.js
-var require_ObjectReader = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var util_1 = require_lib8();
-  var BaseReader_1 = require_BaseReader();
-  var ObjectReader = function(_super) {
-    __extends(ObjectReader2, _super);
-    function ObjectReader2() {
-      return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ObjectReader2.prototype._parse = function(node, obj) {
-      var _this = this;
-      var options = this._builderOptions;
-      var lastChild = null;
-      if (util_1.isFunction(obj)) {
-        lastChild = this.parse(node, obj.apply(this));
-      } else if (util_1.isArray(obj) || util_1.isSet(obj)) {
-        util_1.forEachArray(obj, function(item) {
-          return lastChild = _this.parse(node, item);
-        }, this);
-      } else if (util_1.isMap(obj) || util_1.isObject(obj)) {
-        util_1.forEachObject(obj, function(key, val) {
-          if (util_1.isFunction(val)) {
-            val = val.apply(_this);
-          }
-          if (!options.ignoreConverters && key.indexOf(options.convert.att) === 0) {
-            if (key === options.convert.att) {
-              if (util_1.isArray(val) || util_1.isSet(val)) {
-                throw new Error("Invalid attribute: " + val.toString() + ". " + node._debugInfo());
-              } else {
-                util_1.forEachObject(val, function(attrKey, attrVal) {
-                  lastChild = _this.attribute(node, undefined, _this.sanitize(attrKey), _this._decodeAttributeValue(_this.sanitize(attrVal))) || lastChild;
-                });
-              }
-            } else {
-              lastChild = _this.attribute(node, undefined, _this.sanitize(key.substr(options.convert.att.length)), _this._decodeAttributeValue(_this.sanitize(val))) || lastChild;
-            }
-          } else if (!options.ignoreConverters && key.indexOf(options.convert.text) === 0) {
-            if (util_1.isMap(val) || util_1.isObject(val)) {
-              lastChild = _this.parse(node, val);
-            } else {
-              lastChild = _this.text(node, _this._decodeText(_this.sanitize(val))) || lastChild;
-            }
-          } else if (!options.ignoreConverters && key.indexOf(options.convert.cdata) === 0) {
-            if (util_1.isArray(val) || util_1.isSet(val)) {
-              util_1.forEachArray(val, function(item) {
-                return lastChild = _this.cdata(node, _this.sanitize(item)) || lastChild;
-              }, _this);
-            } else {
-              lastChild = _this.cdata(node, _this.sanitize(val)) || lastChild;
-            }
-          } else if (!options.ignoreConverters && key.indexOf(options.convert.comment) === 0) {
-            if (util_1.isArray(val) || util_1.isSet(val)) {
-              util_1.forEachArray(val, function(item) {
-                return lastChild = _this.comment(node, _this.sanitize(item)) || lastChild;
-              }, _this);
-            } else {
-              lastChild = _this.comment(node, _this.sanitize(val)) || lastChild;
-            }
-          } else if (!options.ignoreConverters && key.indexOf(options.convert.ins) === 0) {
-            if (util_1.isString(val)) {
-              var insIndex = val.indexOf(" ");
-              var insTarget = insIndex === -1 ? val : val.substr(0, insIndex);
-              var insValue = insIndex === -1 ? "" : val.substr(insIndex + 1);
-              lastChild = _this.instruction(node, _this.sanitize(insTarget), _this.sanitize(insValue)) || lastChild;
-            } else if (util_1.isArray(val) || util_1.isSet(val)) {
-              util_1.forEachArray(val, function(item) {
-                var insIndex2 = item.indexOf(" ");
-                var insTarget2 = insIndex2 === -1 ? item : item.substr(0, insIndex2);
-                var insValue2 = insIndex2 === -1 ? "" : item.substr(insIndex2 + 1);
-                lastChild = _this.instruction(node, _this.sanitize(insTarget2), _this.sanitize(insValue2)) || lastChild;
-              }, _this);
-            } else {
-              util_1.forEachObject(val, function(insTarget2, insValue2) {
-                return lastChild = _this.instruction(node, _this.sanitize(insTarget2), _this.sanitize(insValue2)) || lastChild;
-              }, _this);
-            }
-          } else if ((util_1.isArray(val) || util_1.isSet(val)) && util_1.isEmpty(val)) {
-          } else if ((util_1.isMap(val) || util_1.isObject(val)) && util_1.isEmpty(val)) {
-            lastChild = _this.element(node, undefined, _this.sanitize(key)) || lastChild;
-          } else if (!options.keepNullNodes && val == null) {
-          } else if (util_1.isArray(val) || util_1.isSet(val)) {
-            util_1.forEachArray(val, function(item) {
-              var childNode = {};
-              childNode[key] = item;
-              lastChild = _this.parse(node, childNode);
-            }, _this);
-          } else if (util_1.isMap(val) || util_1.isObject(val)) {
-            var parent = _this.element(node, undefined, _this.sanitize(key));
-            if (parent) {
-              lastChild = parent;
-              _this.parse(parent, val);
-            }
-          } else if (val != null && val !== "") {
-            var parent = _this.element(node, undefined, _this.sanitize(key));
-            if (parent) {
-              lastChild = parent;
-              _this.text(parent, _this._decodeText(_this.sanitize(val)));
-            }
-          } else {
-            lastChild = _this.element(node, undefined, _this.sanitize(key)) || lastChild;
-          }
-        }, this);
-      } else if (!options.keepNullNodes && obj == null) {
-      } else {
-        lastChild = this.text(node, this._decodeText(this.sanitize(obj))) || lastChild;
-      }
-      return lastChild || node;
-    };
-    return ObjectReader2;
-  }(BaseReader_1.BaseReader);
-  exports.ObjectReader = ObjectReader;
-});
-
-// node_modules/xmlbuilder2/lib/readers/JSONReader.js
-var require_JSONReader = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var ObjectReader_1 = require_ObjectReader();
-  var BaseReader_1 = require_BaseReader();
-  var JSONReader = function(_super) {
-    __extends(JSONReader2, _super);
-    function JSONReader2() {
-      return _super !== null && _super.apply(this, arguments) || this;
-    }
-    JSONReader2.prototype._parse = function(node, str) {
-      return new ObjectReader_1.ObjectReader(this._builderOptions).parse(node, JSON.parse(str));
-    };
-    return JSONReader2;
-  }(BaseReader_1.BaseReader);
-  exports.JSONReader = JSONReader;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/common.js
-var require_common2 = __commonJS((exports, module) => {
-  function isNothing(subject) {
-    return typeof subject === "undefined" || subject === null;
-  }
-  function isObject(subject) {
-    return typeof subject === "object" && subject !== null;
-  }
-  function toArray(sequence) {
-    if (Array.isArray(sequence))
-      return sequence;
-    else if (isNothing(sequence))
-      return [];
-    return [sequence];
-  }
-  function extend(target, source) {
-    var index, length, key, sourceKeys;
-    if (source) {
-      sourceKeys = Object.keys(source);
-      for (index = 0, length = sourceKeys.length;index < length; index += 1) {
-        key = sourceKeys[index];
-        target[key] = source[key];
-      }
-    }
-    return target;
-  }
-  function repeat(string, count) {
-    var result = "", cycle;
-    for (cycle = 0;cycle < count; cycle += 1) {
-      result += string;
-    }
-    return result;
-  }
-  function isNegativeZero(number) {
-    return number === 0 && Number.NEGATIVE_INFINITY === 1 / number;
-  }
-  exports.isNothing = isNothing;
-  exports.isObject = isObject;
-  exports.toArray = toArray;
-  exports.repeat = repeat;
-  exports.isNegativeZero = isNegativeZero;
-  exports.extend = extend;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/exception.js
-var require_exception = __commonJS((exports, module) => {
-  function YAMLException(reason, mark) {
-    Error.call(this);
-    this.name = "YAMLException";
-    this.reason = reason;
-    this.mark = mark;
-    this.message = (this.reason || "(unknown reason)") + (this.mark ? " " + this.mark.toString() : "");
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
-    } else {
-      this.stack = new Error().stack || "";
-    }
-  }
-  YAMLException.prototype = Object.create(Error.prototype);
-  YAMLException.prototype.constructor = YAMLException;
-  YAMLException.prototype.toString = function toString(compact) {
-    var result = this.name + ": ";
-    result += this.reason || "(unknown reason)";
-    if (!compact && this.mark) {
-      result += " " + this.mark.toString();
-    }
-    return result;
-  };
-  module.exports = YAMLException;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/mark.js
-var require_mark = __commonJS((exports, module) => {
-  var common = require_common2();
-  function Mark(name, buffer, position, line, column) {
-    this.name = name;
-    this.buffer = buffer;
-    this.position = position;
-    this.line = line;
-    this.column = column;
-  }
-  Mark.prototype.getSnippet = function getSnippet(indent, maxLength) {
-    var head, start, tail, end, snippet;
-    if (!this.buffer)
-      return null;
-    indent = indent || 4;
-    maxLength = maxLength || 75;
-    head = "";
-    start = this.position;
-    while (start > 0 && `\x00\r
-\u2028\u2029`.indexOf(this.buffer.charAt(start - 1)) === -1) {
-      start -= 1;
-      if (this.position - start > maxLength / 2 - 1) {
-        head = " ... ";
-        start += 5;
-        break;
-      }
-    }
-    tail = "";
-    end = this.position;
-    while (end < this.buffer.length && `\x00\r
-\u2028\u2029`.indexOf(this.buffer.charAt(end)) === -1) {
-      end += 1;
-      if (end - this.position > maxLength / 2 - 1) {
-        tail = " ... ";
-        end -= 5;
-        break;
-      }
-    }
-    snippet = this.buffer.slice(start, end);
-    return common.repeat(" ", indent) + head + snippet + tail + `
-` + common.repeat(" ", indent + this.position - start + head.length) + "^";
-  };
-  Mark.prototype.toString = function toString(compact) {
-    var snippet, where = "";
-    if (this.name) {
-      where += 'in "' + this.name + '" ';
-    }
-    where += "at line " + (this.line + 1) + ", column " + (this.column + 1);
-    if (!compact) {
-      snippet = this.getSnippet();
-      if (snippet) {
-        where += `:
-` + snippet;
-      }
-    }
-    return where;
-  };
-  module.exports = Mark;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type.js
-var require_type2 = __commonJS((exports, module) => {
-  var YAMLException = require_exception();
-  var TYPE_CONSTRUCTOR_OPTIONS = [
-    "kind",
-    "resolve",
-    "construct",
-    "instanceOf",
-    "predicate",
-    "represent",
-    "defaultStyle",
-    "styleAliases"
-  ];
-  var YAML_NODE_KINDS = [
-    "scalar",
-    "sequence",
-    "mapping"
-  ];
-  function compileStyleAliases(map) {
-    var result = {};
-    if (map !== null) {
-      Object.keys(map).forEach(function(style) {
-        map[style].forEach(function(alias) {
-          result[String(alias)] = style;
-        });
-      });
-    }
-    return result;
-  }
-  function Type(tag, options) {
-    options = options || {};
-    Object.keys(options).forEach(function(name) {
-      if (TYPE_CONSTRUCTOR_OPTIONS.indexOf(name) === -1) {
-        throw new YAMLException('Unknown option "' + name + '" is met in definition of "' + tag + '" YAML type.');
-      }
-    });
-    this.tag = tag;
-    this.kind = options["kind"] || null;
-    this.resolve = options["resolve"] || function() {
-      return true;
-    };
-    this.construct = options["construct"] || function(data) {
-      return data;
-    };
-    this.instanceOf = options["instanceOf"] || null;
-    this.predicate = options["predicate"] || null;
-    this.represent = options["represent"] || null;
-    this.defaultStyle = options["defaultStyle"] || null;
-    this.styleAliases = compileStyleAliases(options["styleAliases"] || null);
-    if (YAML_NODE_KINDS.indexOf(this.kind) === -1) {
-      throw new YAMLException('Unknown kind "' + this.kind + '" is specified for "' + tag + '" YAML type.');
-    }
-  }
-  module.exports = Type;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/schema.js
-var require_schema = __commonJS((exports, module) => {
-  var common = require_common2();
-  var YAMLException = require_exception();
-  var Type = require_type2();
-  function compileList(schema, name, result) {
-    var exclude = [];
-    schema.include.forEach(function(includedSchema) {
-      result = compileList(includedSchema, name, result);
-    });
-    schema[name].forEach(function(currentType) {
-      result.forEach(function(previousType, previousIndex) {
-        if (previousType.tag === currentType.tag && previousType.kind === currentType.kind) {
-          exclude.push(previousIndex);
-        }
-      });
-      result.push(currentType);
-    });
-    return result.filter(function(type, index) {
-      return exclude.indexOf(index) === -1;
-    });
-  }
-  function compileMap() {
-    var result = {
-      scalar: {},
-      sequence: {},
-      mapping: {},
-      fallback: {}
-    }, index, length;
-    function collectType(type) {
-      result[type.kind][type.tag] = result["fallback"][type.tag] = type;
-    }
-    for (index = 0, length = arguments.length;index < length; index += 1) {
-      arguments[index].forEach(collectType);
-    }
-    return result;
-  }
-  function Schema(definition) {
-    this.include = definition.include || [];
-    this.implicit = definition.implicit || [];
-    this.explicit = definition.explicit || [];
-    this.implicit.forEach(function(type) {
-      if (type.loadKind && type.loadKind !== "scalar") {
-        throw new YAMLException("There is a non-scalar type in the implicit list of a schema. Implicit resolving of such types is not supported.");
-      }
-    });
-    this.compiledImplicit = compileList(this, "implicit", []);
-    this.compiledExplicit = compileList(this, "explicit", []);
-    this.compiledTypeMap = compileMap(this.compiledImplicit, this.compiledExplicit);
-  }
-  Schema.DEFAULT = null;
-  Schema.create = function createSchema() {
-    var schemas, types;
-    switch (arguments.length) {
-      case 1:
-        schemas = Schema.DEFAULT;
-        types = arguments[0];
-        break;
-      case 2:
-        schemas = arguments[0];
-        types = arguments[1];
-        break;
-      default:
-        throw new YAMLException("Wrong number of arguments for Schema.create function");
-    }
-    schemas = common.toArray(schemas);
-    types = common.toArray(types);
-    if (!schemas.every(function(schema) {
-      return schema instanceof Schema;
-    })) {
-      throw new YAMLException("Specified list of super schemas (or a single Schema object) contains a non-Schema object.");
-    }
-    if (!types.every(function(type) {
-      return type instanceof Type;
-    })) {
-      throw new YAMLException("Specified list of YAML types (or a single Type object) contains a non-Type object.");
-    }
-    return new Schema({
-      include: schemas,
-      explicit: types
-    });
-  };
-  module.exports = Schema;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/str.js
-var require_str = __commonJS((exports, module) => {
-  var Type = require_type2();
-  module.exports = new Type("tag:yaml.org,2002:str", {
-    kind: "scalar",
-    construct: function(data) {
-      return data !== null ? data : "";
-    }
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/seq.js
-var require_seq = __commonJS((exports, module) => {
-  var Type = require_type2();
-  module.exports = new Type("tag:yaml.org,2002:seq", {
-    kind: "sequence",
-    construct: function(data) {
-      return data !== null ? data : [];
-    }
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/map.js
-var require_map = __commonJS((exports, module) => {
-  var Type = require_type2();
-  module.exports = new Type("tag:yaml.org,2002:map", {
-    kind: "mapping",
-    construct: function(data) {
-      return data !== null ? data : {};
-    }
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/schema/failsafe.js
-var require_failsafe = __commonJS((exports, module) => {
-  var Schema = require_schema();
-  module.exports = new Schema({
-    explicit: [
-      require_str(),
-      require_seq(),
-      require_map()
-    ]
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/null.js
-var require_null = __commonJS((exports, module) => {
-  var Type = require_type2();
-  function resolveYamlNull(data) {
-    if (data === null)
-      return true;
-    var max = data.length;
-    return max === 1 && data === "~" || max === 4 && (data === "null" || data === "Null" || data === "NULL");
-  }
-  function constructYamlNull() {
-    return null;
-  }
-  function isNull(object) {
-    return object === null;
-  }
-  module.exports = new Type("tag:yaml.org,2002:null", {
-    kind: "scalar",
-    resolve: resolveYamlNull,
-    construct: constructYamlNull,
-    predicate: isNull,
-    represent: {
-      canonical: function() {
-        return "~";
-      },
-      lowercase: function() {
-        return "null";
-      },
-      uppercase: function() {
-        return "NULL";
-      },
-      camelcase: function() {
-        return "Null";
-      }
-    },
-    defaultStyle: "lowercase"
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/bool.js
-var require_bool = __commonJS((exports, module) => {
-  var Type = require_type2();
-  function resolveYamlBoolean(data) {
-    if (data === null)
-      return false;
-    var max = data.length;
-    return max === 4 && (data === "true" || data === "True" || data === "TRUE") || max === 5 && (data === "false" || data === "False" || data === "FALSE");
-  }
-  function constructYamlBoolean(data) {
-    return data === "true" || data === "True" || data === "TRUE";
-  }
-  function isBoolean(object) {
-    return Object.prototype.toString.call(object) === "[object Boolean]";
-  }
-  module.exports = new Type("tag:yaml.org,2002:bool", {
-    kind: "scalar",
-    resolve: resolveYamlBoolean,
-    construct: constructYamlBoolean,
-    predicate: isBoolean,
-    represent: {
-      lowercase: function(object) {
-        return object ? "true" : "false";
-      },
-      uppercase: function(object) {
-        return object ? "TRUE" : "FALSE";
-      },
-      camelcase: function(object) {
-        return object ? "True" : "False";
-      }
-    },
-    defaultStyle: "lowercase"
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/int.js
-var require_int = __commonJS((exports, module) => {
-  var common = require_common2();
-  var Type = require_type2();
-  function isHexCode(c) {
-    return 48 <= c && c <= 57 || 65 <= c && c <= 70 || 97 <= c && c <= 102;
-  }
-  function isOctCode(c) {
-    return 48 <= c && c <= 55;
-  }
-  function isDecCode(c) {
-    return 48 <= c && c <= 57;
-  }
-  function resolveYamlInteger(data) {
-    if (data === null)
-      return false;
-    var max = data.length, index = 0, hasDigits = false, ch;
-    if (!max)
-      return false;
-    ch = data[index];
-    if (ch === "-" || ch === "+") {
-      ch = data[++index];
-    }
-    if (ch === "0") {
-      if (index + 1 === max)
-        return true;
-      ch = data[++index];
-      if (ch === "b") {
-        index++;
-        for (;index < max; index++) {
-          ch = data[index];
-          if (ch === "_")
-            continue;
-          if (ch !== "0" && ch !== "1")
-            return false;
-          hasDigits = true;
-        }
-        return hasDigits && ch !== "_";
-      }
-      if (ch === "x") {
-        index++;
-        for (;index < max; index++) {
-          ch = data[index];
-          if (ch === "_")
-            continue;
-          if (!isHexCode(data.charCodeAt(index)))
-            return false;
-          hasDigits = true;
-        }
-        return hasDigits && ch !== "_";
-      }
-      for (;index < max; index++) {
-        ch = data[index];
-        if (ch === "_")
-          continue;
-        if (!isOctCode(data.charCodeAt(index)))
-          return false;
-        hasDigits = true;
-      }
-      return hasDigits && ch !== "_";
-    }
-    if (ch === "_")
-      return false;
-    for (;index < max; index++) {
-      ch = data[index];
-      if (ch === "_")
-        continue;
-      if (ch === ":")
-        break;
-      if (!isDecCode(data.charCodeAt(index))) {
-        return false;
-      }
-      hasDigits = true;
-    }
-    if (!hasDigits || ch === "_")
-      return false;
-    if (ch !== ":")
-      return true;
-    return /^(:[0-5]?[0-9])+$/.test(data.slice(index));
-  }
-  function constructYamlInteger(data) {
-    var value = data, sign = 1, ch, base, digits = [];
-    if (value.indexOf("_") !== -1) {
-      value = value.replace(/_/g, "");
-    }
-    ch = value[0];
-    if (ch === "-" || ch === "+") {
-      if (ch === "-")
-        sign = -1;
-      value = value.slice(1);
-      ch = value[0];
-    }
-    if (value === "0")
-      return 0;
-    if (ch === "0") {
-      if (value[1] === "b")
-        return sign * parseInt(value.slice(2), 2);
-      if (value[1] === "x")
-        return sign * parseInt(value, 16);
-      return sign * parseInt(value, 8);
-    }
-    if (value.indexOf(":") !== -1) {
-      value.split(":").forEach(function(v) {
-        digits.unshift(parseInt(v, 10));
-      });
-      value = 0;
-      base = 1;
-      digits.forEach(function(d) {
-        value += d * base;
-        base *= 60;
-      });
-      return sign * value;
-    }
-    return sign * parseInt(value, 10);
-  }
-  function isInteger(object) {
-    return Object.prototype.toString.call(object) === "[object Number]" && (object % 1 === 0 && !common.isNegativeZero(object));
-  }
-  module.exports = new Type("tag:yaml.org,2002:int", {
-    kind: "scalar",
-    resolve: resolveYamlInteger,
-    construct: constructYamlInteger,
-    predicate: isInteger,
-    represent: {
-      binary: function(obj) {
-        return obj >= 0 ? "0b" + obj.toString(2) : "-0b" + obj.toString(2).slice(1);
-      },
-      octal: function(obj) {
-        return obj >= 0 ? "0" + obj.toString(8) : "-0" + obj.toString(8).slice(1);
-      },
-      decimal: function(obj) {
-        return obj.toString(10);
-      },
-      hexadecimal: function(obj) {
-        return obj >= 0 ? "0x" + obj.toString(16).toUpperCase() : "-0x" + obj.toString(16).toUpperCase().slice(1);
-      }
-    },
-    defaultStyle: "decimal",
-    styleAliases: {
-      binary: [2, "bin"],
-      octal: [8, "oct"],
-      decimal: [10, "dec"],
-      hexadecimal: [16, "hex"]
-    }
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/float.js
-var require_float = __commonJS((exports, module) => {
-  var common = require_common2();
-  var Type = require_type2();
-  var YAML_FLOAT_PATTERN = new RegExp("^(?:[-+]?(?:0|[1-9][0-9_]*)(?:\\.[0-9_]*)?(?:[eE][-+]?[0-9]+)?" + "|\\.[0-9_]+(?:[eE][-+]?[0-9]+)?" + "|[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\\.[0-9_]*" + "|[-+]?\\.(?:inf|Inf|INF)" + "|\\.(?:nan|NaN|NAN))$");
-  function resolveYamlFloat(data) {
-    if (data === null)
-      return false;
-    if (!YAML_FLOAT_PATTERN.test(data) || data[data.length - 1] === "_") {
-      return false;
-    }
-    return true;
-  }
-  function constructYamlFloat(data) {
-    var value, sign, base, digits;
-    value = data.replace(/_/g, "").toLowerCase();
-    sign = value[0] === "-" ? -1 : 1;
-    digits = [];
-    if ("+-".indexOf(value[0]) >= 0) {
-      value = value.slice(1);
-    }
-    if (value === ".inf") {
-      return sign === 1 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY;
-    } else if (value === ".nan") {
-      return NaN;
-    } else if (value.indexOf(":") >= 0) {
-      value.split(":").forEach(function(v) {
-        digits.unshift(parseFloat(v, 10));
-      });
-      value = 0;
-      base = 1;
-      digits.forEach(function(d) {
-        value += d * base;
-        base *= 60;
-      });
-      return sign * value;
-    }
-    return sign * parseFloat(value, 10);
-  }
-  var SCIENTIFIC_WITHOUT_DOT = /^[-+]?[0-9]+e/;
-  function representYamlFloat(object, style) {
-    var res;
-    if (isNaN(object)) {
-      switch (style) {
-        case "lowercase":
-          return ".nan";
-        case "uppercase":
-          return ".NAN";
-        case "camelcase":
-          return ".NaN";
-      }
-    } else if (Number.POSITIVE_INFINITY === object) {
-      switch (style) {
-        case "lowercase":
-          return ".inf";
-        case "uppercase":
-          return ".INF";
-        case "camelcase":
-          return ".Inf";
-      }
-    } else if (Number.NEGATIVE_INFINITY === object) {
-      switch (style) {
-        case "lowercase":
-          return "-.inf";
-        case "uppercase":
-          return "-.INF";
-        case "camelcase":
-          return "-.Inf";
-      }
-    } else if (common.isNegativeZero(object)) {
-      return "-0.0";
-    }
-    res = object.toString(10);
-    return SCIENTIFIC_WITHOUT_DOT.test(res) ? res.replace("e", ".e") : res;
-  }
-  function isFloat(object) {
-    return Object.prototype.toString.call(object) === "[object Number]" && (object % 1 !== 0 || common.isNegativeZero(object));
-  }
-  module.exports = new Type("tag:yaml.org,2002:float", {
-    kind: "scalar",
-    resolve: resolveYamlFloat,
-    construct: constructYamlFloat,
-    predicate: isFloat,
-    represent: representYamlFloat,
-    defaultStyle: "lowercase"
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/schema/json.js
-var require_json = __commonJS((exports, module) => {
-  var Schema = require_schema();
-  module.exports = new Schema({
-    include: [
-      require_failsafe()
-    ],
-    implicit: [
-      require_null(),
-      require_bool(),
-      require_int(),
-      require_float()
-    ]
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/schema/core.js
-var require_core = __commonJS((exports, module) => {
-  var Schema = require_schema();
-  module.exports = new Schema({
-    include: [
-      require_json()
-    ]
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/timestamp.js
-var require_timestamp = __commonJS((exports, module) => {
-  var Type = require_type2();
-  var YAML_DATE_REGEXP = new RegExp("^([0-9][0-9][0-9][0-9])" + "-([0-9][0-9])" + "-([0-9][0-9])$");
-  var YAML_TIMESTAMP_REGEXP = new RegExp("^([0-9][0-9][0-9][0-9])" + "-([0-9][0-9]?)" + "-([0-9][0-9]?)" + "(?:[Tt]|[ \\t]+)" + "([0-9][0-9]?)" + ":([0-9][0-9])" + ":([0-9][0-9])" + "(?:\\.([0-9]*))?" + "(?:[ \\t]*(Z|([-+])([0-9][0-9]?)" + "(?::([0-9][0-9]))?))?$");
-  function resolveYamlTimestamp(data) {
-    if (data === null)
-      return false;
-    if (YAML_DATE_REGEXP.exec(data) !== null)
-      return true;
-    if (YAML_TIMESTAMP_REGEXP.exec(data) !== null)
-      return true;
-    return false;
-  }
-  function constructYamlTimestamp(data) {
-    var match, year, month, day, hour, minute, second, fraction = 0, delta = null, tz_hour, tz_minute, date;
-    match = YAML_DATE_REGEXP.exec(data);
-    if (match === null)
-      match = YAML_TIMESTAMP_REGEXP.exec(data);
-    if (match === null)
-      throw new Error("Date resolve error");
-    year = +match[1];
-    month = +match[2] - 1;
-    day = +match[3];
-    if (!match[4]) {
-      return new Date(Date.UTC(year, month, day));
-    }
-    hour = +match[4];
-    minute = +match[5];
-    second = +match[6];
-    if (match[7]) {
-      fraction = match[7].slice(0, 3);
-      while (fraction.length < 3) {
-        fraction += "0";
-      }
-      fraction = +fraction;
-    }
-    if (match[9]) {
-      tz_hour = +match[10];
-      tz_minute = +(match[11] || 0);
-      delta = (tz_hour * 60 + tz_minute) * 60000;
-      if (match[9] === "-")
-        delta = -delta;
-    }
-    date = new Date(Date.UTC(year, month, day, hour, minute, second, fraction));
-    if (delta)
-      date.setTime(date.getTime() - delta);
-    return date;
-  }
-  function representYamlTimestamp(object) {
-    return object.toISOString();
-  }
-  module.exports = new Type("tag:yaml.org,2002:timestamp", {
-    kind: "scalar",
-    resolve: resolveYamlTimestamp,
-    construct: constructYamlTimestamp,
-    instanceOf: Date,
-    represent: representYamlTimestamp
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/merge.js
-var require_merge = __commonJS((exports, module) => {
-  var Type = require_type2();
-  function resolveYamlMerge(data) {
-    return data === "<<" || data === null;
-  }
-  module.exports = new Type("tag:yaml.org,2002:merge", {
-    kind: "scalar",
-    resolve: resolveYamlMerge
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/binary.js
-var require_binary = __commonJS((exports, module) => {
-  var NodeBuffer;
-  try {
-    _require = __require;
-    NodeBuffer = _require("buffer").Buffer;
-  } catch (__) {
-  }
-  var _require;
-  var Type = require_type2();
-  var BASE64_MAP = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=
-\r`;
-  function resolveYamlBinary(data) {
-    if (data === null)
-      return false;
-    var code, idx, bitlen = 0, max = data.length, map = BASE64_MAP;
-    for (idx = 0;idx < max; idx++) {
-      code = map.indexOf(data.charAt(idx));
-      if (code > 64)
-        continue;
-      if (code < 0)
-        return false;
-      bitlen += 6;
-    }
-    return bitlen % 8 === 0;
-  }
-  function constructYamlBinary(data) {
-    var idx, tailbits, input = data.replace(/[\r\n=]/g, ""), max = input.length, map = BASE64_MAP, bits = 0, result = [];
-    for (idx = 0;idx < max; idx++) {
-      if (idx % 4 === 0 && idx) {
-        result.push(bits >> 16 & 255);
-        result.push(bits >> 8 & 255);
-        result.push(bits & 255);
-      }
-      bits = bits << 6 | map.indexOf(input.charAt(idx));
-    }
-    tailbits = max % 4 * 6;
-    if (tailbits === 0) {
-      result.push(bits >> 16 & 255);
-      result.push(bits >> 8 & 255);
-      result.push(bits & 255);
-    } else if (tailbits === 18) {
-      result.push(bits >> 10 & 255);
-      result.push(bits >> 2 & 255);
-    } else if (tailbits === 12) {
-      result.push(bits >> 4 & 255);
-    }
-    if (NodeBuffer) {
-      return NodeBuffer.from ? NodeBuffer.from(result) : new NodeBuffer(result);
-    }
-    return result;
-  }
-  function representYamlBinary(object) {
-    var result = "", bits = 0, idx, tail, max = object.length, map = BASE64_MAP;
-    for (idx = 0;idx < max; idx++) {
-      if (idx % 3 === 0 && idx) {
-        result += map[bits >> 18 & 63];
-        result += map[bits >> 12 & 63];
-        result += map[bits >> 6 & 63];
-        result += map[bits & 63];
-      }
-      bits = (bits << 8) + object[idx];
-    }
-    tail = max % 3;
-    if (tail === 0) {
-      result += map[bits >> 18 & 63];
-      result += map[bits >> 12 & 63];
-      result += map[bits >> 6 & 63];
-      result += map[bits & 63];
-    } else if (tail === 2) {
-      result += map[bits >> 10 & 63];
-      result += map[bits >> 4 & 63];
-      result += map[bits << 2 & 63];
-      result += map[64];
-    } else if (tail === 1) {
-      result += map[bits >> 2 & 63];
-      result += map[bits << 4 & 63];
-      result += map[64];
-      result += map[64];
-    }
-    return result;
-  }
-  function isBinary(object) {
-    return NodeBuffer && NodeBuffer.isBuffer(object);
-  }
-  module.exports = new Type("tag:yaml.org,2002:binary", {
-    kind: "scalar",
-    resolve: resolveYamlBinary,
-    construct: constructYamlBinary,
-    predicate: isBinary,
-    represent: representYamlBinary
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/omap.js
-var require_omap = __commonJS((exports, module) => {
-  var Type = require_type2();
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-  var _toString = Object.prototype.toString;
-  function resolveYamlOmap(data) {
-    if (data === null)
-      return true;
-    var objectKeys = [], index, length, pair, pairKey, pairHasKey, object = data;
-    for (index = 0, length = object.length;index < length; index += 1) {
-      pair = object[index];
-      pairHasKey = false;
-      if (_toString.call(pair) !== "[object Object]")
-        return false;
-      for (pairKey in pair) {
-        if (_hasOwnProperty.call(pair, pairKey)) {
-          if (!pairHasKey)
-            pairHasKey = true;
-          else
-            return false;
-        }
-      }
-      if (!pairHasKey)
-        return false;
-      if (objectKeys.indexOf(pairKey) === -1)
-        objectKeys.push(pairKey);
-      else
-        return false;
-    }
-    return true;
-  }
-  function constructYamlOmap(data) {
-    return data !== null ? data : [];
-  }
-  module.exports = new Type("tag:yaml.org,2002:omap", {
-    kind: "sequence",
-    resolve: resolveYamlOmap,
-    construct: constructYamlOmap
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/pairs.js
-var require_pairs = __commonJS((exports, module) => {
-  var Type = require_type2();
-  var _toString = Object.prototype.toString;
-  function resolveYamlPairs(data) {
-    if (data === null)
-      return true;
-    var index, length, pair, keys, result, object = data;
-    result = new Array(object.length);
-    for (index = 0, length = object.length;index < length; index += 1) {
-      pair = object[index];
-      if (_toString.call(pair) !== "[object Object]")
-        return false;
-      keys = Object.keys(pair);
-      if (keys.length !== 1)
-        return false;
-      result[index] = [keys[0], pair[keys[0]]];
-    }
-    return true;
-  }
-  function constructYamlPairs(data) {
-    if (data === null)
-      return [];
-    var index, length, pair, keys, result, object = data;
-    result = new Array(object.length);
-    for (index = 0, length = object.length;index < length; index += 1) {
-      pair = object[index];
-      keys = Object.keys(pair);
-      result[index] = [keys[0], pair[keys[0]]];
-    }
-    return result;
-  }
-  module.exports = new Type("tag:yaml.org,2002:pairs", {
-    kind: "sequence",
-    resolve: resolveYamlPairs,
-    construct: constructYamlPairs
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/set.js
-var require_set = __commonJS((exports, module) => {
-  var Type = require_type2();
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-  function resolveYamlSet(data) {
-    if (data === null)
-      return true;
-    var key, object = data;
-    for (key in object) {
-      if (_hasOwnProperty.call(object, key)) {
-        if (object[key] !== null)
-          return false;
-      }
-    }
-    return true;
-  }
-  function constructYamlSet(data) {
-    return data !== null ? data : {};
-  }
-  module.exports = new Type("tag:yaml.org,2002:set", {
-    kind: "mapping",
-    resolve: resolveYamlSet,
-    construct: constructYamlSet
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/schema/default_safe.js
-var require_default_safe = __commonJS((exports, module) => {
-  var Schema = require_schema();
-  module.exports = new Schema({
-    include: [
-      require_core()
-    ],
-    implicit: [
-      require_timestamp(),
-      require_merge()
-    ],
-    explicit: [
-      require_binary(),
-      require_omap(),
-      require_pairs(),
-      require_set()
-    ]
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/js/undefined.js
-var require_undefined = __commonJS((exports, module) => {
-  var Type = require_type2();
-  function resolveJavascriptUndefined() {
-    return true;
-  }
-  function constructJavascriptUndefined() {
-    return;
-  }
-  function representJavascriptUndefined() {
-    return "";
-  }
-  function isUndefined(object) {
-    return typeof object === "undefined";
-  }
-  module.exports = new Type("tag:yaml.org,2002:js/undefined", {
-    kind: "scalar",
-    resolve: resolveJavascriptUndefined,
-    construct: constructJavascriptUndefined,
-    predicate: isUndefined,
-    represent: representJavascriptUndefined
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/js/regexp.js
-var require_regexp = __commonJS((exports, module) => {
-  var Type = require_type2();
-  function resolveJavascriptRegExp(data) {
-    if (data === null)
-      return false;
-    if (data.length === 0)
-      return false;
-    var regexp = data, tail = /\/([gim]*)$/.exec(data), modifiers = "";
-    if (regexp[0] === "/") {
-      if (tail)
-        modifiers = tail[1];
-      if (modifiers.length > 3)
-        return false;
-      if (regexp[regexp.length - modifiers.length - 1] !== "/")
-        return false;
-    }
-    return true;
-  }
-  function constructJavascriptRegExp(data) {
-    var regexp = data, tail = /\/([gim]*)$/.exec(data), modifiers = "";
-    if (regexp[0] === "/") {
-      if (tail)
-        modifiers = tail[1];
-      regexp = regexp.slice(1, regexp.length - modifiers.length - 1);
-    }
-    return new RegExp(regexp, modifiers);
-  }
-  function representJavascriptRegExp(object) {
-    var result = "/" + object.source + "/";
-    if (object.global)
-      result += "g";
-    if (object.multiline)
-      result += "m";
-    if (object.ignoreCase)
-      result += "i";
-    return result;
-  }
-  function isRegExp(object) {
-    return Object.prototype.toString.call(object) === "[object RegExp]";
-  }
-  module.exports = new Type("tag:yaml.org,2002:js/regexp", {
-    kind: "scalar",
-    resolve: resolveJavascriptRegExp,
-    construct: constructJavascriptRegExp,
-    predicate: isRegExp,
-    represent: representJavascriptRegExp
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/type/js/function.js
-var require_function = __commonJS((exports, module) => {
-  var esprima;
-  try {
-    _require = __require;
-    esprima = _require("esprima");
-  } catch (_) {
-    if (typeof window !== "undefined")
-      esprima = window.esprima;
-  }
-  var _require;
-  var Type = require_type2();
-  function resolveJavascriptFunction(data) {
-    if (data === null)
-      return false;
-    try {
-      var source = "(" + data + ")", ast = esprima.parse(source, { range: true });
-      if (ast.type !== "Program" || ast.body.length !== 1 || ast.body[0].type !== "ExpressionStatement" || ast.body[0].expression.type !== "ArrowFunctionExpression" && ast.body[0].expression.type !== "FunctionExpression") {
-        return false;
-      }
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
-  function constructJavascriptFunction(data) {
-    var source = "(" + data + ")", ast = esprima.parse(source, { range: true }), params = [], body;
-    if (ast.type !== "Program" || ast.body.length !== 1 || ast.body[0].type !== "ExpressionStatement" || ast.body[0].expression.type !== "ArrowFunctionExpression" && ast.body[0].expression.type !== "FunctionExpression") {
-      throw new Error("Failed to resolve function");
-    }
-    ast.body[0].expression.params.forEach(function(param) {
-      params.push(param.name);
-    });
-    body = ast.body[0].expression.body.range;
-    if (ast.body[0].expression.body.type === "BlockStatement") {
-      return new Function(params, source.slice(body[0] + 1, body[1] - 1));
-    }
-    return new Function(params, "return " + source.slice(body[0], body[1]));
-  }
-  function representJavascriptFunction(object) {
-    return object.toString();
-  }
-  function isFunction(object) {
-    return Object.prototype.toString.call(object) === "[object Function]";
-  }
-  module.exports = new Type("tag:yaml.org,2002:js/function", {
-    kind: "scalar",
-    resolve: resolveJavascriptFunction,
-    construct: constructJavascriptFunction,
-    predicate: isFunction,
-    represent: representJavascriptFunction
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/schema/default_full.js
-var require_default_full = __commonJS((exports, module) => {
-  var Schema = require_schema();
-  module.exports = Schema.DEFAULT = new Schema({
-    include: [
-      require_default_safe()
-    ],
-    explicit: [
-      require_undefined(),
-      require_regexp(),
-      require_function()
-    ]
-  });
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/loader.js
-var require_loader = __commonJS((exports, module) => {
-  var common = require_common2();
-  var YAMLException = require_exception();
-  var Mark = require_mark();
-  var DEFAULT_SAFE_SCHEMA = require_default_safe();
-  var DEFAULT_FULL_SCHEMA = require_default_full();
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-  var CONTEXT_FLOW_IN = 1;
-  var CONTEXT_FLOW_OUT = 2;
-  var CONTEXT_BLOCK_IN = 3;
-  var CONTEXT_BLOCK_OUT = 4;
-  var CHOMPING_CLIP = 1;
-  var CHOMPING_STRIP = 2;
-  var CHOMPING_KEEP = 3;
-  var PATTERN_NON_PRINTABLE = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]/;
-  var PATTERN_NON_ASCII_LINE_BREAKS = /[\x85\u2028\u2029]/;
-  var PATTERN_FLOW_INDICATORS = /[,\[\]\{\}]/;
-  var PATTERN_TAG_HANDLE = /^(?:!|!!|![a-z\-]+!)$/i;
-  var PATTERN_TAG_URI = /^(?:!|[^,\[\]\{\}])(?:%[0-9a-f]{2}|[0-9a-z\-#;\/\?:@&=\+\$,_\.!~\*'\(\)\[\]])*$/i;
-  function _class(obj) {
-    return Object.prototype.toString.call(obj);
-  }
-  function is_EOL(c) {
-    return c === 10 || c === 13;
-  }
-  function is_WHITE_SPACE(c) {
-    return c === 9 || c === 32;
-  }
-  function is_WS_OR_EOL(c) {
-    return c === 9 || c === 32 || c === 10 || c === 13;
-  }
-  function is_FLOW_INDICATOR(c) {
-    return c === 44 || c === 91 || c === 93 || c === 123 || c === 125;
-  }
-  function fromHexCode(c) {
-    var lc;
-    if (48 <= c && c <= 57) {
-      return c - 48;
-    }
-    lc = c | 32;
-    if (97 <= lc && lc <= 102) {
-      return lc - 97 + 10;
-    }
-    return -1;
-  }
-  function escapedHexLen(c) {
-    if (c === 120) {
-      return 2;
-    }
-    if (c === 117) {
-      return 4;
-    }
-    if (c === 85) {
-      return 8;
-    }
-    return 0;
-  }
-  function fromDecimalCode(c) {
-    if (48 <= c && c <= 57) {
-      return c - 48;
-    }
-    return -1;
-  }
-  function simpleEscapeSequence(c) {
-    return c === 48 ? "\x00" : c === 97 ? "\x07" : c === 98 ? "\b" : c === 116 ? "\t" : c === 9 ? "\t" : c === 110 ? `
-` : c === 118 ? "\v" : c === 102 ? "\f" : c === 114 ? "\r" : c === 101 ? "\x1B" : c === 32 ? " " : c === 34 ? '"' : c === 47 ? "/" : c === 92 ? "\\" : c === 78 ? "" : c === 95 ? " " : c === 76 ? "\u2028" : c === 80 ? "\u2029" : "";
-  }
-  function charFromCodepoint(c) {
-    if (c <= 65535) {
-      return String.fromCharCode(c);
-    }
-    return String.fromCharCode((c - 65536 >> 10) + 55296, (c - 65536 & 1023) + 56320);
-  }
-  var simpleEscapeCheck = new Array(256);
-  var simpleEscapeMap = new Array(256);
-  for (i = 0;i < 256; i++) {
-    simpleEscapeCheck[i] = simpleEscapeSequence(i) ? 1 : 0;
-    simpleEscapeMap[i] = simpleEscapeSequence(i);
-  }
-  var i;
-  function State(input, options) {
-    this.input = input;
-    this.filename = options["filename"] || null;
-    this.schema = options["schema"] || DEFAULT_FULL_SCHEMA;
-    this.onWarning = options["onWarning"] || null;
-    this.legacy = options["legacy"] || false;
-    this.json = options["json"] || false;
-    this.listener = options["listener"] || null;
-    this.implicitTypes = this.schema.compiledImplicit;
-    this.typeMap = this.schema.compiledTypeMap;
-    this.length = input.length;
-    this.position = 0;
-    this.line = 0;
-    this.lineStart = 0;
-    this.lineIndent = 0;
-    this.documents = [];
-  }
-  function generateError(state, message) {
-    return new YAMLException(message, new Mark(state.filename, state.input, state.position, state.line, state.position - state.lineStart));
-  }
-  function throwError(state, message) {
-    throw generateError(state, message);
-  }
-  function throwWarning(state, message) {
-    if (state.onWarning) {
-      state.onWarning.call(null, generateError(state, message));
-    }
-  }
-  var directiveHandlers = {
-    YAML: function handleYamlDirective(state, name, args) {
-      var match, major, minor;
-      if (state.version !== null) {
-        throwError(state, "duplication of %YAML directive");
-      }
-      if (args.length !== 1) {
-        throwError(state, "YAML directive accepts exactly one argument");
-      }
-      match = /^([0-9]+)\.([0-9]+)$/.exec(args[0]);
-      if (match === null) {
-        throwError(state, "ill-formed argument of the YAML directive");
-      }
-      major = parseInt(match[1], 10);
-      minor = parseInt(match[2], 10);
-      if (major !== 1) {
-        throwError(state, "unacceptable YAML version of the document");
-      }
-      state.version = args[0];
-      state.checkLineBreaks = minor < 2;
-      if (minor !== 1 && minor !== 2) {
-        throwWarning(state, "unsupported YAML version of the document");
-      }
-    },
-    TAG: function handleTagDirective(state, name, args) {
-      var handle, prefix;
-      if (args.length !== 2) {
-        throwError(state, "TAG directive accepts exactly two arguments");
-      }
-      handle = args[0];
-      prefix = args[1];
-      if (!PATTERN_TAG_HANDLE.test(handle)) {
-        throwError(state, "ill-formed tag handle (first argument) of the TAG directive");
-      }
-      if (_hasOwnProperty.call(state.tagMap, handle)) {
-        throwError(state, 'there is a previously declared suffix for "' + handle + '" tag handle');
-      }
-      if (!PATTERN_TAG_URI.test(prefix)) {
-        throwError(state, "ill-formed tag prefix (second argument) of the TAG directive");
-      }
-      state.tagMap[handle] = prefix;
-    }
-  };
-  function captureSegment(state, start, end, checkJson) {
-    var _position, _length, _character, _result;
-    if (start < end) {
-      _result = state.input.slice(start, end);
-      if (checkJson) {
-        for (_position = 0, _length = _result.length;_position < _length; _position += 1) {
-          _character = _result.charCodeAt(_position);
-          if (!(_character === 9 || 32 <= _character && _character <= 1114111)) {
-            throwError(state, "expected valid JSON character");
-          }
-        }
-      } else if (PATTERN_NON_PRINTABLE.test(_result)) {
-        throwError(state, "the stream contains non-printable characters");
-      }
-      state.result += _result;
-    }
-  }
-  function mergeMappings(state, destination, source, overridableKeys) {
-    var sourceKeys, key, index, quantity;
-    if (!common.isObject(source)) {
-      throwError(state, "cannot merge mappings; the provided source object is unacceptable");
-    }
-    sourceKeys = Object.keys(source);
-    for (index = 0, quantity = sourceKeys.length;index < quantity; index += 1) {
-      key = sourceKeys[index];
-      if (!_hasOwnProperty.call(destination, key)) {
-        destination[key] = source[key];
-        overridableKeys[key] = true;
-      }
-    }
-  }
-  function storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, startLine, startPos) {
-    var index, quantity;
-    if (Array.isArray(keyNode)) {
-      keyNode = Array.prototype.slice.call(keyNode);
-      for (index = 0, quantity = keyNode.length;index < quantity; index += 1) {
-        if (Array.isArray(keyNode[index])) {
-          throwError(state, "nested arrays are not supported inside keys");
-        }
-        if (typeof keyNode === "object" && _class(keyNode[index]) === "[object Object]") {
-          keyNode[index] = "[object Object]";
-        }
-      }
-    }
-    if (typeof keyNode === "object" && _class(keyNode) === "[object Object]") {
-      keyNode = "[object Object]";
-    }
-    keyNode = String(keyNode);
-    if (_result === null) {
-      _result = {};
-    }
-    if (keyTag === "tag:yaml.org,2002:merge") {
-      if (Array.isArray(valueNode)) {
-        for (index = 0, quantity = valueNode.length;index < quantity; index += 1) {
-          mergeMappings(state, _result, valueNode[index], overridableKeys);
-        }
-      } else {
-        mergeMappings(state, _result, valueNode, overridableKeys);
-      }
-    } else {
-      if (!state.json && !_hasOwnProperty.call(overridableKeys, keyNode) && _hasOwnProperty.call(_result, keyNode)) {
-        state.line = startLine || state.line;
-        state.position = startPos || state.position;
-        throwError(state, "duplicated mapping key");
-      }
-      _result[keyNode] = valueNode;
-      delete overridableKeys[keyNode];
-    }
-    return _result;
-  }
-  function readLineBreak(state) {
-    var ch;
-    ch = state.input.charCodeAt(state.position);
-    if (ch === 10) {
-      state.position++;
-    } else if (ch === 13) {
-      state.position++;
-      if (state.input.charCodeAt(state.position) === 10) {
-        state.position++;
-      }
-    } else {
-      throwError(state, "a line break is expected");
-    }
-    state.line += 1;
-    state.lineStart = state.position;
-  }
-  function skipSeparationSpace(state, allowComments, checkIndent) {
-    var lineBreaks = 0, ch = state.input.charCodeAt(state.position);
-    while (ch !== 0) {
-      while (is_WHITE_SPACE(ch)) {
-        ch = state.input.charCodeAt(++state.position);
-      }
-      if (allowComments && ch === 35) {
-        do {
-          ch = state.input.charCodeAt(++state.position);
-        } while (ch !== 10 && ch !== 13 && ch !== 0);
-      }
-      if (is_EOL(ch)) {
-        readLineBreak(state);
-        ch = state.input.charCodeAt(state.position);
-        lineBreaks++;
-        state.lineIndent = 0;
-        while (ch === 32) {
-          state.lineIndent++;
-          ch = state.input.charCodeAt(++state.position);
-        }
-      } else {
-        break;
-      }
-    }
-    if (checkIndent !== -1 && lineBreaks !== 0 && state.lineIndent < checkIndent) {
-      throwWarning(state, "deficient indentation");
-    }
-    return lineBreaks;
-  }
-  function testDocumentSeparator(state) {
-    var _position = state.position, ch;
-    ch = state.input.charCodeAt(_position);
-    if ((ch === 45 || ch === 46) && ch === state.input.charCodeAt(_position + 1) && ch === state.input.charCodeAt(_position + 2)) {
-      _position += 3;
-      ch = state.input.charCodeAt(_position);
-      if (ch === 0 || is_WS_OR_EOL(ch)) {
-        return true;
-      }
-    }
-    return false;
-  }
-  function writeFoldedLines(state, count) {
-    if (count === 1) {
-      state.result += " ";
-    } else if (count > 1) {
-      state.result += common.repeat(`
-`, count - 1);
-    }
-  }
-  function readPlainScalar(state, nodeIndent, withinFlowCollection) {
-    var preceding, following, captureStart, captureEnd, hasPendingContent, _line, _lineStart, _lineIndent, _kind = state.kind, _result = state.result, ch;
-    ch = state.input.charCodeAt(state.position);
-    if (is_WS_OR_EOL(ch) || is_FLOW_INDICATOR(ch) || ch === 35 || ch === 38 || ch === 42 || ch === 33 || ch === 124 || ch === 62 || ch === 39 || ch === 34 || ch === 37 || ch === 64 || ch === 96) {
-      return false;
-    }
-    if (ch === 63 || ch === 45) {
-      following = state.input.charCodeAt(state.position + 1);
-      if (is_WS_OR_EOL(following) || withinFlowCollection && is_FLOW_INDICATOR(following)) {
-        return false;
-      }
-    }
-    state.kind = "scalar";
-    state.result = "";
-    captureStart = captureEnd = state.position;
-    hasPendingContent = false;
-    while (ch !== 0) {
-      if (ch === 58) {
-        following = state.input.charCodeAt(state.position + 1);
-        if (is_WS_OR_EOL(following) || withinFlowCollection && is_FLOW_INDICATOR(following)) {
-          break;
-        }
-      } else if (ch === 35) {
-        preceding = state.input.charCodeAt(state.position - 1);
-        if (is_WS_OR_EOL(preceding)) {
-          break;
-        }
-      } else if (state.position === state.lineStart && testDocumentSeparator(state) || withinFlowCollection && is_FLOW_INDICATOR(ch)) {
-        break;
-      } else if (is_EOL(ch)) {
-        _line = state.line;
-        _lineStart = state.lineStart;
-        _lineIndent = state.lineIndent;
-        skipSeparationSpace(state, false, -1);
-        if (state.lineIndent >= nodeIndent) {
-          hasPendingContent = true;
-          ch = state.input.charCodeAt(state.position);
-          continue;
-        } else {
-          state.position = captureEnd;
-          state.line = _line;
-          state.lineStart = _lineStart;
-          state.lineIndent = _lineIndent;
-          break;
-        }
-      }
-      if (hasPendingContent) {
-        captureSegment(state, captureStart, captureEnd, false);
-        writeFoldedLines(state, state.line - _line);
-        captureStart = captureEnd = state.position;
-        hasPendingContent = false;
-      }
-      if (!is_WHITE_SPACE(ch)) {
-        captureEnd = state.position + 1;
-      }
-      ch = state.input.charCodeAt(++state.position);
-    }
-    captureSegment(state, captureStart, captureEnd, false);
-    if (state.result) {
-      return true;
-    }
-    state.kind = _kind;
-    state.result = _result;
-    return false;
-  }
-  function readSingleQuotedScalar(state, nodeIndent) {
-    var ch, captureStart, captureEnd;
-    ch = state.input.charCodeAt(state.position);
-    if (ch !== 39) {
-      return false;
-    }
-    state.kind = "scalar";
-    state.result = "";
-    state.position++;
-    captureStart = captureEnd = state.position;
-    while ((ch = state.input.charCodeAt(state.position)) !== 0) {
-      if (ch === 39) {
-        captureSegment(state, captureStart, state.position, true);
-        ch = state.input.charCodeAt(++state.position);
-        if (ch === 39) {
-          captureStart = state.position;
-          state.position++;
-          captureEnd = state.position;
-        } else {
-          return true;
-        }
-      } else if (is_EOL(ch)) {
-        captureSegment(state, captureStart, captureEnd, true);
-        writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
-        captureStart = captureEnd = state.position;
-      } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
-        throwError(state, "unexpected end of the document within a single quoted scalar");
-      } else {
-        state.position++;
-        captureEnd = state.position;
-      }
-    }
-    throwError(state, "unexpected end of the stream within a single quoted scalar");
-  }
-  function readDoubleQuotedScalar(state, nodeIndent) {
-    var captureStart, captureEnd, hexLength, hexResult, tmp, ch;
-    ch = state.input.charCodeAt(state.position);
-    if (ch !== 34) {
-      return false;
-    }
-    state.kind = "scalar";
-    state.result = "";
-    state.position++;
-    captureStart = captureEnd = state.position;
-    while ((ch = state.input.charCodeAt(state.position)) !== 0) {
-      if (ch === 34) {
-        captureSegment(state, captureStart, state.position, true);
-        state.position++;
-        return true;
-      } else if (ch === 92) {
-        captureSegment(state, captureStart, state.position, true);
-        ch = state.input.charCodeAt(++state.position);
-        if (is_EOL(ch)) {
-          skipSeparationSpace(state, false, nodeIndent);
-        } else if (ch < 256 && simpleEscapeCheck[ch]) {
-          state.result += simpleEscapeMap[ch];
-          state.position++;
-        } else if ((tmp = escapedHexLen(ch)) > 0) {
-          hexLength = tmp;
-          hexResult = 0;
-          for (;hexLength > 0; hexLength--) {
-            ch = state.input.charCodeAt(++state.position);
-            if ((tmp = fromHexCode(ch)) >= 0) {
-              hexResult = (hexResult << 4) + tmp;
-            } else {
-              throwError(state, "expected hexadecimal character");
-            }
-          }
-          state.result += charFromCodepoint(hexResult);
-          state.position++;
-        } else {
-          throwError(state, "unknown escape sequence");
-        }
-        captureStart = captureEnd = state.position;
-      } else if (is_EOL(ch)) {
-        captureSegment(state, captureStart, captureEnd, true);
-        writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
-        captureStart = captureEnd = state.position;
-      } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
-        throwError(state, "unexpected end of the document within a double quoted scalar");
-      } else {
-        state.position++;
-        captureEnd = state.position;
-      }
-    }
-    throwError(state, "unexpected end of the stream within a double quoted scalar");
-  }
-  function readFlowCollection(state, nodeIndent) {
-    var readNext = true, _line, _tag = state.tag, _result, _anchor = state.anchor, following, terminator, isPair, isExplicitPair, isMapping, overridableKeys = {}, keyNode, keyTag, valueNode, ch;
-    ch = state.input.charCodeAt(state.position);
-    if (ch === 91) {
-      terminator = 93;
-      isMapping = false;
-      _result = [];
-    } else if (ch === 123) {
-      terminator = 125;
-      isMapping = true;
-      _result = {};
-    } else {
-      return false;
-    }
-    if (state.anchor !== null) {
-      state.anchorMap[state.anchor] = _result;
-    }
-    ch = state.input.charCodeAt(++state.position);
-    while (ch !== 0) {
-      skipSeparationSpace(state, true, nodeIndent);
-      ch = state.input.charCodeAt(state.position);
-      if (ch === terminator) {
-        state.position++;
-        state.tag = _tag;
-        state.anchor = _anchor;
-        state.kind = isMapping ? "mapping" : "sequence";
-        state.result = _result;
-        return true;
-      } else if (!readNext) {
-        throwError(state, "missed comma between flow collection entries");
-      }
-      keyTag = keyNode = valueNode = null;
-      isPair = isExplicitPair = false;
-      if (ch === 63) {
-        following = state.input.charCodeAt(state.position + 1);
-        if (is_WS_OR_EOL(following)) {
-          isPair = isExplicitPair = true;
-          state.position++;
-          skipSeparationSpace(state, true, nodeIndent);
-        }
-      }
-      _line = state.line;
-      composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
-      keyTag = state.tag;
-      keyNode = state.result;
-      skipSeparationSpace(state, true, nodeIndent);
-      ch = state.input.charCodeAt(state.position);
-      if ((isExplicitPair || state.line === _line) && ch === 58) {
-        isPair = true;
-        ch = state.input.charCodeAt(++state.position);
-        skipSeparationSpace(state, true, nodeIndent);
-        composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
-        valueNode = state.result;
-      }
-      if (isMapping) {
-        storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode);
-      } else if (isPair) {
-        _result.push(storeMappingPair(state, null, overridableKeys, keyTag, keyNode, valueNode));
-      } else {
-        _result.push(keyNode);
-      }
-      skipSeparationSpace(state, true, nodeIndent);
-      ch = state.input.charCodeAt(state.position);
-      if (ch === 44) {
-        readNext = true;
-        ch = state.input.charCodeAt(++state.position);
-      } else {
-        readNext = false;
-      }
-    }
-    throwError(state, "unexpected end of the stream within a flow collection");
-  }
-  function readBlockScalar(state, nodeIndent) {
-    var captureStart, folding, chomping = CHOMPING_CLIP, didReadContent = false, detectedIndent = false, textIndent = nodeIndent, emptyLines = 0, atMoreIndented = false, tmp, ch;
-    ch = state.input.charCodeAt(state.position);
-    if (ch === 124) {
-      folding = false;
-    } else if (ch === 62) {
-      folding = true;
-    } else {
-      return false;
-    }
-    state.kind = "scalar";
-    state.result = "";
-    while (ch !== 0) {
-      ch = state.input.charCodeAt(++state.position);
-      if (ch === 43 || ch === 45) {
-        if (CHOMPING_CLIP === chomping) {
-          chomping = ch === 43 ? CHOMPING_KEEP : CHOMPING_STRIP;
-        } else {
-          throwError(state, "repeat of a chomping mode identifier");
-        }
-      } else if ((tmp = fromDecimalCode(ch)) >= 0) {
-        if (tmp === 0) {
-          throwError(state, "bad explicit indentation width of a block scalar; it cannot be less than one");
-        } else if (!detectedIndent) {
-          textIndent = nodeIndent + tmp - 1;
-          detectedIndent = true;
-        } else {
-          throwError(state, "repeat of an indentation width identifier");
-        }
-      } else {
-        break;
-      }
-    }
-    if (is_WHITE_SPACE(ch)) {
-      do {
-        ch = state.input.charCodeAt(++state.position);
-      } while (is_WHITE_SPACE(ch));
-      if (ch === 35) {
-        do {
-          ch = state.input.charCodeAt(++state.position);
-        } while (!is_EOL(ch) && ch !== 0);
-      }
-    }
-    while (ch !== 0) {
-      readLineBreak(state);
-      state.lineIndent = 0;
-      ch = state.input.charCodeAt(state.position);
-      while ((!detectedIndent || state.lineIndent < textIndent) && ch === 32) {
-        state.lineIndent++;
-        ch = state.input.charCodeAt(++state.position);
-      }
-      if (!detectedIndent && state.lineIndent > textIndent) {
-        textIndent = state.lineIndent;
-      }
-      if (is_EOL(ch)) {
-        emptyLines++;
-        continue;
-      }
-      if (state.lineIndent < textIndent) {
-        if (chomping === CHOMPING_KEEP) {
-          state.result += common.repeat(`
-`, didReadContent ? 1 + emptyLines : emptyLines);
-        } else if (chomping === CHOMPING_CLIP) {
-          if (didReadContent) {
-            state.result += `
-`;
-          }
-        }
-        break;
-      }
-      if (folding) {
-        if (is_WHITE_SPACE(ch)) {
-          atMoreIndented = true;
-          state.result += common.repeat(`
-`, didReadContent ? 1 + emptyLines : emptyLines);
-        } else if (atMoreIndented) {
-          atMoreIndented = false;
-          state.result += common.repeat(`
-`, emptyLines + 1);
-        } else if (emptyLines === 0) {
-          if (didReadContent) {
-            state.result += " ";
-          }
-        } else {
-          state.result += common.repeat(`
-`, emptyLines);
-        }
-      } else {
-        state.result += common.repeat(`
-`, didReadContent ? 1 + emptyLines : emptyLines);
-      }
-      didReadContent = true;
-      detectedIndent = true;
-      emptyLines = 0;
-      captureStart = state.position;
-      while (!is_EOL(ch) && ch !== 0) {
-        ch = state.input.charCodeAt(++state.position);
-      }
-      captureSegment(state, captureStart, state.position, false);
-    }
-    return true;
-  }
-  function readBlockSequence(state, nodeIndent) {
-    var _line, _tag = state.tag, _anchor = state.anchor, _result = [], following, detected = false, ch;
-    if (state.anchor !== null) {
-      state.anchorMap[state.anchor] = _result;
-    }
-    ch = state.input.charCodeAt(state.position);
-    while (ch !== 0) {
-      if (ch !== 45) {
-        break;
-      }
-      following = state.input.charCodeAt(state.position + 1);
-      if (!is_WS_OR_EOL(following)) {
-        break;
-      }
-      detected = true;
-      state.position++;
-      if (skipSeparationSpace(state, true, -1)) {
-        if (state.lineIndent <= nodeIndent) {
-          _result.push(null);
-          ch = state.input.charCodeAt(state.position);
-          continue;
-        }
-      }
-      _line = state.line;
-      composeNode(state, nodeIndent, CONTEXT_BLOCK_IN, false, true);
-      _result.push(state.result);
-      skipSeparationSpace(state, true, -1);
-      ch = state.input.charCodeAt(state.position);
-      if ((state.line === _line || state.lineIndent > nodeIndent) && ch !== 0) {
-        throwError(state, "bad indentation of a sequence entry");
-      } else if (state.lineIndent < nodeIndent) {
-        break;
-      }
-    }
-    if (detected) {
-      state.tag = _tag;
-      state.anchor = _anchor;
-      state.kind = "sequence";
-      state.result = _result;
-      return true;
-    }
-    return false;
-  }
-  function readBlockMapping(state, nodeIndent, flowIndent) {
-    var following, allowCompact, _line, _pos, _tag = state.tag, _anchor = state.anchor, _result = {}, overridableKeys = {}, keyTag = null, keyNode = null, valueNode = null, atExplicitKey = false, detected = false, ch;
-    if (state.anchor !== null) {
-      state.anchorMap[state.anchor] = _result;
-    }
-    ch = state.input.charCodeAt(state.position);
-    while (ch !== 0) {
-      following = state.input.charCodeAt(state.position + 1);
-      _line = state.line;
-      _pos = state.position;
-      if ((ch === 63 || ch === 58) && is_WS_OR_EOL(following)) {
-        if (ch === 63) {
-          if (atExplicitKey) {
-            storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null);
-            keyTag = keyNode = valueNode = null;
-          }
-          detected = true;
-          atExplicitKey = true;
-          allowCompact = true;
-        } else if (atExplicitKey) {
-          atExplicitKey = false;
-          allowCompact = true;
-        } else {
-          throwError(state, "incomplete explicit mapping pair; a key node is missed; or followed by a non-tabulated empty line");
-        }
-        state.position += 1;
-        ch = following;
-      } else if (composeNode(state, flowIndent, CONTEXT_FLOW_OUT, false, true)) {
-        if (state.line === _line) {
-          ch = state.input.charCodeAt(state.position);
-          while (is_WHITE_SPACE(ch)) {
-            ch = state.input.charCodeAt(++state.position);
-          }
-          if (ch === 58) {
-            ch = state.input.charCodeAt(++state.position);
-            if (!is_WS_OR_EOL(ch)) {
-              throwError(state, "a whitespace character is expected after the key-value separator within a block mapping");
-            }
-            if (atExplicitKey) {
-              storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null);
-              keyTag = keyNode = valueNode = null;
-            }
-            detected = true;
-            atExplicitKey = false;
-            allowCompact = false;
-            keyTag = state.tag;
-            keyNode = state.result;
-          } else if (detected) {
-            throwError(state, "can not read an implicit mapping pair; a colon is missed");
-          } else {
-            state.tag = _tag;
-            state.anchor = _anchor;
-            return true;
-          }
-        } else if (detected) {
-          throwError(state, "can not read a block mapping entry; a multiline key may not be an implicit key");
-        } else {
-          state.tag = _tag;
-          state.anchor = _anchor;
-          return true;
-        }
-      } else {
-        break;
-      }
-      if (state.line === _line || state.lineIndent > nodeIndent) {
-        if (composeNode(state, nodeIndent, CONTEXT_BLOCK_OUT, true, allowCompact)) {
-          if (atExplicitKey) {
-            keyNode = state.result;
-          } else {
-            valueNode = state.result;
-          }
-        }
-        if (!atExplicitKey) {
-          storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, _line, _pos);
-          keyTag = keyNode = valueNode = null;
-        }
-        skipSeparationSpace(state, true, -1);
-        ch = state.input.charCodeAt(state.position);
-      }
-      if (state.lineIndent > nodeIndent && ch !== 0) {
-        throwError(state, "bad indentation of a mapping entry");
-      } else if (state.lineIndent < nodeIndent) {
-        break;
-      }
-    }
-    if (atExplicitKey) {
-      storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null);
-    }
-    if (detected) {
-      state.tag = _tag;
-      state.anchor = _anchor;
-      state.kind = "mapping";
-      state.result = _result;
-    }
-    return detected;
-  }
-  function readTagProperty(state) {
-    var _position, isVerbatim = false, isNamed = false, tagHandle, tagName, ch;
-    ch = state.input.charCodeAt(state.position);
-    if (ch !== 33)
-      return false;
-    if (state.tag !== null) {
-      throwError(state, "duplication of a tag property");
-    }
-    ch = state.input.charCodeAt(++state.position);
-    if (ch === 60) {
-      isVerbatim = true;
-      ch = state.input.charCodeAt(++state.position);
-    } else if (ch === 33) {
-      isNamed = true;
-      tagHandle = "!!";
-      ch = state.input.charCodeAt(++state.position);
-    } else {
-      tagHandle = "!";
-    }
-    _position = state.position;
-    if (isVerbatim) {
-      do {
-        ch = state.input.charCodeAt(++state.position);
-      } while (ch !== 0 && ch !== 62);
-      if (state.position < state.length) {
-        tagName = state.input.slice(_position, state.position);
-        ch = state.input.charCodeAt(++state.position);
-      } else {
-        throwError(state, "unexpected end of the stream within a verbatim tag");
-      }
-    } else {
-      while (ch !== 0 && !is_WS_OR_EOL(ch)) {
-        if (ch === 33) {
-          if (!isNamed) {
-            tagHandle = state.input.slice(_position - 1, state.position + 1);
-            if (!PATTERN_TAG_HANDLE.test(tagHandle)) {
-              throwError(state, "named tag handle cannot contain such characters");
-            }
-            isNamed = true;
-            _position = state.position + 1;
-          } else {
-            throwError(state, "tag suffix cannot contain exclamation marks");
-          }
-        }
-        ch = state.input.charCodeAt(++state.position);
-      }
-      tagName = state.input.slice(_position, state.position);
-      if (PATTERN_FLOW_INDICATORS.test(tagName)) {
-        throwError(state, "tag suffix cannot contain flow indicator characters");
-      }
-    }
-    if (tagName && !PATTERN_TAG_URI.test(tagName)) {
-      throwError(state, "tag name cannot contain such characters: " + tagName);
-    }
-    if (isVerbatim) {
-      state.tag = tagName;
-    } else if (_hasOwnProperty.call(state.tagMap, tagHandle)) {
-      state.tag = state.tagMap[tagHandle] + tagName;
-    } else if (tagHandle === "!") {
-      state.tag = "!" + tagName;
-    } else if (tagHandle === "!!") {
-      state.tag = "tag:yaml.org,2002:" + tagName;
-    } else {
-      throwError(state, 'undeclared tag handle "' + tagHandle + '"');
-    }
-    return true;
-  }
-  function readAnchorProperty(state) {
-    var _position, ch;
-    ch = state.input.charCodeAt(state.position);
-    if (ch !== 38)
-      return false;
-    if (state.anchor !== null) {
-      throwError(state, "duplication of an anchor property");
-    }
-    ch = state.input.charCodeAt(++state.position);
-    _position = state.position;
-    while (ch !== 0 && !is_WS_OR_EOL(ch) && !is_FLOW_INDICATOR(ch)) {
-      ch = state.input.charCodeAt(++state.position);
-    }
-    if (state.position === _position) {
-      throwError(state, "name of an anchor node must contain at least one character");
-    }
-    state.anchor = state.input.slice(_position, state.position);
-    return true;
-  }
-  function readAlias(state) {
-    var _position, alias, ch;
-    ch = state.input.charCodeAt(state.position);
-    if (ch !== 42)
-      return false;
-    ch = state.input.charCodeAt(++state.position);
-    _position = state.position;
-    while (ch !== 0 && !is_WS_OR_EOL(ch) && !is_FLOW_INDICATOR(ch)) {
-      ch = state.input.charCodeAt(++state.position);
-    }
-    if (state.position === _position) {
-      throwError(state, "name of an alias node must contain at least one character");
-    }
-    alias = state.input.slice(_position, state.position);
-    if (!_hasOwnProperty.call(state.anchorMap, alias)) {
-      throwError(state, 'unidentified alias "' + alias + '"');
-    }
-    state.result = state.anchorMap[alias];
-    skipSeparationSpace(state, true, -1);
-    return true;
-  }
-  function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact) {
-    var allowBlockStyles, allowBlockScalars, allowBlockCollections, indentStatus = 1, atNewLine = false, hasContent = false, typeIndex, typeQuantity, type, flowIndent, blockIndent;
-    if (state.listener !== null) {
-      state.listener("open", state);
-    }
-    state.tag = null;
-    state.anchor = null;
-    state.kind = null;
-    state.result = null;
-    allowBlockStyles = allowBlockScalars = allowBlockCollections = CONTEXT_BLOCK_OUT === nodeContext || CONTEXT_BLOCK_IN === nodeContext;
-    if (allowToSeek) {
-      if (skipSeparationSpace(state, true, -1)) {
-        atNewLine = true;
-        if (state.lineIndent > parentIndent) {
-          indentStatus = 1;
-        } else if (state.lineIndent === parentIndent) {
-          indentStatus = 0;
-        } else if (state.lineIndent < parentIndent) {
-          indentStatus = -1;
-        }
-      }
-    }
-    if (indentStatus === 1) {
-      while (readTagProperty(state) || readAnchorProperty(state)) {
-        if (skipSeparationSpace(state, true, -1)) {
-          atNewLine = true;
-          allowBlockCollections = allowBlockStyles;
-          if (state.lineIndent > parentIndent) {
-            indentStatus = 1;
-          } else if (state.lineIndent === parentIndent) {
-            indentStatus = 0;
-          } else if (state.lineIndent < parentIndent) {
-            indentStatus = -1;
-          }
-        } else {
-          allowBlockCollections = false;
-        }
-      }
-    }
-    if (allowBlockCollections) {
-      allowBlockCollections = atNewLine || allowCompact;
-    }
-    if (indentStatus === 1 || CONTEXT_BLOCK_OUT === nodeContext) {
-      if (CONTEXT_FLOW_IN === nodeContext || CONTEXT_FLOW_OUT === nodeContext) {
-        flowIndent = parentIndent;
-      } else {
-        flowIndent = parentIndent + 1;
-      }
-      blockIndent = state.position - state.lineStart;
-      if (indentStatus === 1) {
-        if (allowBlockCollections && (readBlockSequence(state, blockIndent) || readBlockMapping(state, blockIndent, flowIndent)) || readFlowCollection(state, flowIndent)) {
-          hasContent = true;
-        } else {
-          if (allowBlockScalars && readBlockScalar(state, flowIndent) || readSingleQuotedScalar(state, flowIndent) || readDoubleQuotedScalar(state, flowIndent)) {
-            hasContent = true;
-          } else if (readAlias(state)) {
-            hasContent = true;
-            if (state.tag !== null || state.anchor !== null) {
-              throwError(state, "alias node should not have any properties");
-            }
-          } else if (readPlainScalar(state, flowIndent, CONTEXT_FLOW_IN === nodeContext)) {
-            hasContent = true;
-            if (state.tag === null) {
-              state.tag = "?";
-            }
-          }
-          if (state.anchor !== null) {
-            state.anchorMap[state.anchor] = state.result;
-          }
-        }
-      } else if (indentStatus === 0) {
-        hasContent = allowBlockCollections && readBlockSequence(state, blockIndent);
-      }
-    }
-    if (state.tag !== null && state.tag !== "!") {
-      if (state.tag === "?") {
-        if (state.result !== null && state.kind !== "scalar") {
-          throwError(state, 'unacceptable node kind for !<?> tag; it should be "scalar", not "' + state.kind + '"');
-        }
-        for (typeIndex = 0, typeQuantity = state.implicitTypes.length;typeIndex < typeQuantity; typeIndex += 1) {
-          type = state.implicitTypes[typeIndex];
-          if (type.resolve(state.result)) {
-            state.result = type.construct(state.result);
-            state.tag = type.tag;
-            if (state.anchor !== null) {
-              state.anchorMap[state.anchor] = state.result;
-            }
-            break;
-          }
-        }
-      } else if (_hasOwnProperty.call(state.typeMap[state.kind || "fallback"], state.tag)) {
-        type = state.typeMap[state.kind || "fallback"][state.tag];
-        if (state.result !== null && type.kind !== state.kind) {
-          throwError(state, "unacceptable node kind for !<" + state.tag + '> tag; it should be "' + type.kind + '", not "' + state.kind + '"');
-        }
-        if (!type.resolve(state.result)) {
-          throwError(state, "cannot resolve a node with !<" + state.tag + "> explicit tag");
-        } else {
-          state.result = type.construct(state.result);
-          if (state.anchor !== null) {
-            state.anchorMap[state.anchor] = state.result;
-          }
-        }
-      } else {
-        throwError(state, "unknown tag !<" + state.tag + ">");
-      }
-    }
-    if (state.listener !== null) {
-      state.listener("close", state);
-    }
-    return state.tag !== null || state.anchor !== null || hasContent;
-  }
-  function readDocument(state) {
-    var documentStart = state.position, _position, directiveName, directiveArgs, hasDirectives = false, ch;
-    state.version = null;
-    state.checkLineBreaks = state.legacy;
-    state.tagMap = {};
-    state.anchorMap = {};
-    while ((ch = state.input.charCodeAt(state.position)) !== 0) {
-      skipSeparationSpace(state, true, -1);
-      ch = state.input.charCodeAt(state.position);
-      if (state.lineIndent > 0 || ch !== 37) {
-        break;
-      }
-      hasDirectives = true;
-      ch = state.input.charCodeAt(++state.position);
-      _position = state.position;
-      while (ch !== 0 && !is_WS_OR_EOL(ch)) {
-        ch = state.input.charCodeAt(++state.position);
-      }
-      directiveName = state.input.slice(_position, state.position);
-      directiveArgs = [];
-      if (directiveName.length < 1) {
-        throwError(state, "directive name must not be less than one character in length");
-      }
-      while (ch !== 0) {
-        while (is_WHITE_SPACE(ch)) {
-          ch = state.input.charCodeAt(++state.position);
-        }
-        if (ch === 35) {
-          do {
-            ch = state.input.charCodeAt(++state.position);
-          } while (ch !== 0 && !is_EOL(ch));
-          break;
-        }
-        if (is_EOL(ch))
-          break;
-        _position = state.position;
-        while (ch !== 0 && !is_WS_OR_EOL(ch)) {
-          ch = state.input.charCodeAt(++state.position);
-        }
-        directiveArgs.push(state.input.slice(_position, state.position));
-      }
-      if (ch !== 0)
-        readLineBreak(state);
-      if (_hasOwnProperty.call(directiveHandlers, directiveName)) {
-        directiveHandlers[directiveName](state, directiveName, directiveArgs);
-      } else {
-        throwWarning(state, 'unknown document directive "' + directiveName + '"');
-      }
-    }
-    skipSeparationSpace(state, true, -1);
-    if (state.lineIndent === 0 && state.input.charCodeAt(state.position) === 45 && state.input.charCodeAt(state.position + 1) === 45 && state.input.charCodeAt(state.position + 2) === 45) {
-      state.position += 3;
-      skipSeparationSpace(state, true, -1);
-    } else if (hasDirectives) {
-      throwError(state, "directives end mark is expected");
-    }
-    composeNode(state, state.lineIndent - 1, CONTEXT_BLOCK_OUT, false, true);
-    skipSeparationSpace(state, true, -1);
-    if (state.checkLineBreaks && PATTERN_NON_ASCII_LINE_BREAKS.test(state.input.slice(documentStart, state.position))) {
-      throwWarning(state, "non-ASCII line breaks are interpreted as content");
-    }
-    state.documents.push(state.result);
-    if (state.position === state.lineStart && testDocumentSeparator(state)) {
-      if (state.input.charCodeAt(state.position) === 46) {
-        state.position += 3;
-        skipSeparationSpace(state, true, -1);
-      }
-      return;
-    }
-    if (state.position < state.length - 1) {
-      throwError(state, "end of the stream or a document separator is expected");
-    } else {
-      return;
-    }
-  }
-  function loadDocuments(input, options) {
-    input = String(input);
-    options = options || {};
-    if (input.length !== 0) {
-      if (input.charCodeAt(input.length - 1) !== 10 && input.charCodeAt(input.length - 1) !== 13) {
-        input += `
-`;
-      }
-      if (input.charCodeAt(0) === 65279) {
-        input = input.slice(1);
-      }
-    }
-    var state = new State(input, options);
-    var nullpos = input.indexOf("\x00");
-    if (nullpos !== -1) {
-      state.position = nullpos;
-      throwError(state, "null byte is not allowed in input");
-    }
-    state.input += "\x00";
-    while (state.input.charCodeAt(state.position) === 32) {
-      state.lineIndent += 1;
-      state.position += 1;
-    }
-    while (state.position < state.length - 1) {
-      readDocument(state);
-    }
-    return state.documents;
-  }
-  function loadAll(input, iterator, options) {
-    if (iterator !== null && typeof iterator === "object" && typeof options === "undefined") {
-      options = iterator;
-      iterator = null;
-    }
-    var documents = loadDocuments(input, options);
-    if (typeof iterator !== "function") {
-      return documents;
-    }
-    for (var index = 0, length = documents.length;index < length; index += 1) {
-      iterator(documents[index]);
-    }
-  }
-  function load(input, options) {
-    var documents = loadDocuments(input, options);
-    if (documents.length === 0) {
-      return;
-    } else if (documents.length === 1) {
-      return documents[0];
-    }
-    throw new YAMLException("expected a single document in the stream, but found more");
-  }
-  function safeLoadAll(input, iterator, options) {
-    if (typeof iterator === "object" && iterator !== null && typeof options === "undefined") {
-      options = iterator;
-      iterator = null;
-    }
-    return loadAll(input, iterator, common.extend({ schema: DEFAULT_SAFE_SCHEMA }, options));
-  }
-  function safeLoad(input, options) {
-    return load(input, common.extend({ schema: DEFAULT_SAFE_SCHEMA }, options));
-  }
-  exports.loadAll = loadAll;
-  exports.load = load;
-  exports.safeLoadAll = safeLoadAll;
-  exports.safeLoad = safeLoad;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml/dumper.js
-var require_dumper = __commonJS((exports, module) => {
-  var common = require_common2();
-  var YAMLException = require_exception();
-  var DEFAULT_FULL_SCHEMA = require_default_full();
-  var DEFAULT_SAFE_SCHEMA = require_default_safe();
-  var _toString = Object.prototype.toString;
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-  var CHAR_TAB = 9;
-  var CHAR_LINE_FEED = 10;
-  var CHAR_CARRIAGE_RETURN = 13;
-  var CHAR_SPACE = 32;
-  var CHAR_EXCLAMATION = 33;
-  var CHAR_DOUBLE_QUOTE = 34;
-  var CHAR_SHARP = 35;
-  var CHAR_PERCENT = 37;
-  var CHAR_AMPERSAND = 38;
-  var CHAR_SINGLE_QUOTE = 39;
-  var CHAR_ASTERISK = 42;
-  var CHAR_COMMA = 44;
-  var CHAR_MINUS = 45;
-  var CHAR_COLON = 58;
-  var CHAR_EQUALS = 61;
-  var CHAR_GREATER_THAN = 62;
-  var CHAR_QUESTION = 63;
-  var CHAR_COMMERCIAL_AT = 64;
-  var CHAR_LEFT_SQUARE_BRACKET = 91;
-  var CHAR_RIGHT_SQUARE_BRACKET = 93;
-  var CHAR_GRAVE_ACCENT = 96;
-  var CHAR_LEFT_CURLY_BRACKET = 123;
-  var CHAR_VERTICAL_LINE = 124;
-  var CHAR_RIGHT_CURLY_BRACKET = 125;
-  var ESCAPE_SEQUENCES = {};
-  ESCAPE_SEQUENCES[0] = "\\0";
-  ESCAPE_SEQUENCES[7] = "\\a";
-  ESCAPE_SEQUENCES[8] = "\\b";
-  ESCAPE_SEQUENCES[9] = "\\t";
-  ESCAPE_SEQUENCES[10] = "\\n";
-  ESCAPE_SEQUENCES[11] = "\\v";
-  ESCAPE_SEQUENCES[12] = "\\f";
-  ESCAPE_SEQUENCES[13] = "\\r";
-  ESCAPE_SEQUENCES[27] = "\\e";
-  ESCAPE_SEQUENCES[34] = "\\\"";
-  ESCAPE_SEQUENCES[92] = "\\\\";
-  ESCAPE_SEQUENCES[133] = "\\N";
-  ESCAPE_SEQUENCES[160] = "\\_";
-  ESCAPE_SEQUENCES[8232] = "\\L";
-  ESCAPE_SEQUENCES[8233] = "\\P";
-  var DEPRECATED_BOOLEANS_SYNTAX = [
-    "y",
-    "Y",
-    "yes",
-    "Yes",
-    "YES",
-    "on",
-    "On",
-    "ON",
-    "n",
-    "N",
-    "no",
-    "No",
-    "NO",
-    "off",
-    "Off",
-    "OFF"
-  ];
-  function compileStyleMap(schema, map) {
-    var result, keys, index, length, tag, style, type;
-    if (map === null)
-      return {};
-    result = {};
-    keys = Object.keys(map);
-    for (index = 0, length = keys.length;index < length; index += 1) {
-      tag = keys[index];
-      style = String(map[tag]);
-      if (tag.slice(0, 2) === "!!") {
-        tag = "tag:yaml.org,2002:" + tag.slice(2);
-      }
-      type = schema.compiledTypeMap["fallback"][tag];
-      if (type && _hasOwnProperty.call(type.styleAliases, style)) {
-        style = type.styleAliases[style];
-      }
-      result[tag] = style;
-    }
-    return result;
-  }
-  function encodeHex(character) {
-    var string, handle, length;
-    string = character.toString(16).toUpperCase();
-    if (character <= 255) {
-      handle = "x";
-      length = 2;
-    } else if (character <= 65535) {
-      handle = "u";
-      length = 4;
-    } else if (character <= 4294967295) {
-      handle = "U";
-      length = 8;
-    } else {
-      throw new YAMLException("code point within a string may not be greater than 0xFFFFFFFF");
-    }
-    return "\\" + handle + common.repeat("0", length - string.length) + string;
-  }
-  function State(options) {
-    this.schema = options["schema"] || DEFAULT_FULL_SCHEMA;
-    this.indent = Math.max(1, options["indent"] || 2);
-    this.noArrayIndent = options["noArrayIndent"] || false;
-    this.skipInvalid = options["skipInvalid"] || false;
-    this.flowLevel = common.isNothing(options["flowLevel"]) ? -1 : options["flowLevel"];
-    this.styleMap = compileStyleMap(this.schema, options["styles"] || null);
-    this.sortKeys = options["sortKeys"] || false;
-    this.lineWidth = options["lineWidth"] || 80;
-    this.noRefs = options["noRefs"] || false;
-    this.noCompatMode = options["noCompatMode"] || false;
-    this.condenseFlow = options["condenseFlow"] || false;
-    this.implicitTypes = this.schema.compiledImplicit;
-    this.explicitTypes = this.schema.compiledExplicit;
-    this.tag = null;
-    this.result = "";
-    this.duplicates = [];
-    this.usedDuplicates = null;
-  }
-  function indentString(string, spaces) {
-    var ind = common.repeat(" ", spaces), position = 0, next = -1, result = "", line, length = string.length;
-    while (position < length) {
-      next = string.indexOf(`
-`, position);
-      if (next === -1) {
-        line = string.slice(position);
-        position = length;
-      } else {
-        line = string.slice(position, next + 1);
-        position = next + 1;
-      }
-      if (line.length && line !== `
-`)
-        result += ind;
-      result += line;
-    }
-    return result;
-  }
-  function generateNextLine(state, level) {
-    return `
-` + common.repeat(" ", state.indent * level);
-  }
-  function testImplicitResolving(state, str) {
-    var index, length, type;
-    for (index = 0, length = state.implicitTypes.length;index < length; index += 1) {
-      type = state.implicitTypes[index];
-      if (type.resolve(str)) {
-        return true;
-      }
-    }
-    return false;
-  }
-  function isWhitespace(c) {
-    return c === CHAR_SPACE || c === CHAR_TAB;
-  }
-  function isPrintable(c) {
-    return 32 <= c && c <= 126 || 161 <= c && c <= 55295 && c !== 8232 && c !== 8233 || 57344 <= c && c <= 65533 && c !== 65279 || 65536 <= c && c <= 1114111;
-  }
-  function isNsChar(c) {
-    return isPrintable(c) && !isWhitespace(c) && c !== 65279 && c !== CHAR_CARRIAGE_RETURN && c !== CHAR_LINE_FEED;
-  }
-  function isPlainSafe(c, prev) {
-    return isPrintable(c) && c !== 65279 && c !== CHAR_COMMA && c !== CHAR_LEFT_SQUARE_BRACKET && c !== CHAR_RIGHT_SQUARE_BRACKET && c !== CHAR_LEFT_CURLY_BRACKET && c !== CHAR_RIGHT_CURLY_BRACKET && c !== CHAR_COLON && (c !== CHAR_SHARP || prev && isNsChar(prev));
-  }
-  function isPlainSafeFirst(c) {
-    return isPrintable(c) && c !== 65279 && !isWhitespace(c) && c !== CHAR_MINUS && c !== CHAR_QUESTION && c !== CHAR_COLON && c !== CHAR_COMMA && c !== CHAR_LEFT_SQUARE_BRACKET && c !== CHAR_RIGHT_SQUARE_BRACKET && c !== CHAR_LEFT_CURLY_BRACKET && c !== CHAR_RIGHT_CURLY_BRACKET && c !== CHAR_SHARP && c !== CHAR_AMPERSAND && c !== CHAR_ASTERISK && c !== CHAR_EXCLAMATION && c !== CHAR_VERTICAL_LINE && c !== CHAR_EQUALS && c !== CHAR_GREATER_THAN && c !== CHAR_SINGLE_QUOTE && c !== CHAR_DOUBLE_QUOTE && c !== CHAR_PERCENT && c !== CHAR_COMMERCIAL_AT && c !== CHAR_GRAVE_ACCENT;
-  }
-  function needIndentIndicator(string) {
-    var leadingSpaceRe = /^\n* /;
-    return leadingSpaceRe.test(string);
-  }
-  var STYLE_PLAIN = 1;
-  var STYLE_SINGLE = 2;
-  var STYLE_LITERAL = 3;
-  var STYLE_FOLDED = 4;
-  var STYLE_DOUBLE = 5;
-  function chooseScalarStyle(string, singleLineOnly, indentPerLevel, lineWidth, testAmbiguousType) {
-    var i;
-    var char, prev_char;
-    var hasLineBreak = false;
-    var hasFoldableLine = false;
-    var shouldTrackWidth = lineWidth !== -1;
-    var previousLineBreak = -1;
-    var plain = isPlainSafeFirst(string.charCodeAt(0)) && !isWhitespace(string.charCodeAt(string.length - 1));
-    if (singleLineOnly) {
-      for (i = 0;i < string.length; i++) {
-        char = string.charCodeAt(i);
-        if (!isPrintable(char)) {
-          return STYLE_DOUBLE;
-        }
-        prev_char = i > 0 ? string.charCodeAt(i - 1) : null;
-        plain = plain && isPlainSafe(char, prev_char);
-      }
-    } else {
-      for (i = 0;i < string.length; i++) {
-        char = string.charCodeAt(i);
-        if (char === CHAR_LINE_FEED) {
-          hasLineBreak = true;
-          if (shouldTrackWidth) {
-            hasFoldableLine = hasFoldableLine || i - previousLineBreak - 1 > lineWidth && string[previousLineBreak + 1] !== " ";
-            previousLineBreak = i;
-          }
-        } else if (!isPrintable(char)) {
-          return STYLE_DOUBLE;
-        }
-        prev_char = i > 0 ? string.charCodeAt(i - 1) : null;
-        plain = plain && isPlainSafe(char, prev_char);
-      }
-      hasFoldableLine = hasFoldableLine || shouldTrackWidth && (i - previousLineBreak - 1 > lineWidth && string[previousLineBreak + 1] !== " ");
-    }
-    if (!hasLineBreak && !hasFoldableLine) {
-      return plain && !testAmbiguousType(string) ? STYLE_PLAIN : STYLE_SINGLE;
-    }
-    if (indentPerLevel > 9 && needIndentIndicator(string)) {
-      return STYLE_DOUBLE;
-    }
-    return hasFoldableLine ? STYLE_FOLDED : STYLE_LITERAL;
-  }
-  function writeScalar(state, string, level, iskey) {
-    state.dump = function() {
-      if (string.length === 0) {
-        return "''";
-      }
-      if (!state.noCompatMode && DEPRECATED_BOOLEANS_SYNTAX.indexOf(string) !== -1) {
-        return "'" + string + "'";
-      }
-      var indent = state.indent * Math.max(1, level);
-      var lineWidth = state.lineWidth === -1 ? -1 : Math.max(Math.min(state.lineWidth, 40), state.lineWidth - indent);
-      var singleLineOnly = iskey || state.flowLevel > -1 && level >= state.flowLevel;
-      function testAmbiguity(string2) {
-        return testImplicitResolving(state, string2);
-      }
-      switch (chooseScalarStyle(string, singleLineOnly, state.indent, lineWidth, testAmbiguity)) {
-        case STYLE_PLAIN:
-          return string;
-        case STYLE_SINGLE:
-          return "'" + string.replace(/'/g, "''") + "'";
-        case STYLE_LITERAL:
-          return "|" + blockHeader(string, state.indent) + dropEndingNewline(indentString(string, indent));
-        case STYLE_FOLDED:
-          return ">" + blockHeader(string, state.indent) + dropEndingNewline(indentString(foldString(string, lineWidth), indent));
-        case STYLE_DOUBLE:
-          return '"' + escapeString(string, lineWidth) + '"';
-        default:
-          throw new YAMLException("impossible error: invalid scalar style");
-      }
-    }();
-  }
-  function blockHeader(string, indentPerLevel) {
-    var indentIndicator = needIndentIndicator(string) ? String(indentPerLevel) : "";
-    var clip = string[string.length - 1] === `
-`;
-    var keep = clip && (string[string.length - 2] === `
-` || string === `
-`);
-    var chomp = keep ? "+" : clip ? "" : "-";
-    return indentIndicator + chomp + `
-`;
-  }
-  function dropEndingNewline(string) {
-    return string[string.length - 1] === `
-` ? string.slice(0, -1) : string;
-  }
-  function foldString(string, width) {
-    var lineRe = /(\n+)([^\n]*)/g;
-    var result = function() {
-      var nextLF = string.indexOf(`
-`);
-      nextLF = nextLF !== -1 ? nextLF : string.length;
-      lineRe.lastIndex = nextLF;
-      return foldLine(string.slice(0, nextLF), width);
-    }();
-    var prevMoreIndented = string[0] === `
-` || string[0] === " ";
-    var moreIndented;
-    var match;
-    while (match = lineRe.exec(string)) {
-      var prefix = match[1], line = match[2];
-      moreIndented = line[0] === " ";
-      result += prefix + (!prevMoreIndented && !moreIndented && line !== "" ? `
-` : "") + foldLine(line, width);
-      prevMoreIndented = moreIndented;
-    }
-    return result;
-  }
-  function foldLine(line, width) {
-    if (line === "" || line[0] === " ")
-      return line;
-    var breakRe = / [^ ]/g;
-    var match;
-    var start = 0, end, curr = 0, next = 0;
-    var result = "";
-    while (match = breakRe.exec(line)) {
-      next = match.index;
-      if (next - start > width) {
-        end = curr > start ? curr : next;
-        result += `
-` + line.slice(start, end);
-        start = end + 1;
-      }
-      curr = next;
-    }
-    result += `
-`;
-    if (line.length - start > width && curr > start) {
-      result += line.slice(start, curr) + `
-` + line.slice(curr + 1);
-    } else {
-      result += line.slice(start);
-    }
-    return result.slice(1);
-  }
-  function escapeString(string) {
-    var result = "";
-    var char, nextChar;
-    var escapeSeq;
-    for (var i = 0;i < string.length; i++) {
-      char = string.charCodeAt(i);
-      if (char >= 55296 && char <= 56319) {
-        nextChar = string.charCodeAt(i + 1);
-        if (nextChar >= 56320 && nextChar <= 57343) {
-          result += encodeHex((char - 55296) * 1024 + nextChar - 56320 + 65536);
-          i++;
-          continue;
-        }
-      }
-      escapeSeq = ESCAPE_SEQUENCES[char];
-      result += !escapeSeq && isPrintable(char) ? string[i] : escapeSeq || encodeHex(char);
-    }
-    return result;
-  }
-  function writeFlowSequence(state, level, object) {
-    var _result = "", _tag = state.tag, index, length;
-    for (index = 0, length = object.length;index < length; index += 1) {
-      if (writeNode(state, level, object[index], false, false)) {
-        if (index !== 0)
-          _result += "," + (!state.condenseFlow ? " " : "");
-        _result += state.dump;
-      }
-    }
-    state.tag = _tag;
-    state.dump = "[" + _result + "]";
-  }
-  function writeBlockSequence(state, level, object, compact) {
-    var _result = "", _tag = state.tag, index, length;
-    for (index = 0, length = object.length;index < length; index += 1) {
-      if (writeNode(state, level + 1, object[index], true, true)) {
-        if (!compact || index !== 0) {
-          _result += generateNextLine(state, level);
-        }
-        if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
-          _result += "-";
-        } else {
-          _result += "- ";
-        }
-        _result += state.dump;
-      }
-    }
-    state.tag = _tag;
-    state.dump = _result || "[]";
-  }
-  function writeFlowMapping(state, level, object) {
-    var _result = "", _tag = state.tag, objectKeyList = Object.keys(object), index, length, objectKey, objectValue, pairBuffer;
-    for (index = 0, length = objectKeyList.length;index < length; index += 1) {
-      pairBuffer = "";
-      if (index !== 0)
-        pairBuffer += ", ";
-      if (state.condenseFlow)
-        pairBuffer += '"';
-      objectKey = objectKeyList[index];
-      objectValue = object[objectKey];
-      if (!writeNode(state, level, objectKey, false, false)) {
-        continue;
-      }
-      if (state.dump.length > 1024)
-        pairBuffer += "? ";
-      pairBuffer += state.dump + (state.condenseFlow ? '"' : "") + ":" + (state.condenseFlow ? "" : " ");
-      if (!writeNode(state, level, objectValue, false, false)) {
-        continue;
-      }
-      pairBuffer += state.dump;
-      _result += pairBuffer;
-    }
-    state.tag = _tag;
-    state.dump = "{" + _result + "}";
-  }
-  function writeBlockMapping(state, level, object, compact) {
-    var _result = "", _tag = state.tag, objectKeyList = Object.keys(object), index, length, objectKey, objectValue, explicitPair, pairBuffer;
-    if (state.sortKeys === true) {
-      objectKeyList.sort();
-    } else if (typeof state.sortKeys === "function") {
-      objectKeyList.sort(state.sortKeys);
-    } else if (state.sortKeys) {
-      throw new YAMLException("sortKeys must be a boolean or a function");
-    }
-    for (index = 0, length = objectKeyList.length;index < length; index += 1) {
-      pairBuffer = "";
-      if (!compact || index !== 0) {
-        pairBuffer += generateNextLine(state, level);
-      }
-      objectKey = objectKeyList[index];
-      objectValue = object[objectKey];
-      if (!writeNode(state, level + 1, objectKey, true, true, true)) {
-        continue;
-      }
-      explicitPair = state.tag !== null && state.tag !== "?" || state.dump && state.dump.length > 1024;
-      if (explicitPair) {
-        if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
-          pairBuffer += "?";
-        } else {
-          pairBuffer += "? ";
-        }
-      }
-      pairBuffer += state.dump;
-      if (explicitPair) {
-        pairBuffer += generateNextLine(state, level);
-      }
-      if (!writeNode(state, level + 1, objectValue, true, explicitPair)) {
-        continue;
-      }
-      if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
-        pairBuffer += ":";
-      } else {
-        pairBuffer += ": ";
-      }
-      pairBuffer += state.dump;
-      _result += pairBuffer;
-    }
-    state.tag = _tag;
-    state.dump = _result || "{}";
-  }
-  function detectType(state, object, explicit) {
-    var _result, typeList, index, length, type, style;
-    typeList = explicit ? state.explicitTypes : state.implicitTypes;
-    for (index = 0, length = typeList.length;index < length; index += 1) {
-      type = typeList[index];
-      if ((type.instanceOf || type.predicate) && (!type.instanceOf || typeof object === "object" && object instanceof type.instanceOf) && (!type.predicate || type.predicate(object))) {
-        state.tag = explicit ? type.tag : "?";
-        if (type.represent) {
-          style = state.styleMap[type.tag] || type.defaultStyle;
-          if (_toString.call(type.represent) === "[object Function]") {
-            _result = type.represent(object, style);
-          } else if (_hasOwnProperty.call(type.represent, style)) {
-            _result = type.represent[style](object, style);
-          } else {
-            throw new YAMLException("!<" + type.tag + '> tag resolver accepts not "' + style + '" style');
-          }
-          state.dump = _result;
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-  function writeNode(state, level, object, block, compact, iskey) {
-    state.tag = null;
-    state.dump = object;
-    if (!detectType(state, object, false)) {
-      detectType(state, object, true);
-    }
-    var type = _toString.call(state.dump);
-    if (block) {
-      block = state.flowLevel < 0 || state.flowLevel > level;
-    }
-    var objectOrArray = type === "[object Object]" || type === "[object Array]", duplicateIndex, duplicate;
-    if (objectOrArray) {
-      duplicateIndex = state.duplicates.indexOf(object);
-      duplicate = duplicateIndex !== -1;
-    }
-    if (state.tag !== null && state.tag !== "?" || duplicate || state.indent !== 2 && level > 0) {
-      compact = false;
-    }
-    if (duplicate && state.usedDuplicates[duplicateIndex]) {
-      state.dump = "*ref_" + duplicateIndex;
-    } else {
-      if (objectOrArray && duplicate && !state.usedDuplicates[duplicateIndex]) {
-        state.usedDuplicates[duplicateIndex] = true;
-      }
-      if (type === "[object Object]") {
-        if (block && Object.keys(state.dump).length !== 0) {
-          writeBlockMapping(state, level, state.dump, compact);
-          if (duplicate) {
-            state.dump = "&ref_" + duplicateIndex + state.dump;
-          }
-        } else {
-          writeFlowMapping(state, level, state.dump);
-          if (duplicate) {
-            state.dump = "&ref_" + duplicateIndex + " " + state.dump;
-          }
-        }
-      } else if (type === "[object Array]") {
-        var arrayLevel = state.noArrayIndent && level > 0 ? level - 1 : level;
-        if (block && state.dump.length !== 0) {
-          writeBlockSequence(state, arrayLevel, state.dump, compact);
-          if (duplicate) {
-            state.dump = "&ref_" + duplicateIndex + state.dump;
-          }
-        } else {
-          writeFlowSequence(state, arrayLevel, state.dump);
-          if (duplicate) {
-            state.dump = "&ref_" + duplicateIndex + " " + state.dump;
-          }
-        }
-      } else if (type === "[object String]") {
-        if (state.tag !== "?") {
-          writeScalar(state, state.dump, level, iskey);
-        }
-      } else {
-        if (state.skipInvalid)
-          return false;
-        throw new YAMLException("unacceptable kind of an object to dump " + type);
-      }
-      if (state.tag !== null && state.tag !== "?") {
-        state.dump = "!<" + state.tag + "> " + state.dump;
-      }
-    }
-    return true;
-  }
-  function getDuplicateReferences(object, state) {
-    var objects = [], duplicatesIndexes = [], index, length;
-    inspectNode(object, objects, duplicatesIndexes);
-    for (index = 0, length = duplicatesIndexes.length;index < length; index += 1) {
-      state.duplicates.push(objects[duplicatesIndexes[index]]);
-    }
-    state.usedDuplicates = new Array(length);
-  }
-  function inspectNode(object, objects, duplicatesIndexes) {
-    var objectKeyList, index, length;
-    if (object !== null && typeof object === "object") {
-      index = objects.indexOf(object);
-      if (index !== -1) {
-        if (duplicatesIndexes.indexOf(index) === -1) {
-          duplicatesIndexes.push(index);
-        }
-      } else {
-        objects.push(object);
-        if (Array.isArray(object)) {
-          for (index = 0, length = object.length;index < length; index += 1) {
-            inspectNode(object[index], objects, duplicatesIndexes);
-          }
-        } else {
-          objectKeyList = Object.keys(object);
-          for (index = 0, length = objectKeyList.length;index < length; index += 1) {
-            inspectNode(object[objectKeyList[index]], objects, duplicatesIndexes);
-          }
-        }
-      }
-    }
-  }
-  function dump(input, options) {
-    options = options || {};
-    var state = new State(options);
-    if (!state.noRefs)
-      getDuplicateReferences(input, state);
-    if (writeNode(state, 0, input, true, true))
-      return state.dump + `
-`;
-    return "";
-  }
-  function safeDump(input, options) {
-    return dump(input, common.extend({ schema: DEFAULT_SAFE_SCHEMA }, options));
-  }
-  exports.dump = dump;
-  exports.safeDump = safeDump;
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/lib/js-yaml.js
-var require_js_yaml = __commonJS((exports, module) => {
-  var loader = require_loader();
-  var dumper = require_dumper();
-  function deprecated(name) {
-    return function() {
-      throw new Error("Function " + name + " is deprecated and cannot be used.");
-    };
-  }
-  exports.Type = require_type2();
-  exports.Schema = require_schema();
-  exports.FAILSAFE_SCHEMA = require_failsafe();
-  exports.JSON_SCHEMA = require_json();
-  exports.CORE_SCHEMA = require_core();
-  exports.DEFAULT_SAFE_SCHEMA = require_default_safe();
-  exports.DEFAULT_FULL_SCHEMA = require_default_full();
-  exports.load = loader.load;
-  exports.loadAll = loader.loadAll;
-  exports.safeLoad = loader.safeLoad;
-  exports.safeLoadAll = loader.safeLoadAll;
-  exports.dump = dumper.dump;
-  exports.safeDump = dumper.safeDump;
-  exports.YAMLException = require_exception();
-  exports.MINIMAL_SCHEMA = require_failsafe();
-  exports.SAFE_SCHEMA = require_default_safe();
-  exports.DEFAULT_SCHEMA = require_default_full();
-  exports.scan = deprecated("scan");
-  exports.parse = deprecated("parse");
-  exports.compose = deprecated("compose");
-  exports.addConstructor = deprecated("addConstructor");
-});
-
-// node_modules/xmlbuilder2/node_modules/js-yaml/index.js
-var require_js_yaml2 = __commonJS((exports, module) => {
-  var yaml = require_js_yaml();
-  module.exports = yaml;
-});
-
-// node_modules/xmlbuilder2/lib/readers/YAMLReader.js
-var require_YAMLReader = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var ObjectReader_1 = require_ObjectReader();
-  var BaseReader_1 = require_BaseReader();
-  var js_yaml_1 = require_js_yaml2();
-  var YAMLReader = function(_super) {
-    __extends(YAMLReader2, _super);
-    function YAMLReader2() {
-      return _super !== null && _super.apply(this, arguments) || this;
-    }
-    YAMLReader2.prototype._parse = function(node, str) {
-      var result = js_yaml_1.safeLoad(str);
-      if (result === undefined) {
-        throw new Error("Unable to parse YAML document.");
-      }
-      return new ObjectReader_1.ObjectReader(this._builderOptions).parse(node, result);
-    };
-    return YAMLReader2;
-  }(BaseReader_1.BaseReader);
-  exports.YAMLReader = YAMLReader;
-});
-
-// node_modules/xmlbuilder2/lib/readers/index.js
-var require_readers = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var XMLReader_1 = require_XMLReader();
-  exports.XMLReader = XMLReader_1.XMLReader;
-  var ObjectReader_1 = require_ObjectReader();
-  exports.ObjectReader = ObjectReader_1.ObjectReader;
-  var JSONReader_1 = require_JSONReader();
-  exports.JSONReader = JSONReader_1.JSONReader;
-  var YAMLReader_1 = require_YAMLReader();
-  exports.YAMLReader = YAMLReader_1.YAMLReader;
-});
-
 // node_modules/xmlbuilder2/lib/builder/XMLBuilderImpl.js
 var require_XMLBuilderImpl = __commonJS((exports) => {
-  var __read = exports && exports.__read || function(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m)
-      return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-      while ((n === undefined || n-- > 0) && !(r = i.next()).done)
-        ar.push(r.value);
-    } catch (error) {
-      e = { error };
-    } finally {
-      try {
-        if (r && !r.done && (m = i["return"]))
-          m.call(i);
-      } finally {
-        if (e)
-          throw e.error;
-      }
-    }
-    return ar;
-  };
-  var __values = exports && exports.__values || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m)
-      return m.call(o);
-    if (o && typeof o.length === "number")
-      return {
-        next: function() {
-          if (o && i >= o.length)
-            o = undefined;
-          return { value: o && o[i++], done: !o };
-        }
-      };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-  };
   Object.defineProperty(exports, "__esModule", { value: true });
   var interfaces_1 = require_interfaces();
   var util_1 = require_lib8();
@@ -40207,83 +37199,150 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
   var algorithm_1 = require_algorithm();
   var dom_1 = require_dom2();
   var infra_1 = require_lib9();
-  var readers_1 = require_readers();
-  var XMLBuilderImpl = function() {
-    function XMLBuilderImpl2(domNode) {
+
+  class XMLBuilderImpl {
+    constructor(domNode) {
       this._domNode = domNode;
     }
-    Object.defineProperty(XMLBuilderImpl2.prototype, "node", {
-      get: function() {
-        return this._domNode;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(XMLBuilderImpl2.prototype, "options", {
-      get: function() {
-        return this._options;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    XMLBuilderImpl2.prototype.set = function(options) {
+    get node() {
+      return this._domNode;
+    }
+    set(options) {
       this._options = util_1.applyDefaults(util_1.applyDefaults(this._options, options, true), interfaces_1.DefaultBuilderOptions);
       return this;
-    };
-    XMLBuilderImpl2.prototype.ele = function(p1, p2, p3) {
-      var _a, _b, _c;
-      var namespace;
-      var name;
-      var attributes;
-      if (util_1.isObject(p1)) {
-        return new readers_1.ObjectReader(this._options).parse(this, p1);
-      } else if (p1 !== null && /^\s*</.test(p1)) {
-        return new readers_1.XMLReader(this._options).parse(this, p1);
-      } else if (p1 !== null && /^\s*[\{\[]/.test(p1)) {
-        return new readers_1.JSONReader(this._options).parse(this, p1);
-      } else if (p1 !== null && /^(\s*|(#.*)|(%.*))*---/.test(p1)) {
-        return new readers_1.YAMLReader(this._options).parse(this, p1);
-      }
-      if ((p1 === null || util_1.isString(p1)) && util_1.isString(p2)) {
-        _a = __read([p1, p2, p3], 3), namespace = _a[0], name = _a[1], attributes = _a[2];
+    }
+    ele(p1, p2, p3) {
+      let namespace;
+      let name;
+      let attributes;
+      let lastChild = null;
+      if (util_1.isString(p1) && /^\s*</.test(p1)) {
+        const contents = "<TEMP_ROOT>" + p1 + "</TEMP_ROOT>";
+        const domParser = dom_1.createParser();
+        const doc = domParser.parseFromString(dom_1.sanitizeInput(contents, this._options.invalidCharReplacement), "text/xml");
+        if (doc.documentElement === null) {
+          throw new Error("Document element is null.");
+        }
+        dom_1.throwIfParserError(doc);
+        for (const child of doc.documentElement.childNodes) {
+          const newChild = doc.importNode(child, true);
+          lastChild = new XMLBuilderImpl(newChild);
+          this._domNode.appendChild(newChild);
+        }
+        if (lastChild === null) {
+          throw new Error("Could not create any elements with: " + p1.toString() + ". " + this._debugInfo());
+        }
+        return lastChild;
+      } else if (util_1.isString(p1) && /^\s*[\{\[]/.test(p1)) {
+        const obj = JSON.parse(p1);
+        return this.ele(obj);
+      } else if (util_1.isObject(p1)) {
+        [namespace, name, attributes] = [undefined, p1, undefined];
+      } else if ((p1 === null || util_1.isString(p1)) && util_1.isString(p2)) {
+        [namespace, name, attributes] = [p1, p2, p3];
       } else if (p1 !== null) {
-        _b = __read([undefined, p1, util_1.isObject(p2) ? p2 : undefined], 3), namespace = _b[0], name = _b[1], attributes = _b[2];
+        [namespace, name, attributes] = [undefined, p1, util_1.isObject(p2) ? p2 : undefined];
       } else {
         throw new Error("Element name cannot be null. " + this._debugInfo());
       }
       if (attributes) {
         attributes = util_1.getValue(attributes);
       }
-      _c = __read(this._extractNamespace(dom_1.sanitizeInput(namespace, this._options.invalidCharReplacement), dom_1.sanitizeInput(name, this._options.invalidCharReplacement), true), 2), namespace = _c[0], name = _c[1];
-      if (namespace === undefined) {
-        var _d = __read(algorithm_1.namespace_extractQName(name), 1), prefix = _d[0];
-        namespace = this.node.lookupNamespaceURI(prefix);
+      if (util_1.isFunction(name)) {
+        lastChild = this.ele(name.apply(this));
+      } else if (util_1.isArray(name) || util_1.isSet(name)) {
+        util_1.forEachArray(name, (item) => lastChild = this.ele(item), this);
+      } else if (util_1.isMap(name) || util_1.isObject(name)) {
+        util_1.forEachObject(name, (key, val) => {
+          if (util_1.isFunction(val)) {
+            val = val.apply(this);
+          }
+          if (!this._options.ignoreConverters && key.indexOf(this._options.convert.att) === 0) {
+            if (key === this._options.convert.att) {
+              lastChild = this.att(val);
+            } else {
+              lastChild = this.att(key.substr(this._options.convert.att.length), val);
+            }
+          } else if (!this._options.ignoreConverters && key.indexOf(this._options.convert.text) === 0) {
+            if (util_1.isMap(val) || util_1.isObject(val)) {
+              lastChild = this.ele(val);
+            } else {
+              lastChild = this.txt(val);
+            }
+          } else if (!this._options.ignoreConverters && key.indexOf(this._options.convert.cdata) === 0) {
+            if (util_1.isArray(val) || util_1.isSet(val)) {
+              util_1.forEachArray(val, (item) => lastChild = this.dat(item), this);
+            } else {
+              lastChild = this.dat(val);
+            }
+          } else if (!this._options.ignoreConverters && key.indexOf(this._options.convert.comment) === 0) {
+            if (util_1.isArray(val) || util_1.isSet(val)) {
+              util_1.forEachArray(val, (item) => lastChild = this.com(item), this);
+            } else {
+              lastChild = this.com(val);
+            }
+          } else if (!this._options.ignoreConverters && key.indexOf(this._options.convert.ins) === 0) {
+            if (util_1.isString(val)) {
+              const insIndex = val.indexOf(" ");
+              const insTarget = insIndex === -1 ? val : val.substr(0, insIndex);
+              const insValue = insIndex === -1 ? "" : val.substr(insIndex + 1);
+              lastChild = this.ins(insTarget, insValue);
+            } else {
+              lastChild = this.ins(val);
+            }
+          } else if ((util_1.isArray(val) || util_1.isSet(val)) && util_1.isEmpty(val)) {
+            lastChild = this._dummy();
+          } else if ((util_1.isMap(val) || util_1.isObject(val)) && util_1.isEmpty(val)) {
+            lastChild = this.ele(key);
+          } else if (!this._options.keepNullNodes && val == null) {
+            lastChild = this._dummy();
+          } else if (util_1.isArray(val) || util_1.isSet(val)) {
+            util_1.forEachArray(val, (item) => {
+              const childNode = {};
+              childNode[key] = item;
+              lastChild = this.ele(childNode);
+            }, this);
+          } else if (util_1.isMap(val) || util_1.isObject(val)) {
+            lastChild = this.ele(key);
+            lastChild.ele(val);
+          } else if (val) {
+            lastChild = this.ele(key);
+            lastChild.txt(val);
+          } else {
+            lastChild = this.ele(key);
+          }
+        }, this);
+      } else {
+        [namespace, name] = this._extractNamespace(dom_1.sanitizeInput(namespace, this._options.invalidCharReplacement), dom_1.sanitizeInput(name, this._options.invalidCharReplacement), true);
+        if (namespace === undefined) {
+          const [prefix] = algorithm_1.namespace_extractQName(name);
+          namespace = this.node.lookupNamespaceURI(prefix);
+        }
+        const childNode = namespace !== undefined && namespace !== null ? this._doc.createElementNS(namespace, name) : this._doc.createElement(name);
+        this.node.appendChild(childNode);
+        lastChild = new XMLBuilderImpl(childNode);
+        const oldDocType = this._doc.doctype;
+        if (childNode === this._doc.documentElement && oldDocType !== null) {
+          const docType = this._doc.implementation.createDocumentType(this._doc.documentElement.tagName, oldDocType.publicId, oldDocType.systemId);
+          this._doc.replaceChild(docType, oldDocType);
+        }
+        if (attributes && !util_1.isEmpty(attributes)) {
+          lastChild.att(attributes);
+        }
       }
-      var childNode = namespace !== undefined && namespace !== null ? this._doc.createElementNS(namespace, name) : this._doc.createElement(name);
-      this.node.appendChild(childNode);
-      var builder = new XMLBuilderImpl2(childNode);
-      var oldDocType = this._doc.doctype;
-      if (childNode === this._doc.documentElement && oldDocType !== null) {
-        var docType = this._doc.implementation.createDocumentType(this._doc.documentElement.tagName, oldDocType.publicId, oldDocType.systemId);
-        this._doc.replaceChild(docType, oldDocType);
+      if (lastChild === null) {
+        throw new Error("Could not create any elements with: " + name.toString() + ". " + this._debugInfo());
       }
-      if (attributes && !util_1.isEmpty(attributes)) {
-        builder.att(attributes);
-      }
-      return builder;
-    };
-    XMLBuilderImpl2.prototype.remove = function() {
-      var parent = this.up();
+      return lastChild;
+    }
+    remove() {
+      const parent = this.up();
       parent.node.removeChild(this.node);
       return parent;
-    };
-    XMLBuilderImpl2.prototype.att = function(p1, p2, p3) {
-      var _a, _b, _c;
-      var _this = this;
+    }
+    att(p1, p2, p3) {
       if (util_1.isMap(p1) || util_1.isObject(p1)) {
-        util_1.forEachObject(p1, function(attName, attValue) {
-          return _this.att(attName, attValue);
-        }, this);
+        util_1.forEachObject(p1, (attName, attValue) => this.att(attName, attValue), this);
         return this;
       }
       if (p1 !== undefined && p1 !== null)
@@ -40292,13 +37351,13 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
         p2 = util_1.getValue(p2 + "");
       if (p3 !== undefined && p3 !== null)
         p3 = util_1.getValue(p3 + "");
-      var namespace;
-      var name;
-      var value;
+      let namespace;
+      let name;
+      let value;
       if ((p1 === null || util_1.isString(p1)) && util_1.isString(p2) && (p3 === null || util_1.isString(p3))) {
-        _a = __read([p1, p2, p3], 3), namespace = _a[0], name = _a[1], value = _a[2];
+        [namespace, name, value] = [p1, p2, p3];
       } else if (util_1.isString(p1) && (p2 == null || util_1.isString(p2))) {
-        _b = __read([undefined, p1, p2], 3), namespace = _b[0], name = _b[1], value = _b[2];
+        [namespace, name, value] = [undefined, p1, p2];
       } else {
         throw new Error("Attribute name and value not specified. " + this._debugInfo());
       }
@@ -40310,14 +37369,14 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
       if (!util_2.Guard.isElementNode(this.node)) {
         throw new Error("An attribute can only be assigned to an element node.");
       }
-      var ele = this.node;
-      _c = __read(this._extractNamespace(namespace, name, false), 2), namespace = _c[0], name = _c[1];
+      let ele = this.node;
+      [namespace, name] = this._extractNamespace(namespace, name, false);
       name = dom_1.sanitizeInput(name, this._options.invalidCharReplacement);
       namespace = dom_1.sanitizeInput(namespace, this._options.invalidCharReplacement);
       value = dom_1.sanitizeInput(value, this._options.invalidCharReplacement);
-      var _d = __read(algorithm_1.namespace_extractQName(name), 2), prefix = _d[0], localName = _d[1];
-      var _e = __read(algorithm_1.namespace_extractQName(ele.prefix ? ele.prefix + ":" + ele.localName : ele.localName), 1), elePrefix = _e[0];
-      var eleNamespace = null;
+      const [prefix, localName] = algorithm_1.namespace_extractQName(name);
+      const [elePrefix, eleLocalName] = algorithm_1.namespace_extractQName(ele.prefix ? ele.prefix + ":" + ele.localName : ele.localName);
+      let eleNamespace = null;
       if (prefix === "xmlns") {
         namespace = infra_1.namespace.XMLNS;
         if (ele.namespaceURI === null && elePrefix === localName) {
@@ -40328,8 +37387,20 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
         eleNamespace = value;
       }
       if (eleNamespace !== null) {
-        this._updateNamespace(eleNamespace);
-        ele = this.node;
+        const newEle = algorithm_1.create_element(this._doc, eleLocalName, eleNamespace, elePrefix);
+        for (const attr of ele.attributes) {
+          newEle.setAttributeNodeNS(attr.cloneNode());
+        }
+        for (const childNode of ele.childNodes) {
+          newEle.appendChild(childNode.cloneNode());
+        }
+        const parent = ele.parentNode;
+        if (parent === null) {
+          throw new Error("Parent node is null." + this._debugInfo());
+        }
+        parent.replaceChild(newEle, ele);
+        this._domNode = newEle;
+        ele = newEle;
       }
       if (namespace !== undefined) {
         ele.setAttributeNS(namespace, name, value);
@@ -40337,9 +37408,8 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
         ele.setAttribute(name, value);
       }
       return this;
-    };
-    XMLBuilderImpl2.prototype.removeAtt = function(p1, p2) {
-      var _this = this;
+    }
+    removeAtt(p1, p2) {
       if (!util_2.Guard.isElementNode(this.node)) {
         throw new Error("An attribute can only be removed from an element node.");
       }
@@ -40347,8 +37417,8 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
       if (p2 !== undefined) {
         p2 = util_1.getValue(p2);
       }
-      var namespace;
-      var name;
+      let namespace;
+      let name;
       if (p1 !== null && p2 === undefined) {
         name = p1;
       } else if ((p1 === null || util_1.isString(p1)) && p2 !== undefined) {
@@ -40358,9 +37428,7 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
         throw new Error("Attribute namespace must be a string. " + this._debugInfo());
       }
       if (util_1.isArray(name) || util_1.isSet(name)) {
-        util_1.forEachArray(name, function(attName) {
-          return namespace === undefined ? _this.removeAtt(attName) : _this.removeAtt(namespace, attName);
-        }, this);
+        util_1.forEachArray(name, (attName) => namespace === undefined ? this.removeAtt(attName) : this.removeAtt(namespace, attName), this);
       } else if (namespace !== undefined) {
         name = dom_1.sanitizeInput(name, this._options.invalidCharReplacement);
         namespace = dom_1.sanitizeInput(namespace, this._options.invalidCharReplacement);
@@ -40370,349 +37438,233 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
         this.node.removeAttribute(name);
       }
       return this;
-    };
-    XMLBuilderImpl2.prototype.txt = function(content) {
-      if (content === null || content === undefined) {
-        if (this._options.keepNullNodes) {
-          content = "";
-        } else {
-          return this;
-        }
-      }
-      var child = this._doc.createTextNode(dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
+    }
+    txt(content) {
+      const child = this._doc.createTextNode(dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
       this.node.appendChild(child);
       return this;
-    };
-    XMLBuilderImpl2.prototype.com = function(content) {
-      if (content === null || content === undefined) {
-        if (this._options.keepNullNodes) {
-          content = "";
-        } else {
-          return this;
-        }
-      }
-      var child = this._doc.createComment(dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
+    }
+    com(content) {
+      const child = this._doc.createComment(dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
       this.node.appendChild(child);
       return this;
-    };
-    XMLBuilderImpl2.prototype.dat = function(content) {
-      if (content === null || content === undefined) {
-        if (this._options.keepNullNodes) {
-          content = "";
-        } else {
-          return this;
-        }
-      }
-      var child = this._doc.createCDATASection(dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
+    }
+    dat(content) {
+      const child = this._doc.createCDATASection(dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
       this.node.appendChild(child);
       return this;
-    };
-    XMLBuilderImpl2.prototype.ins = function(target, content) {
-      var _this = this;
-      if (content === undefined) {
-        content = "";
-      }
-      if (content === null || content === undefined) {
-        if (this._options.keepNullNodes) {
-          content = "";
-        } else {
-          return this;
-        }
-      }
+    }
+    ins(target, content = "") {
       if (util_1.isArray(target) || util_1.isSet(target)) {
-        util_1.forEachArray(target, function(item) {
+        util_1.forEachArray(target, (item) => {
           item += "";
-          var insIndex = item.indexOf(" ");
-          var insTarget = insIndex === -1 ? item : item.substr(0, insIndex);
-          var insValue = insIndex === -1 ? "" : item.substr(insIndex + 1);
-          _this.ins(insTarget, insValue);
+          const insIndex = item.indexOf(" ");
+          const insTarget = insIndex === -1 ? item : item.substr(0, insIndex);
+          const insValue = insIndex === -1 ? "" : item.substr(insIndex + 1);
+          this.ins(insTarget, insValue);
         }, this);
       } else if (util_1.isMap(target) || util_1.isObject(target)) {
-        util_1.forEachObject(target, function(insTarget, insValue) {
-          return _this.ins(insTarget, insValue);
-        }, this);
+        util_1.forEachObject(target, (insTarget, insValue) => this.ins(insTarget, insValue), this);
       } else {
-        var child = this._doc.createProcessingInstruction(dom_1.sanitizeInput(target, this._options.invalidCharReplacement), dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
+        const child = this._doc.createProcessingInstruction(dom_1.sanitizeInput(target, this._options.invalidCharReplacement), dom_1.sanitizeInput(content, this._options.invalidCharReplacement));
         this.node.appendChild(child);
       }
       return this;
-    };
-    XMLBuilderImpl2.prototype.dec = function(options) {
+    }
+    dec(options) {
       this._options.version = options.version || "1.0";
       this._options.encoding = options.encoding;
       this._options.standalone = options.standalone;
       return this;
-    };
-    XMLBuilderImpl2.prototype.dtd = function(options) {
-      var name = dom_1.sanitizeInput(options && options.name || (this._doc.documentElement ? this._doc.documentElement.tagName : "ROOT"), this._options.invalidCharReplacement);
-      var pubID = dom_1.sanitizeInput(options && options.pubID || "", this._options.invalidCharReplacement);
-      var sysID = dom_1.sanitizeInput(options && options.sysID || "", this._options.invalidCharReplacement);
+    }
+    dtd(options) {
+      const name = dom_1.sanitizeInput(options && options.name || (this._doc.documentElement ? this._doc.documentElement.tagName : "ROOT"), this._options.invalidCharReplacement);
+      const pubID = dom_1.sanitizeInput(options && options.pubID || "", this._options.invalidCharReplacement);
+      const sysID = dom_1.sanitizeInput(options && options.sysID || "", this._options.invalidCharReplacement);
       if (this._doc.documentElement !== null && name !== this._doc.documentElement.tagName) {
         throw new Error("DocType name does not match document element name.");
       }
-      var docType = this._doc.implementation.createDocumentType(name, pubID, sysID);
+      const docType = this._doc.implementation.createDocumentType(name, pubID, sysID);
       if (this._doc.doctype !== null) {
         this._doc.replaceChild(docType, this._doc.doctype);
       } else {
         this._doc.insertBefore(docType, this._doc.documentElement);
       }
       return this;
-    };
-    XMLBuilderImpl2.prototype.import = function(node) {
-      var e_1, _a;
-      var hostNode = this._domNode;
-      var hostDoc = this._doc;
-      var importedNode = node.node;
+    }
+    import(node) {
+      const hostNode = this._domNode;
+      const hostDoc = this._doc;
+      const importedNode = node.node;
       if (util_2.Guard.isDocumentNode(importedNode)) {
-        var elementNode = importedNode.documentElement;
+        const elementNode = importedNode.documentElement;
         if (elementNode === null) {
           throw new Error("Imported document has no document element node. " + this._debugInfo());
         }
-        var clone = hostDoc.importNode(elementNode, true);
+        const clone = hostDoc.importNode(elementNode, true);
         hostNode.appendChild(clone);
-        var _b = __read(algorithm_1.namespace_extractQName(clone.prefix ? clone.prefix + ":" + clone.localName : clone.localName), 1), prefix = _b[0];
-        var namespace = hostNode.lookupNamespaceURI(prefix);
-        new XMLBuilderImpl2(clone)._updateNamespace(namespace);
       } else if (util_2.Guard.isDocumentFragmentNode(importedNode)) {
-        try {
-          for (var _c = __values(importedNode.childNodes), _d = _c.next();!_d.done; _d = _c.next()) {
-            var childNode = _d.value;
-            var clone = hostDoc.importNode(childNode, true);
-            hostNode.appendChild(clone);
-            if (util_2.Guard.isElementNode(clone)) {
-              var _e = __read(algorithm_1.namespace_extractQName(clone.prefix ? clone.prefix + ":" + clone.localName : clone.localName), 1), prefix = _e[0];
-              var namespace = hostNode.lookupNamespaceURI(prefix);
-              new XMLBuilderImpl2(clone)._updateNamespace(namespace);
-            }
-          }
-        } catch (e_1_1) {
-          e_1 = { error: e_1_1 };
-        } finally {
-          try {
-            if (_d && !_d.done && (_a = _c.return))
-              _a.call(_c);
-          } finally {
-            if (e_1)
-              throw e_1.error;
-          }
+        for (const childNode of importedNode.childNodes) {
+          const clone = hostDoc.importNode(childNode, true);
+          hostNode.appendChild(clone);
         }
       } else {
-        var clone = hostDoc.importNode(importedNode, true);
+        const clone = hostDoc.importNode(importedNode, true);
         hostNode.appendChild(clone);
-        if (util_2.Guard.isElementNode(clone)) {
-          var _f = __read(algorithm_1.namespace_extractQName(clone.prefix ? clone.prefix + ":" + clone.localName : clone.localName), 1), prefix = _f[0];
-          var namespace = hostNode.lookupNamespaceURI(prefix);
-          new XMLBuilderImpl2(clone)._updateNamespace(namespace);
-        }
       }
       return this;
-    };
-    XMLBuilderImpl2.prototype.doc = function() {
+    }
+    doc() {
       if (this._doc._isFragment) {
-        var node = this.node;
+        let node = this.node;
         while (node && node.nodeType !== interfaces_2.NodeType.DocumentFragment) {
           node = node.parentNode;
         }
         if (node === null) {
-          throw new Error("Node has no parent node while searching for document fragment ancestor. " + this._debugInfo());
+          throw new Error("Node has no parent node while searching for document fragment ancestor.");
         }
-        return new XMLBuilderImpl2(node);
+        return new XMLBuilderImpl(node);
       } else {
-        return new XMLBuilderImpl2(this._doc);
+        return new XMLBuilderImpl(this._doc);
       }
-    };
-    XMLBuilderImpl2.prototype.root = function() {
-      var ele = this._doc.documentElement;
+    }
+    root() {
+      const ele = this._doc.documentElement;
       if (!ele) {
         throw new Error("Document root element is null. " + this._debugInfo());
       }
-      return new XMLBuilderImpl2(ele);
-    };
-    XMLBuilderImpl2.prototype.up = function() {
-      var parent = this._domNode.parentNode;
+      return new XMLBuilderImpl(ele);
+    }
+    up() {
+      const parent = this._domNode.parentNode;
       if (!parent) {
         throw new Error("Parent node is null. " + this._debugInfo());
       }
-      return new XMLBuilderImpl2(parent);
-    };
-    XMLBuilderImpl2.prototype.prev = function() {
-      var node = this._domNode.previousSibling;
+      return new XMLBuilderImpl(parent);
+    }
+    prev() {
+      const node = this._domNode.previousSibling;
       if (!node) {
         throw new Error("Previous sibling node is null. " + this._debugInfo());
       }
-      return new XMLBuilderImpl2(node);
-    };
-    XMLBuilderImpl2.prototype.next = function() {
-      var node = this._domNode.nextSibling;
+      return new XMLBuilderImpl(node);
+    }
+    next() {
+      const node = this._domNode.nextSibling;
       if (!node) {
         throw new Error("Next sibling node is null. " + this._debugInfo());
       }
-      return new XMLBuilderImpl2(node);
-    };
-    XMLBuilderImpl2.prototype.first = function() {
-      var node = this._domNode.firstChild;
+      return new XMLBuilderImpl(node);
+    }
+    first() {
+      const node = this._domNode.firstChild;
       if (!node) {
         throw new Error("First child node is null. " + this._debugInfo());
       }
-      return new XMLBuilderImpl2(node);
-    };
-    XMLBuilderImpl2.prototype.last = function() {
-      var node = this._domNode.lastChild;
+      return new XMLBuilderImpl(node);
+    }
+    last() {
+      const node = this._domNode.lastChild;
       if (!node) {
         throw new Error("Last child node is null. " + this._debugInfo());
       }
-      return new XMLBuilderImpl2(node);
-    };
-    XMLBuilderImpl2.prototype.each = function(callback, self2, recursive, thisArg) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var result = this._getFirstDescendantNode(this._domNode, self2, recursive);
+      return new XMLBuilderImpl(node);
+    }
+    each(callback, self2 = false, recursive = false, thisArg) {
+      let result = this._getFirstDescendantNode(this._domNode, self2, recursive);
       while (result[0]) {
-        var nextResult = this._getNextDescendantNode(this._domNode, result[0], recursive, result[1], result[2]);
-        callback.call(thisArg, new XMLBuilderImpl2(result[0]), result[1], result[2]);
-        result = nextResult;
+        callback.call(thisArg, new XMLBuilderImpl(result[0]), result[1], result[2]);
+        result = this._getNextDescendantNode(this._domNode, result[0], recursive, result[1], result[2]);
       }
       return this;
-    };
-    XMLBuilderImpl2.prototype.map = function(callback, self2, recursive, thisArg) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var result = [];
-      this.each(function(node, index, level) {
-        return result.push(callback.call(thisArg, node, index, level));
-      }, self2, recursive);
+    }
+    map(callback, self2 = false, recursive = false, thisArg) {
+      let result = [];
+      this.each((node, index, level) => result.push(callback.call(thisArg, node, index, level)), self2, recursive);
       return result;
-    };
-    XMLBuilderImpl2.prototype.reduce = function(callback, initialValue, self2, recursive, thisArg) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var value = initialValue;
-      this.each(function(node, index, level) {
-        return value = callback.call(thisArg, value, node, index, level);
-      }, self2, recursive);
+    }
+    reduce(callback, initialValue, self2 = false, recursive = false, thisArg) {
+      let value = initialValue;
+      this.each((node, index, level) => value = callback.call(thisArg, value, node, index, level), self2, recursive);
       return value;
-    };
-    XMLBuilderImpl2.prototype.find = function(predicate, self2, recursive, thisArg) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var result = this._getFirstDescendantNode(this._domNode, self2, recursive);
+    }
+    find(predicate, self2 = false, recursive = false, thisArg) {
+      let result = this._getFirstDescendantNode(this._domNode, self2, recursive);
       while (result[0]) {
-        var builder = new XMLBuilderImpl2(result[0]);
+        const builder = new XMLBuilderImpl(result[0]);
         if (predicate.call(thisArg, builder, result[1], result[2])) {
           return builder;
         }
         result = this._getNextDescendantNode(this._domNode, result[0], recursive, result[1], result[2]);
       }
       return;
-    };
-    XMLBuilderImpl2.prototype.filter = function(predicate, self2, recursive, thisArg) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var result = [];
-      this.each(function(node, index, level) {
+    }
+    filter(predicate, self2 = false, recursive = false, thisArg) {
+      let result = [];
+      this.each((node, index, level) => {
         if (predicate.call(thisArg, node, index, level)) {
           result.push(node);
         }
       }, self2, recursive);
       return result;
-    };
-    XMLBuilderImpl2.prototype.every = function(predicate, self2, recursive, thisArg) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var result = this._getFirstDescendantNode(this._domNode, self2, recursive);
+    }
+    every(predicate, self2 = false, recursive = false, thisArg) {
+      let result = this._getFirstDescendantNode(this._domNode, self2, recursive);
       while (result[0]) {
-        var builder = new XMLBuilderImpl2(result[0]);
+        const builder = new XMLBuilderImpl(result[0]);
         if (!predicate.call(thisArg, builder, result[1], result[2])) {
           return false;
         }
         result = this._getNextDescendantNode(this._domNode, result[0], recursive, result[1], result[2]);
       }
       return true;
-    };
-    XMLBuilderImpl2.prototype.some = function(predicate, self2, recursive, thisArg) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var result = this._getFirstDescendantNode(this._domNode, self2, recursive);
+    }
+    some(predicate, self2 = false, recursive = false, thisArg) {
+      let result = this._getFirstDescendantNode(this._domNode, self2, recursive);
       while (result[0]) {
-        var builder = new XMLBuilderImpl2(result[0]);
+        const builder = new XMLBuilderImpl(result[0]);
         if (predicate.call(thisArg, builder, result[1], result[2])) {
           return true;
         }
         result = this._getNextDescendantNode(this._domNode, result[0], recursive, result[1], result[2]);
       }
       return false;
-    };
-    XMLBuilderImpl2.prototype.toArray = function(self2, recursive) {
-      if (self2 === undefined) {
-        self2 = false;
-      }
-      if (recursive === undefined) {
-        recursive = false;
-      }
-      var result = [];
-      this.each(function(node) {
-        return result.push(node);
-      }, self2, recursive);
+    }
+    toArray(self2 = false, recursive = false) {
+      let result = [];
+      this.each((node) => result.push(node), self2, recursive);
       return result;
-    };
-    XMLBuilderImpl2.prototype.toString = function(writerOptions) {
+    }
+    toString(writerOptions) {
       writerOptions = writerOptions || {};
       if (writerOptions.format === undefined) {
         writerOptions.format = "xml";
       }
       return this._serialize(writerOptions);
-    };
-    XMLBuilderImpl2.prototype.toObject = function(writerOptions) {
+    }
+    toObject(writerOptions) {
       writerOptions = writerOptions || {};
       if (writerOptions.format === undefined) {
         writerOptions.format = "object";
       }
       return this._serialize(writerOptions);
-    };
-    XMLBuilderImpl2.prototype.end = function(writerOptions) {
+    }
+    end(writerOptions) {
       writerOptions = writerOptions || {};
       if (writerOptions.format === undefined) {
         writerOptions.format = "xml";
       }
       return this.doc()._serialize(writerOptions);
-    };
-    XMLBuilderImpl2.prototype._getFirstDescendantNode = function(root, self2, recursive) {
+    }
+    _getFirstDescendantNode(root, self2, recursive) {
       if (self2)
         return [this._domNode, 0, 0];
       else if (recursive)
         return this._getNextDescendantNode(root, root, recursive, 0, 0);
       else
         return [this._domNode.firstChild, 0, 1];
-    };
-    XMLBuilderImpl2.prototype._getNextDescendantNode = function(root, node, recursive, index, level) {
+    }
+    _getNextDescendantNode(root, node, recursive, index, level) {
       if (recursive) {
         if (node.firstChild)
           return [node.firstChild, 0, level + 1];
@@ -40720,7 +37672,7 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
           return [null, -1, -1];
         if (node.nextSibling)
           return [node.nextSibling, index + 1, level];
-        var parent = node.parentNode;
+        let parent = node.parentNode;
         while (parent && parent !== root) {
           if (parent.nextSibling)
             return [parent.nextSibling, algorithm_1.tree_index(parent.nextSibling), level - 1];
@@ -40734,29 +37686,29 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
           return [node.nextSibling, index + 1, level];
       }
       return [null, -1, -1];
-    };
-    XMLBuilderImpl2.prototype._serialize = function(writerOptions) {
+    }
+    _serialize(writerOptions) {
       if (writerOptions.format === "xml") {
-        var writer = new writers_1.XMLWriter(this._options, writerOptions);
-        return writer.serialize(this.node);
+        const writer = new writers_1.XMLWriter(this._options);
+        return writer.serialize(this.node, writerOptions);
       } else if (writerOptions.format === "map") {
-        var writer = new writers_1.MapWriter(this._options, writerOptions);
-        return writer.serialize(this.node);
+        const writer = new writers_1.MapWriter(this._options);
+        return writer.serialize(this.node, writerOptions);
       } else if (writerOptions.format === "object") {
-        var writer = new writers_1.ObjectWriter(this._options, writerOptions);
-        return writer.serialize(this.node);
+        const writer = new writers_1.ObjectWriter(this._options);
+        return writer.serialize(this.node, writerOptions);
       } else if (writerOptions.format === "json") {
-        var writer = new writers_1.JSONWriter(this._options, writerOptions);
-        return writer.serialize(this.node);
-      } else if (writerOptions.format === "yaml") {
-        var writer = new writers_1.YAMLWriter(this._options, writerOptions);
-        return writer.serialize(this.node);
+        const writer = new writers_1.JSONWriter(this._options);
+        return writer.serialize(this.node, writerOptions);
       } else {
         throw new Error("Invalid writer format: " + writerOptions.format + ". " + this._debugInfo());
       }
-    };
-    XMLBuilderImpl2.prototype._extractNamespace = function(namespace, name, ele) {
-      var atIndex = name.indexOf("@");
+    }
+    _dummy() {
+      return new XMLBuilderImpl(this._doc.createElement("dummy_node"));
+    }
+    _extractNamespace(namespace, name, ele) {
+      const atIndex = name.indexOf("@");
       if (atIndex > 0) {
         if (namespace === undefined)
           namespace = name.slice(atIndex + 1);
@@ -40765,268 +37717,77 @@ var require_XMLBuilderImpl = __commonJS((exports) => {
       if (namespace === undefined) {
         namespace = ele ? this._options.defaultNamespace.ele : this._options.defaultNamespace.att;
       } else if (namespace !== null && namespace[0] === "@") {
-        var alias = namespace.slice(1);
+        const alias = namespace.slice(1);
         namespace = this._options.namespaceAlias[alias];
         if (namespace === undefined) {
           throw new Error("Namespace alias `" + alias + "` is not defined. " + this._debugInfo());
         }
       }
       return [namespace, name];
-    };
-    XMLBuilderImpl2.prototype._updateNamespace = function(ns) {
-      var e_2, _a, e_3, _b;
-      var ele = this._domNode;
-      if (util_2.Guard.isElementNode(ele) && ns !== null && ele.namespaceURI !== ns) {
-        var _c = __read(algorithm_1.namespace_extractQName(ele.prefix ? ele.prefix + ":" + ele.localName : ele.localName), 2), elePrefix = _c[0], eleLocalName = _c[1];
-        var newEle = algorithm_1.create_element(this._doc, eleLocalName, ns, elePrefix);
-        try {
-          for (var _d = __values(ele.attributes), _e = _d.next();!_e.done; _e = _d.next()) {
-            var attr = _e.value;
-            var attrQName = attr.prefix ? attr.prefix + ":" + attr.localName : attr.localName;
-            var _f = __read(algorithm_1.namespace_extractQName(attrQName), 1), attrPrefix = _f[0];
-            var newAttrNS = attr.namespaceURI;
-            if (newAttrNS === null && attrPrefix !== null) {
-              newAttrNS = ele.lookupNamespaceURI(attrPrefix);
-            }
-            if (newAttrNS === null) {
-              newEle.setAttribute(attrQName, attr.value);
-            } else {
-              newEle.setAttributeNS(newAttrNS, attrQName, attr.value);
-            }
-          }
-        } catch (e_2_1) {
-          e_2 = { error: e_2_1 };
-        } finally {
-          try {
-            if (_e && !_e.done && (_a = _d.return))
-              _a.call(_d);
-          } finally {
-            if (e_2)
-              throw e_2.error;
-          }
-        }
-        var parent = ele.parentNode;
-        if (parent === null) {
-          throw new Error("Parent node is null." + this._debugInfo());
-        }
-        parent.replaceChild(newEle, ele);
-        this._domNode = newEle;
-        try {
-          for (var _g = __values(ele.childNodes), _h = _g.next();!_h.done; _h = _g.next()) {
-            var childNode = _h.value;
-            var newChildNode = childNode.cloneNode(true);
-            newEle.appendChild(newChildNode);
-            if (util_2.Guard.isElementNode(newChildNode)) {
-              var _j = __read(algorithm_1.namespace_extractQName(newChildNode.prefix ? newChildNode.prefix + ":" + newChildNode.localName : newChildNode.localName), 1), newChildNodePrefix = _j[0];
-              var newChildNodeNS = newEle.lookupNamespaceURI(newChildNodePrefix);
-              new XMLBuilderImpl2(newChildNode)._updateNamespace(newChildNodeNS);
-            }
-          }
-        } catch (e_3_1) {
-          e_3 = { error: e_3_1 };
-        } finally {
-          try {
-            if (_h && !_h.done && (_b = _g.return))
-              _b.call(_g);
-          } finally {
-            if (e_3)
-              throw e_3.error;
-          }
-        }
+    }
+    get _doc() {
+      const node = this.node;
+      if (util_2.Guard.isDocumentNode(node)) {
+        return node;
+      } else {
+        const docNode = node.ownerDocument;
+        if (!docNode)
+          throw new Error("Owner document is null. " + this._debugInfo());
+        return docNode;
       }
-    };
-    Object.defineProperty(XMLBuilderImpl2.prototype, "_doc", {
-      get: function() {
-        var node = this.node;
-        if (util_2.Guard.isDocumentNode(node)) {
-          return node;
-        } else {
-          var docNode = node.ownerDocument;
-          if (!docNode)
-            throw new Error("Owner document is null. " + this._debugInfo());
-          return docNode;
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    XMLBuilderImpl2.prototype._debugInfo = function(name) {
-      var node = this.node;
-      var parentNode = node.parentNode;
+    }
+    _debugInfo(name) {
+      const node = this.node;
+      const parentNode = node.parentNode;
       name = name || node.nodeName;
-      var parentName = parentNode ? parentNode.nodeName : "";
+      const parentName = parentNode ? parentNode.nodeName : "";
       if (!parentName) {
         return "node: <" + name + ">";
       } else {
         return "node: <" + name + ">, parent: <" + parentName + ">";
       }
-    };
-    Object.defineProperty(XMLBuilderImpl2.prototype, "_options", {
-      get: function() {
-        var doc = this._doc;
-        if (doc._xmlBuilderOptions === undefined) {
-          throw new Error("Builder options is not set.");
-        }
-        return doc._xmlBuilderOptions;
-      },
-      set: function(value) {
-        var doc = this._doc;
-        doc._xmlBuilderOptions = value;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    return XMLBuilderImpl2;
-  }();
+    }
+    get _options() {
+      const doc = this._doc;
+      if (doc._xmlBuilderOptions === undefined) {
+        throw new Error("Builder options is not set.");
+      }
+      return doc._xmlBuilderOptions;
+    }
+    set _options(value) {
+      const doc = this._doc;
+      doc._xmlBuilderOptions = value;
+    }
+  }
   exports.XMLBuilderImpl = XMLBuilderImpl;
-});
-
-// node_modules/xmlbuilder2/lib/builder/BuilderFunctions.js
-var require_BuilderFunctions = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var interfaces_1 = require_interfaces();
-  var util_1 = require_lib8();
-  var util_2 = require_util2();
-  var _1 = require_builder();
-  var dom_1 = require_dom2();
-  function builder(p1, p2) {
-    var options = formatBuilderOptions(isXMLBuilderCreateOptions(p1) ? p1 : interfaces_1.DefaultBuilderOptions);
-    var nodes = util_2.Guard.isNode(p1) || util_1.isArray(p1) ? p1 : p2;
-    if (nodes === undefined) {
-      throw new Error("Invalid arguments.");
-    }
-    if (util_1.isArray(nodes)) {
-      var builders = [];
-      for (var i = 0;i < nodes.length; i++) {
-        var builder_1 = new _1.XMLBuilderImpl(nodes[i]);
-        builder_1.set(options);
-        builders.push(builder_1);
-      }
-      return builders;
-    } else {
-      var builder_2 = new _1.XMLBuilderImpl(nodes);
-      builder_2.set(options);
-      return builder_2;
-    }
-  }
-  exports.builder = builder;
-  function create(p1, p2) {
-    var options = formatBuilderOptions(p1 === undefined || isXMLBuilderCreateOptions(p1) ? p1 : interfaces_1.DefaultBuilderOptions);
-    var contents = isXMLBuilderCreateOptions(p1) ? p2 : p1;
-    var doc = dom_1.createDocument();
-    setOptions(doc, options);
-    var builder2 = new _1.XMLBuilderImpl(doc);
-    if (contents !== undefined) {
-      builder2.ele(contents);
-    }
-    return builder2;
-  }
-  exports.create = create;
-  function fragment(p1, p2) {
-    var options = formatBuilderOptions(p1 === undefined || isXMLBuilderCreateOptions(p1) ? p1 : interfaces_1.DefaultBuilderOptions);
-    var contents = isXMLBuilderCreateOptions(p1) ? p2 : p1;
-    var doc = dom_1.createDocument();
-    setOptions(doc, options, true);
-    var builder2 = new _1.XMLBuilderImpl(doc.createDocumentFragment());
-    if (contents !== undefined) {
-      builder2.ele(contents);
-    }
-    return builder2;
-  }
-  exports.fragment = fragment;
-  function convert(p1, p2, p3) {
-    var builderOptions;
-    var contents;
-    var convertOptions;
-    if (isXMLBuilderCreateOptions(p1) && p2 !== undefined) {
-      builderOptions = p1;
-      contents = p2;
-      convertOptions = p3;
-    } else {
-      builderOptions = interfaces_1.DefaultBuilderOptions;
-      contents = p1;
-      convertOptions = p2 || undefined;
-    }
-    return create(builderOptions, contents).end(convertOptions);
-  }
-  exports.convert = convert;
-  function isXMLBuilderCreateOptions(obj) {
-    if (!util_1.isPlainObject(obj))
-      return false;
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        if (!interfaces_1.XMLBuilderOptionKeys.has(key))
-          return false;
-      }
-    }
-    return true;
-  }
-  function formatBuilderOptions(createOptions) {
-    if (createOptions === undefined) {
-      createOptions = {};
-    }
-    var options = util_1.applyDefaults(createOptions, interfaces_1.DefaultBuilderOptions);
-    if (options.convert.att.length === 0 || options.convert.ins.length === 0 || options.convert.text.length === 0 || options.convert.cdata.length === 0 || options.convert.comment.length === 0) {
-      throw new Error("JS object converter strings cannot be zero length.");
-    }
-    return options;
-  }
-  function setOptions(doc, options, isFragment) {
-    var docWithSettings = doc;
-    docWithSettings._xmlBuilderOptions = options;
-    docWithSettings._isFragment = isFragment;
-  }
 });
 
 // node_modules/xmlbuilder2/lib/writers/BaseCBWriter.js
 var require_BaseCBWriter = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
-  var BaseCBWriter = function() {
-    function BaseCBWriter2(builderOptions) {
+
+  class BaseCBWriter {
+    constructor(builderOptions) {
       this.level = 0;
       this._builderOptions = builderOptions;
       this._writerOptions = builderOptions;
     }
-    return BaseCBWriter2;
-  }();
+  }
   exports.BaseCBWriter = BaseCBWriter;
 });
 
 // node_modules/xmlbuilder2/lib/writers/XMLCBWriter.js
 var require_XMLCBWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
   Object.defineProperty(exports, "__esModule", { value: true });
   var BaseCBWriter_1 = require_BaseCBWriter();
-  var XMLCBWriter = function(_super) {
-    __extends(XMLCBWriter2, _super);
-    function XMLCBWriter2(builderOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._lineLength = 0;
-      return _this;
+
+  class XMLCBWriter extends BaseCBWriter_1.BaseCBWriter {
+    constructor(builderOptions) {
+      super(builderOptions);
+      this._lineLength = 0;
     }
-    XMLCBWriter2.prototype.frontMatter = function() {
-      return "";
-    };
-    XMLCBWriter2.prototype.declaration = function(version, encoding, standalone) {
-      var markup = this._beginLine() + "<?xml";
+    declaration(version, encoding, standalone) {
+      let markup = this._beginLine() + "<?xml";
       markup += ' version="' + version + '"';
       if (encoding !== undefined) {
         markup += ' encoding="' + encoding + '"';
@@ -41036,9 +37797,9 @@ var require_XMLCBWriter = __commonJS((exports) => {
       }
       markup += "?>";
       return markup;
-    };
-    XMLCBWriter2.prototype.docType = function(name, publicId, systemId) {
-      var markup = this._beginLine();
+    }
+    docType(name, publicId, systemId) {
+      let markup = this._beginLine();
       if (publicId && systemId) {
         markup += "<!DOCTYPE " + name + ' PUBLIC "' + publicId + '" "' + systemId + '">';
       } else if (publicId) {
@@ -41049,28 +37810,28 @@ var require_XMLCBWriter = __commonJS((exports) => {
         markup += "<!DOCTYPE " + name + ">";
       }
       return markup;
-    };
-    XMLCBWriter2.prototype.comment = function(data) {
+    }
+    comment(data) {
       return this._beginLine() + "<!--" + data + "-->";
-    };
-    XMLCBWriter2.prototype.text = function(data) {
+    }
+    text(data) {
       return this._beginLine() + data;
-    };
-    XMLCBWriter2.prototype.instruction = function(target, data) {
+    }
+    instruction(target, data) {
       if (data) {
         return this._beginLine() + "<?" + target + " " + data + "?>";
       } else {
         return this._beginLine() + "<?" + target + "?>";
       }
-    };
-    XMLCBWriter2.prototype.cdata = function(data) {
+    }
+    cdata(data) {
       return this._beginLine() + "<![CDATA[" + data + "]]>";
-    };
-    XMLCBWriter2.prototype.openTagBegin = function(name) {
+    }
+    openTagBegin(name) {
       this._lineLength += 1 + name.length;
       return this._beginLine() + "<" + name;
-    };
-    XMLCBWriter2.prototype.openTagEnd = function(name, selfClosing, voidElement) {
+    }
+    openTagEnd(name, selfClosing, voidElement) {
       if (voidElement) {
         return " />";
       } else if (selfClosing) {
@@ -41084,12 +37845,12 @@ var require_XMLCBWriter = __commonJS((exports) => {
       } else {
         return ">";
       }
-    };
-    XMLCBWriter2.prototype.closeTag = function(name) {
+    }
+    closeTag(name) {
       return this._beginLine() + "</" + name + ">";
-    };
-    XMLCBWriter2.prototype.attribute = function(name, value) {
-      var str = name + '="' + value + '"';
+    }
+    attribute(name, value) {
+      let str = name + '="' + value + '"';
       if (this._writerOptions.prettyPrint && this._writerOptions.width > 0 && this._lineLength + 1 + str.length > this._writerOptions.width) {
         str = this._beginLine() + this._indent(1) + str;
         this._lineLength = str.length;
@@ -41098,330 +37859,132 @@ var require_XMLCBWriter = __commonJS((exports) => {
         this._lineLength += 1 + str.length;
         return " " + str;
       }
-    };
-    XMLCBWriter2.prototype.beginElement = function(name) {
-    };
-    XMLCBWriter2.prototype.endElement = function(name) {
-    };
-    XMLCBWriter2.prototype._beginLine = function() {
+    }
+    beginElement(name) {
+    }
+    endElement(name) {
+    }
+    _beginLine() {
       if (this._writerOptions.prettyPrint) {
-        var str = (this.hasData ? this._writerOptions.newline : "") + this._indent(this._writerOptions.offset + this.level);
+        const str = (this.hasData ? this._writerOptions.newline : "") + this._indent(this._writerOptions.offset + this.level);
         this._lineLength = str.length;
         return str;
       } else {
         return "";
       }
-    };
-    XMLCBWriter2.prototype._indent = function(level) {
+    }
+    _indent(level) {
       if (level <= 0) {
         return "";
       } else {
         return this._writerOptions.indent.repeat(level);
       }
-    };
-    return XMLCBWriter2;
-  }(BaseCBWriter_1.BaseCBWriter);
+    }
+  }
   exports.XMLCBWriter = XMLCBWriter;
 });
 
 // node_modules/xmlbuilder2/lib/writers/JSONCBWriter.js
 var require_JSONCBWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
   Object.defineProperty(exports, "__esModule", { value: true });
   var BaseCBWriter_1 = require_BaseCBWriter();
-  var JSONCBWriter = function(_super) {
-    __extends(JSONCBWriter2, _super);
-    function JSONCBWriter2(builderOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._hasChildren = [];
-      _this._additionalLevel = 0;
-      return _this;
+
+  class JSONCBWriter extends BaseCBWriter_1.BaseCBWriter {
+    constructor(builderOptions) {
+      super(builderOptions);
+      this._hasChildren = [];
+      this._additionalLevel = 0;
     }
-    JSONCBWriter2.prototype.frontMatter = function() {
+    declaration(version, encoding, standalone) {
       return "";
-    };
-    JSONCBWriter2.prototype.declaration = function(version, encoding, standalone) {
+    }
+    docType(name, publicId, systemId) {
       return "";
-    };
-    JSONCBWriter2.prototype.docType = function(name, publicId, systemId) {
-      return "";
-    };
-    JSONCBWriter2.prototype.comment = function(data) {
+    }
+    comment(data) {
       return this._comma() + this._beginLine() + "{" + this._sep() + this._key(this._builderOptions.convert.comment) + this._sep() + this._val(data) + this._sep() + "}";
-    };
-    JSONCBWriter2.prototype.text = function(data) {
+    }
+    text(data) {
       return this._comma() + this._beginLine() + "{" + this._sep() + this._key(this._builderOptions.convert.text) + this._sep() + this._val(data) + this._sep() + "}";
-    };
-    JSONCBWriter2.prototype.instruction = function(target, data) {
+    }
+    instruction(target, data) {
       return this._comma() + this._beginLine() + "{" + this._sep() + this._key(this._builderOptions.convert.ins) + this._sep() + this._val(data ? target + " " + data : target) + this._sep() + "}";
-    };
-    JSONCBWriter2.prototype.cdata = function(data) {
+    }
+    cdata(data) {
       return this._comma() + this._beginLine() + "{" + this._sep() + this._key(this._builderOptions.convert.cdata) + this._sep() + this._val(data) + this._sep() + "}";
-    };
-    JSONCBWriter2.prototype.attribute = function(name, value) {
+    }
+    attribute(name, value) {
       return this._comma() + this._beginLine(1) + "{" + this._sep() + this._key(this._builderOptions.convert.att + name) + this._sep() + this._val(value) + this._sep() + "}";
-    };
-    JSONCBWriter2.prototype.openTagBegin = function(name) {
-      var str = this._comma() + this._beginLine() + "{" + this._sep() + this._key(name) + this._sep() + "{";
+    }
+    openTagBegin(name) {
+      let str = this._comma() + this._beginLine() + "{" + this._sep() + this._key(name) + this._sep() + "{";
       this._additionalLevel++;
       this.hasData = true;
       str += this._beginLine() + this._key(this._builderOptions.convert.text) + this._sep() + "[";
       this._hasChildren.push(false);
       return str;
-    };
-    JSONCBWriter2.prototype.openTagEnd = function(name, selfClosing, voidElement) {
+    }
+    openTagEnd(name, selfClosing, voidElement) {
       if (selfClosing) {
-        var str = this._sep() + "]";
+        let str = this._sep() + "]";
         this._additionalLevel--;
         str += this._beginLine() + "}" + this._sep() + "}";
         return str;
       } else {
         return "";
       }
-    };
-    JSONCBWriter2.prototype.closeTag = function(name) {
-      var str = this._beginLine() + "]";
+    }
+    closeTag(name) {
+      let str = this._beginLine() + "]";
       this._additionalLevel--;
       str += this._beginLine() + "}" + this._sep() + "}";
       return str;
-    };
-    JSONCBWriter2.prototype.beginElement = function(name) {
-    };
-    JSONCBWriter2.prototype.endElement = function(name) {
+    }
+    beginElement(name) {
+    }
+    endElement(name) {
       this._hasChildren.pop();
-    };
-    JSONCBWriter2.prototype._beginLine = function(additionalOffset) {
-      if (additionalOffset === undefined) {
-        additionalOffset = 0;
-      }
+    }
+    _beginLine(additionalOffset = 0) {
       if (this._writerOptions.prettyPrint) {
         return (this.hasData ? this._writerOptions.newline : "") + this._indent(this._writerOptions.offset + this.level + additionalOffset);
       } else {
         return "";
       }
-    };
-    JSONCBWriter2.prototype._indent = function(level) {
+    }
+    _indent(level) {
       if (level + this._additionalLevel <= 0) {
         return "";
       } else {
         return this._writerOptions.indent.repeat(level + this._additionalLevel);
       }
-    };
-    JSONCBWriter2.prototype._comma = function() {
-      var str = this._hasChildren[this._hasChildren.length - 1] ? "," : "";
+    }
+    _comma() {
+      const str = this._hasChildren[this._hasChildren.length - 1] ? "," : "";
       if (this._hasChildren.length > 0) {
         this._hasChildren[this._hasChildren.length - 1] = true;
       }
       return str;
-    };
-    JSONCBWriter2.prototype._sep = function() {
-      return this._writerOptions.prettyPrint ? " " : "";
-    };
-    JSONCBWriter2.prototype._key = function(key) {
-      return '"' + key + '":';
-    };
-    JSONCBWriter2.prototype._val = function(val) {
-      return JSON.stringify(val);
-    };
-    return JSONCBWriter2;
-  }(BaseCBWriter_1.BaseCBWriter);
-  exports.JSONCBWriter = JSONCBWriter;
-});
-
-// node_modules/xmlbuilder2/lib/writers/YAMLCBWriter.js
-var require_YAMLCBWriter = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var BaseCBWriter_1 = require_BaseCBWriter();
-  var YAMLCBWriter = function(_super) {
-    __extends(YAMLCBWriter2, _super);
-    function YAMLCBWriter2(builderOptions) {
-      var _this = _super.call(this, builderOptions) || this;
-      _this._rootWritten = false;
-      _this._additionalLevel = 0;
-      if (builderOptions.indent.length < 2) {
-        throw new Error("YAML indententation string must be at least two characters long.");
-      }
-      if (builderOptions.offset < 0) {
-        throw new Error("YAML offset should be zero or a positive number.");
-      }
-      return _this;
     }
-    YAMLCBWriter2.prototype.frontMatter = function() {
-      return this._beginLine() + "---";
-    };
-    YAMLCBWriter2.prototype.declaration = function(version, encoding, standalone) {
-      return "";
-    };
-    YAMLCBWriter2.prototype.docType = function(name, publicId, systemId) {
-      return "";
-    };
-    YAMLCBWriter2.prototype.comment = function(data) {
-      return this._beginLine() + this._key(this._builderOptions.convert.comment) + " " + this._val(data);
-    };
-    YAMLCBWriter2.prototype.text = function(data) {
-      return this._beginLine() + this._key(this._builderOptions.convert.text) + " " + this._val(data);
-    };
-    YAMLCBWriter2.prototype.instruction = function(target, data) {
-      return this._beginLine() + this._key(this._builderOptions.convert.ins) + " " + this._val(data ? target + " " + data : target);
-    };
-    YAMLCBWriter2.prototype.cdata = function(data) {
-      return this._beginLine() + this._key(this._builderOptions.convert.cdata) + " " + this._val(data);
-    };
-    YAMLCBWriter2.prototype.attribute = function(name, value) {
-      this._additionalLevel++;
-      var str = this._beginLine() + this._key(this._builderOptions.convert.att + name) + " " + this._val(value);
-      this._additionalLevel--;
-      return str;
-    };
-    YAMLCBWriter2.prototype.openTagBegin = function(name) {
-      var str = this._beginLine() + this._key(name);
-      if (!this._rootWritten) {
-        this._rootWritten = true;
-      }
-      this.hasData = true;
-      this._additionalLevel++;
-      str += this._beginLine(true) + this._key(this._builderOptions.convert.text);
-      return str;
-    };
-    YAMLCBWriter2.prototype.openTagEnd = function(name, selfClosing, voidElement) {
-      if (selfClosing) {
-        return " " + this._val("");
-      }
-      return "";
-    };
-    YAMLCBWriter2.prototype.closeTag = function(name) {
-      this._additionalLevel--;
-      return "";
-    };
-    YAMLCBWriter2.prototype.beginElement = function(name) {
-    };
-    YAMLCBWriter2.prototype.endElement = function(name) {
-    };
-    YAMLCBWriter2.prototype._beginLine = function(suppressArray) {
-      if (suppressArray === undefined) {
-        suppressArray = false;
-      }
-      return (this.hasData ? this._writerOptions.newline : "") + this._indent(this._writerOptions.offset + this.level, suppressArray);
-    };
-    YAMLCBWriter2.prototype._indent = function(level, suppressArray) {
-      if (level + this._additionalLevel <= 0) {
-        return "";
-      } else {
-        var chars = this._writerOptions.indent.repeat(level + this._additionalLevel);
-        if (!suppressArray && this._rootWritten) {
-          return chars.substr(0, chars.length - 2) + "-" + chars.substr(-1, 1);
-        }
-        return chars;
-      }
-    };
-    YAMLCBWriter2.prototype._key = function(key) {
+    _sep() {
+      return this._writerOptions.prettyPrint ? " " : "";
+    }
+    _key(key) {
       return '"' + key + '":';
-    };
-    YAMLCBWriter2.prototype._val = function(val) {
-      return JSON.stringify(val);
-    };
-    return YAMLCBWriter2;
-  }(BaseCBWriter_1.BaseCBWriter);
-  exports.YAMLCBWriter = YAMLCBWriter;
+    }
+    _val(val) {
+      return '"' + val + '"';
+    }
+  }
+  exports.JSONCBWriter = JSONCBWriter;
 });
 
 // node_modules/xmlbuilder2/lib/builder/XMLBuilderCBImpl.js
 var require_XMLBuilderCBImpl = __commonJS((exports) => {
-  var __extends = exports && exports.__extends || function() {
-    var extendStatics = function(d, b) {
-      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
-        d2.__proto__ = b2;
-      } || function(d2, b2) {
-        for (var p in b2)
-          if (b2.hasOwnProperty(p))
-            d2[p] = b2[p];
-      };
-      return extendStatics(d, b);
-    };
-    return function(d, b) {
-      extendStatics(d, b);
-      function __() {
-        this.constructor = d;
-      }
-      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __);
-    };
-  }();
-  var __values = exports && exports.__values || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m)
-      return m.call(o);
-    if (o && typeof o.length === "number")
-      return {
-        next: function() {
-          if (o && i >= o.length)
-            o = undefined;
-          return { value: o && o[i++], done: !o };
-        }
-      };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-  };
-  var __read = exports && exports.__read || function(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m)
-      return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-      while ((n === undefined || n-- > 0) && !(r = i.next()).done)
-        ar.push(r.value);
-    } catch (error) {
-      e = { error };
-    } finally {
-      try {
-        if (r && !r.done && (m = i["return"]))
-          m.call(i);
-      } finally {
-        if (e)
-          throw e.error;
-      }
-    }
-    return ar;
-  };
   Object.defineProperty(exports, "__esModule", { value: true });
   var interfaces_1 = require_interfaces();
   var util_1 = require_lib8();
-  var BuilderFunctions_1 = require_BuilderFunctions();
+  var __1 = require_lib12();
   var algorithm_1 = require_algorithm();
   var infra_1 = require_lib9();
   var NamespacePrefixMap_1 = require_NamespacePrefixMap();
@@ -41429,74 +37992,48 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
   var util_2 = require_util2();
   var XMLCBWriter_1 = require_XMLCBWriter();
   var JSONCBWriter_1 = require_JSONCBWriter();
-  var YAMLCBWriter_1 = require_YAMLCBWriter();
   var events_1 = __require("events");
-  var XMLBuilderCBImpl = function(_super) {
-    __extends(XMLBuilderCBImpl2, _super);
-    function XMLBuilderCBImpl2(options, fragment) {
-      if (fragment === undefined) {
-        fragment = false;
-      }
-      var _this = _super.call(this) || this;
-      _this._hasDeclaration = false;
-      _this._docTypeName = "";
-      _this._hasDocumentElement = false;
-      _this._currentElementSerialized = false;
-      _this._openTags = [];
-      _this._ended = false;
-      _this._fragment = fragment;
-      _this._options = util_1.applyDefaults(options || {}, interfaces_1.DefaultXMLBuilderCBOptions);
-      _this._builderOptions = {
-        defaultNamespace: _this._options.defaultNamespace,
-        namespaceAlias: _this._options.namespaceAlias
+
+  class XMLBuilderCBImpl extends events_1.EventEmitter {
+    constructor(options, fragment = false) {
+      super();
+      this._hasDeclaration = false;
+      this._docTypeName = "";
+      this._hasDocumentElement = false;
+      this._currentElementSerialized = false;
+      this._openTags = [];
+      this._ended = false;
+      this._fragment = fragment;
+      this._options = util_1.applyDefaults(options || {}, interfaces_1.DefaultXMLBuilderCBOptions);
+      this._builderOptions = {
+        defaultNamespace: this._options.defaultNamespace,
+        namespaceAlias: this._options.namespaceAlias
       };
-      if (_this._options.format === "json") {
-        _this._writer = new JSONCBWriter_1.JSONCBWriter(_this._options);
-      } else if (_this._options.format === "yaml") {
-        _this._writer = new YAMLCBWriter_1.YAMLCBWriter(_this._options);
-      } else {
-        _this._writer = new XMLCBWriter_1.XMLCBWriter(_this._options);
+      this._writer = this._options.format === "xml" ? new XMLCBWriter_1.XMLCBWriter(this._options) : new JSONCBWriter_1.JSONCBWriter(this._options);
+      if (this._options.data !== undefined) {
+        this.on("data", this._options.data);
       }
-      if (_this._options.data !== undefined) {
-        _this.on("data", _this._options.data);
+      if (this._options.end !== undefined) {
+        this.on("end", this._options.end);
       }
-      if (_this._options.end !== undefined) {
-        _this.on("end", _this._options.end);
+      if (this._options.error !== undefined) {
+        this.on("error", this._options.error);
       }
-      if (_this._options.error !== undefined) {
-        _this.on("error", _this._options.error);
-      }
-      _this._prefixMap = new NamespacePrefixMap_1.NamespacePrefixMap;
-      _this._prefixMap.set("xml", infra_1.namespace.XML);
-      _this._prefixIndex = { value: 1 };
-      _this._push(_this._writer.frontMatter());
-      return _this;
+      this._prefixMap = new NamespacePrefixMap_1.NamespacePrefixMap;
+      this._prefixMap.set("xml", infra_1.namespace.XML);
+      this._prefixIndex = { value: 1 };
     }
-    XMLBuilderCBImpl2.prototype.ele = function(p1, p2, p3) {
-      var e_1, _a;
-      if (util_1.isObject(p1) || util_1.isString(p1) && (/^\s*</.test(p1) || /^\s*[\{\[]/.test(p1) || /^(\s*|(#.*)|(%.*))*---/.test(p1))) {
-        var frag = BuilderFunctions_1.fragment().set(this._options);
+    ele(p1, p2, p3) {
+      if (util_1.isObject(p1) || util_1.isString(p1) && (/^\s*</.test(p1) || /^\s*[\{\[]/.test(p1))) {
+        const frag = __1.fragment().set(this._options);
         try {
           frag.ele(p1);
         } catch (err) {
           this.emit("error", err);
           return this;
         }
-        try {
-          for (var _b = __values(frag.node.childNodes), _c = _b.next();!_c.done; _c = _b.next()) {
-            var node = _c.value;
-            this._fromNode(node);
-          }
-        } catch (e_1_1) {
-          e_1 = { error: e_1_1 };
-        } finally {
-          try {
-            if (_c && !_c.done && (_a = _b.return))
-              _a.call(_b);
-          } finally {
-            if (e_1)
-              throw e_1.error;
-          }
+        for (const node of frag.node.childNodes) {
+          this._fromNode(node);
         }
         return this;
       }
@@ -41506,7 +38043,7 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         return this;
       }
       try {
-        this._currentElement = BuilderFunctions_1.fragment(this._builderOptions).ele(p1, p2, p3);
+        this._currentElement = __1.fragment(this._builderOptions).ele(p1, p2, p3);
       } catch (err) {
         this.emit("error", err);
         return this;
@@ -41520,8 +38057,8 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         this._hasDocumentElement = true;
       }
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.att = function(p1, p2, p3) {
+    }
+    att(p1, p2, p3) {
       if (this._currentElement === undefined) {
         this.emit("error", new Error("Cannot insert an attribute node as child of a document node."));
         return this;
@@ -41533,12 +38070,12 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         return this;
       }
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.com = function(content) {
+    }
+    com(content) {
       this._serializeOpenTag(true);
-      var node;
+      let node;
       try {
-        node = BuilderFunctions_1.fragment(this._builderOptions).com(content).first().node;
+        node = __1.fragment(this._builderOptions).com(content).first().node;
       } catch (err) {
         this.emit("error", err);
         return this;
@@ -41549,16 +38086,16 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
       }
       this._push(this._writer.comment(node.data));
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.txt = function(content) {
+    }
+    txt(content) {
       if (!this._fragment && this._currentElement === undefined) {
         this.emit("error", new Error("Cannot insert a text node as child of a document node."));
         return this;
       }
       this._serializeOpenTag(true);
-      var node;
+      let node;
       try {
-        node = BuilderFunctions_1.fragment(this._builderOptions).txt(content).first().node;
+        node = __1.fragment(this._builderOptions).txt(content).first().node;
       } catch (err) {
         this.emit("error", err);
         return this;
@@ -41567,18 +38104,30 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         this.emit("error", new Error("Text data contains invalid characters (well-formed required)."));
         return this;
       }
-      var markup = node.data.replace(/(?!&(lt|gt|amp|apos|quot);)&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      let markup = "";
+      if (this._options.noDoubleEncoding) {
+        markup = node.data.replace(/(?!&(lt|gt|amp|apos|quot);)&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\r/g, "&#xD;");
+      } else {
+        for (let i = 0;i < node.data.length; i++) {
+          const c = node.data[i];
+          if (c === "&")
+            markup += "&amp;";
+          else if (c === "<")
+            markup += "&lt;";
+          else if (c === ">")
+            markup += "&gt;";
+          else
+            markup += c;
+        }
+      }
       this._push(this._writer.text(markup));
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.ins = function(target, content) {
-      if (content === undefined) {
-        content = "";
-      }
+    }
+    ins(target, content = "") {
       this._serializeOpenTag(true);
-      var node;
+      let node;
       try {
-        node = BuilderFunctions_1.fragment(this._builderOptions).ins(target, content).first().node;
+        node = __1.fragment(this._builderOptions).ins(target, content).first().node;
       } catch (err) {
         this.emit("error", err);
         return this;
@@ -41593,23 +38142,20 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
       }
       this._push(this._writer.instruction(node.target, node.data));
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.dat = function(content) {
+    }
+    dat(content) {
       this._serializeOpenTag(true);
-      var node;
+      let node;
       try {
-        node = BuilderFunctions_1.fragment(this._builderOptions).dat(content).first().node;
+        node = __1.fragment(this._builderOptions).dat(content).first().node;
       } catch (err) {
         this.emit("error", err);
         return this;
       }
       this._push(this._writer.cdata(node.data));
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.dec = function(options) {
-      if (options === undefined) {
-        options = { version: "1.0" };
-      }
+    }
+    dec(options = { version: "1.0" }) {
       if (this._fragment) {
         this.emit("error", Error("Cannot insert an XML declaration into a document fragment."));
         return this;
@@ -41621,8 +38167,8 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
       this._push(this._writer.declaration(options.version || "1.0", options.encoding, options.standalone));
       this._hasDeclaration = true;
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.dtd = function(options) {
+    }
+    dtd(options) {
       if (this._fragment) {
         this.emit("error", Error("Cannot insert a DocType declaration into a document fragment."));
         return this;
@@ -41635,9 +38181,9 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         this.emit("error", new Error("Cannot insert DocType declaration after document element."));
         return this;
       }
-      var node;
+      let node;
       try {
-        node = BuilderFunctions_1.create().dtd(options).first().node;
+        node = __1.create().dtd(options).first().node;
       } catch (err) {
         this.emit("error", err);
         return this;
@@ -41653,64 +38199,37 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
       this._docTypeName = options.name;
       this._push(this._writer.docType(options.name, node.publicId, node.systemId));
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.import = function(node) {
-      var e_2, _a;
-      var frag = BuilderFunctions_1.fragment().set(this._options);
-      try {
-        frag.import(node);
-      } catch (err) {
-        this.emit("error", err);
-        return this;
-      }
-      try {
-        for (var _b = __values(frag.node.childNodes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var node_1 = _c.value;
-          this._fromNode(node_1);
-        }
-      } catch (e_2_1) {
-        e_2 = { error: e_2_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_2)
-            throw e_2.error;
-        }
-      }
-      return this;
-    };
-    XMLBuilderCBImpl2.prototype.up = function() {
+    }
+    up() {
       this._serializeOpenTag(false);
       this._serializeCloseTag();
       return this;
-    };
-    XMLBuilderCBImpl2.prototype.end = function() {
+    }
+    end() {
       this._serializeOpenTag(false);
       while (this._openTags.length > 0) {
         this._serializeCloseTag();
       }
       this._push(null);
       return this;
-    };
-    XMLBuilderCBImpl2.prototype._serializeOpenTag = function(hasChildren) {
+    }
+    _serializeOpenTag(hasChildren) {
       if (this._currentElementSerialized)
         return;
       if (this._currentElement === undefined)
         return;
-      var node = this._currentElement.node;
+      const node = this._currentElement.node;
       if (this._options.wellFormed && (node.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(node.localName))) {
         this.emit("error", new Error("Node local name contains invalid characters (well-formed required)."));
         return;
       }
-      var qualifiedName = "";
-      var ignoreNamespaceDefinitionAttribute = false;
-      var map = this._prefixMap.copy();
-      var localPrefixesMap = {};
-      var localDefaultNamespace = this._recordNamespaceInformation(node, map, localPrefixesMap);
-      var inheritedNS = this._openTags.length === 0 ? null : this._openTags[this._openTags.length - 1][1];
-      var ns = node.namespaceURI;
+      let qualifiedName = "";
+      let ignoreNamespaceDefinitionAttribute = false;
+      let map = this._prefixMap.copy();
+      let localPrefixesMap = {};
+      let localDefaultNamespace = this._recordNamespaceInformation(node, map, localPrefixesMap);
+      let inheritedNS = this._openTags.length === 0 ? null : this._openTags[this._openTags.length - 1][1];
+      let ns = node.namespaceURI;
       if (ns === null)
         ns = inheritedNS;
       if (inheritedNS === ns) {
@@ -41725,8 +38244,8 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         this._writer.beginElement(qualifiedName);
         this._push(this._writer.openTagBegin(qualifiedName));
       } else {
-        var prefix = node.prefix;
-        var candidatePrefix = null;
+        let prefix = node.prefix;
+        let candidatePrefix = null;
         if (prefix !== null || ns !== localDefaultNamespace) {
           candidatePrefix = map.get(prefix, ns);
         }
@@ -41771,8 +38290,8 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         }
       }
       this._serializeAttributes(node, map, this._prefixIndex, localPrefixesMap, ignoreNamespaceDefinitionAttribute, this._options.wellFormed);
-      var isHTML = ns === infra_1.namespace.HTML;
-      if (isHTML && !hasChildren && XMLBuilderCBImpl2._VoidElementNames.has(node.localName)) {
+      const isHTML = ns === infra_1.namespace.HTML;
+      if (isHTML && !hasChildren && XMLBuilderCBImpl._VoidElementNames.has(node.localName)) {
         this._push(this._writer.openTagEnd(qualifiedName, true, true));
         this._writer.endElement(qualifiedName);
       } else if (!isHTML && !hasChildren) {
@@ -41787,22 +38306,22 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         this._prefixMap = map;
       }
       this._writer.level++;
-    };
-    XMLBuilderCBImpl2.prototype._serializeCloseTag = function() {
+    }
+    _serializeCloseTag() {
       this._writer.level--;
-      var lastEle = this._openTags.pop();
+      const lastEle = this._openTags.pop();
       if (lastEle === undefined) {
         this.emit("error", new Error("Last element is undefined."));
         return;
       }
-      var _a = __read(lastEle, 4), qualifiedName = _a[0], ns = _a[1], map = _a[2], hasChildren = _a[3];
+      const [qualifiedName, ns, map, hasChildren] = lastEle;
       this._prefixMap = map;
       if (!hasChildren)
         return;
       this._push(this._writer.closeTag(qualifiedName));
       this._writer.endElement(qualifiedName);
-    };
-    XMLBuilderCBImpl2.prototype._push = function(data) {
+    }
+    _push(data) {
       if (data === null) {
         this._ended = true;
         this.emit("end");
@@ -41812,52 +38331,25 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
         this._writer.hasData = true;
         this.emit("data", data, this._writer.level);
       }
-    };
-    XMLBuilderCBImpl2.prototype._fromNode = function(node) {
-      var e_3, _a, e_4, _b;
+    }
+    _fromNode(node) {
       if (util_2.Guard.isElementNode(node)) {
-        var name = node.prefix ? node.prefix + ":" + node.localName : node.localName;
+        const name = node.prefix ? node.prefix + ":" + node.localName : node.localName;
         if (node.namespaceURI !== null) {
           this.ele(node.namespaceURI, name);
         } else {
           this.ele(name);
         }
-        try {
-          for (var _c = __values(node.attributes), _d = _c.next();!_d.done; _d = _c.next()) {
-            var attr = _d.value;
-            var name_1 = attr.prefix ? attr.prefix + ":" + attr.localName : attr.localName;
-            if (attr.namespaceURI !== null) {
-              this.att(attr.namespaceURI, name_1, attr.value);
-            } else {
-              this.att(name_1, attr.value);
-            }
-          }
-        } catch (e_3_1) {
-          e_3 = { error: e_3_1 };
-        } finally {
-          try {
-            if (_d && !_d.done && (_a = _c.return))
-              _a.call(_c);
-          } finally {
-            if (e_3)
-              throw e_3.error;
+        for (const attr of node.attributes) {
+          const name2 = attr.prefix ? attr.prefix + ":" + attr.localName : attr.localName;
+          if (attr.namespaceURI !== null) {
+            this.att(attr.namespaceURI, name2, attr.value);
+          } else {
+            this.att(name2, attr.value);
           }
         }
-        try {
-          for (var _e = __values(node.childNodes), _f = _e.next();!_f.done; _f = _e.next()) {
-            var child = _f.value;
-            this._fromNode(child);
-          }
-        } catch (e_4_1) {
-          e_4 = { error: e_4_1 };
-        } finally {
-          try {
-            if (_f && !_f.done && (_b = _e.return))
-              _b.call(_e);
-          } finally {
-            if (e_4)
-              throw e_4.error;
-          }
+        for (const child of node.childNodes) {
+          this._fromNode(child);
         }
         this.up();
       } else if (util_2.Guard.isExclusiveTextNode(node) && node.data) {
@@ -41869,187 +38361,162 @@ var require_XMLBuilderCBImpl = __commonJS((exports) => {
       } else if (util_2.Guard.isProcessingInstructionNode(node)) {
         this.ins(node.target, node.data);
       }
-    };
-    XMLBuilderCBImpl2.prototype._serializeAttributes = function(node, map, prefixIndex, localPrefixesMap, ignoreNamespaceDefinitionAttribute, requireWellFormed) {
-      var e_5, _a;
-      var localNameSet = requireWellFormed ? new LocalNameSet_1.LocalNameSet : undefined;
-      try {
-        for (var _b = __values(node.attributes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var attr = _c.value;
-          if (!requireWellFormed && !ignoreNamespaceDefinitionAttribute && attr.namespaceURI === null) {
-            this._push(this._writer.attribute(attr.localName, this._serializeAttributeValue(attr.value, this._options.wellFormed)));
-            continue;
-          }
-          if (requireWellFormed && localNameSet && localNameSet.has(attr.namespaceURI, attr.localName)) {
-            this.emit("error", new Error("Element contains duplicate attributes (well-formed required)."));
-            return;
-          }
-          if (requireWellFormed && localNameSet)
-            localNameSet.set(attr.namespaceURI, attr.localName);
-          var attributeNamespace = attr.namespaceURI;
-          var candidatePrefix = null;
-          if (attributeNamespace !== null) {
-            candidatePrefix = map.get(attr.prefix, attributeNamespace);
-            if (attributeNamespace === infra_1.namespace.XMLNS) {
-              if (attr.value === infra_1.namespace.XML || attr.prefix === null && ignoreNamespaceDefinitionAttribute || attr.prefix !== null && (!(attr.localName in localPrefixesMap) || localPrefixesMap[attr.localName] !== attr.value) && map.has(attr.localName, attr.value))
-                continue;
-              if (requireWellFormed && attr.value === infra_1.namespace.XMLNS) {
-                this.emit("error", new Error("XMLNS namespace is reserved (well-formed required)."));
-                return;
-              }
-              if (requireWellFormed && attr.value === "") {
-                this.emit("error", new Error("Namespace prefix declarations cannot be used to undeclare a namespace (well-formed required)."));
-                return;
-              }
-              if (attr.prefix === "xmlns")
-                candidatePrefix = "xmlns";
-            } else if (candidatePrefix === null) {
-              if (attr.prefix !== null && (!map.hasPrefix(attr.prefix) || map.has(attr.prefix, attributeNamespace))) {
-                candidatePrefix = attr.prefix;
-              } else {
-                candidatePrefix = this._generatePrefix(attributeNamespace, map, prefixIndex);
-              }
-              this._push(this._writer.attribute("xmlns:" + candidatePrefix, this._serializeAttributeValue(attributeNamespace, this._options.wellFormed)));
+    }
+    _serializeAttributes(node, map, prefixIndex, localPrefixesMap, ignoreNamespaceDefinitionAttribute, requireWellFormed) {
+      const localNameSet = requireWellFormed ? new LocalNameSet_1.LocalNameSet : undefined;
+      for (const attr of node.attributes) {
+        if (!requireWellFormed && !ignoreNamespaceDefinitionAttribute && attr.namespaceURI === null) {
+          this._push(this._writer.attribute(attr.localName, this._serializeAttributeValue(attr.value, this._options.wellFormed)));
+          continue;
+        }
+        if (requireWellFormed && localNameSet && localNameSet.has(attr.namespaceURI, attr.localName)) {
+          this.emit("error", new Error("Element contains duplicate attributes (well-formed required)."));
+          return;
+        }
+        if (requireWellFormed && localNameSet)
+          localNameSet.set(attr.namespaceURI, attr.localName);
+        let attributeNamespace = attr.namespaceURI;
+        let candidatePrefix = null;
+        if (attributeNamespace !== null) {
+          candidatePrefix = map.get(attr.prefix, attributeNamespace);
+          if (attributeNamespace === infra_1.namespace.XMLNS) {
+            if (attr.value === infra_1.namespace.XML || attr.prefix === null && ignoreNamespaceDefinitionAttribute || attr.prefix !== null && (!(attr.localName in localPrefixesMap) || localPrefixesMap[attr.localName] !== attr.value) && map.has(attr.localName, attr.value))
+              continue;
+            if (requireWellFormed && attr.value === infra_1.namespace.XMLNS) {
+              this.emit("error", new Error("XMLNS namespace is reserved (well-formed required)."));
+              return;
             }
+            if (requireWellFormed && attr.value === "") {
+              this.emit("error", new Error("Namespace prefix declarations cannot be used to undeclare a namespace (well-formed required)."));
+              return;
+            }
+            if (attr.prefix === "xmlns")
+              candidatePrefix = "xmlns";
+          } else if (candidatePrefix === null) {
+            if (attr.prefix !== null && (!map.hasPrefix(attr.prefix) || map.has(attr.prefix, attributeNamespace))) {
+              candidatePrefix = attr.prefix;
+            } else {
+              candidatePrefix = this._generatePrefix(attributeNamespace, map, prefixIndex);
+            }
+            this._push(this._writer.attribute("xmlns:" + candidatePrefix, this._serializeAttributeValue(attributeNamespace, this._options.wellFormed)));
           }
-          if (requireWellFormed && (attr.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(attr.localName) || attr.localName === "xmlns" && attributeNamespace === null)) {
-            this.emit("error", new Error("Attribute local name contains invalid characters (well-formed required)."));
-            return;
-          }
-          this._push(this._writer.attribute((candidatePrefix !== null ? candidatePrefix + ":" : "") + attr.localName, this._serializeAttributeValue(attr.value, this._options.wellFormed)));
         }
-      } catch (e_5_1) {
-        e_5 = { error: e_5_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_5)
-            throw e_5.error;
+        if (requireWellFormed && (attr.localName.indexOf(":") !== -1 || !algorithm_1.xml_isName(attr.localName) || attr.localName === "xmlns" && attributeNamespace === null)) {
+          this.emit("error", new Error("Attribute local name contains invalid characters (well-formed required)."));
+          return;
         }
+        this._push(this._writer.attribute((candidatePrefix !== null ? candidatePrefix + ":" : "") + attr.localName, this._serializeAttributeValue(attr.value, this._options.wellFormed)));
       }
-    };
-    XMLBuilderCBImpl2.prototype._serializeAttributeValue = function(value, requireWellFormed) {
+    }
+    _serializeAttributeValue(value, requireWellFormed) {
       if (requireWellFormed && value !== null && !algorithm_1.xml_isLegalChar(value)) {
         this.emit("error", new Error("Invalid characters in attribute value."));
         return "";
       }
       if (value === null)
         return "";
-      return value.replace(/(?!&(lt|gt|amp|apos|quot);)&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    };
-    XMLBuilderCBImpl2.prototype._recordNamespaceInformation = function(node, map, localPrefixesMap) {
-      var e_6, _a;
-      var defaultNamespaceAttrValue = null;
-      try {
-        for (var _b = __values(node.attributes), _c = _b.next();!_c.done; _c = _b.next()) {
-          var attr = _c.value;
-          var attributeNamespace = attr.namespaceURI;
-          var attributePrefix = attr.prefix;
-          if (attributeNamespace === infra_1.namespace.XMLNS) {
-            if (attributePrefix === null) {
-              defaultNamespaceAttrValue = attr.value;
-              continue;
-            } else {
-              var prefixDefinition = attr.localName;
-              var namespaceDefinition = attr.value;
-              if (namespaceDefinition === infra_1.namespace.XML) {
-                continue;
-              }
-              if (namespaceDefinition === "") {
-                namespaceDefinition = null;
-              }
-              if (map.has(prefixDefinition, namespaceDefinition)) {
-                continue;
-              }
-              map.set(prefixDefinition, namespaceDefinition);
-              localPrefixesMap[prefixDefinition] = namespaceDefinition || "";
-            }
-          }
+      if (this._options.noDoubleEncoding) {
+        return value.replace(/(?!&(lt|gt|amp|apos|quot);)&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;").replace(/\t/g, "&#x9;").replace(/\n/g, "&#xA;").replace(/\r/g, "&#xD;");
+      } else {
+        let result = "";
+        for (let i = 0;i < value.length; i++) {
+          const c = value[i];
+          if (c === '"')
+            result += "&quot;";
+          else if (c === "&")
+            result += "&amp;";
+          else if (c === "<")
+            result += "&lt;";
+          else if (c === ">")
+            result += "&gt;";
+          else
+            result += c;
         }
-      } catch (e_6_1) {
-        e_6 = { error: e_6_1 };
-      } finally {
-        try {
-          if (_c && !_c.done && (_a = _b.return))
-            _a.call(_b);
-        } finally {
-          if (e_6)
-            throw e_6.error;
+        return result;
+      }
+    }
+    _recordNamespaceInformation(node, map, localPrefixesMap) {
+      let defaultNamespaceAttrValue = null;
+      for (const attr of node.attributes) {
+        let attributeNamespace = attr.namespaceURI;
+        let attributePrefix = attr.prefix;
+        if (attributeNamespace === infra_1.namespace.XMLNS) {
+          if (attributePrefix === null) {
+            defaultNamespaceAttrValue = attr.value;
+            continue;
+          } else {
+            let prefixDefinition = attr.localName;
+            let namespaceDefinition = attr.value;
+            if (namespaceDefinition === infra_1.namespace.XML) {
+              continue;
+            }
+            if (namespaceDefinition === "") {
+              namespaceDefinition = null;
+            }
+            if (map.has(prefixDefinition, namespaceDefinition)) {
+              continue;
+            }
+            map.set(prefixDefinition, namespaceDefinition);
+            localPrefixesMap[prefixDefinition] = namespaceDefinition || "";
+          }
         }
       }
       return defaultNamespaceAttrValue;
-    };
-    XMLBuilderCBImpl2.prototype._generatePrefix = function(newNamespace, prefixMap, prefixIndex) {
-      var generatedPrefix = "ns" + prefixIndex.value;
+    }
+    _generatePrefix(newNamespace, prefixMap, prefixIndex) {
+      let generatedPrefix = "ns" + prefixIndex.value;
       prefixIndex.value++;
       prefixMap.set(generatedPrefix, newNamespace);
       return generatedPrefix;
-    };
-    XMLBuilderCBImpl2.prototype._isPrefixMapModified = function(originalMap, newMap) {
-      var items1 = originalMap._items;
-      var items2 = newMap._items;
-      var nullItems1 = originalMap._nullItems;
-      var nullItems2 = newMap._nullItems;
-      for (var key in items2) {
-        var arr1 = items1[key];
+    }
+    _isPrefixMapModified(originalMap, newMap) {
+      const items1 = originalMap._items;
+      const items2 = newMap._items;
+      const nullItems1 = originalMap._nullItems;
+      const nullItems2 = newMap._nullItems;
+      for (const key in items2) {
+        const arr1 = items1[key];
         if (arr1 === undefined)
           return true;
-        var arr2 = items2[key];
+        const arr2 = items2[key];
         if (arr1.length !== arr2.length)
           return true;
-        for (var i = 0;i < arr1.length; i++) {
+        for (let i = 0;i < arr1.length; i++) {
           if (arr1[i] !== arr2[i])
             return true;
         }
       }
       if (nullItems1.length !== nullItems2.length)
         return true;
-      for (var i = 0;i < nullItems1.length; i++) {
+      for (let i = 0;i < nullItems1.length; i++) {
         if (nullItems1[i] !== nullItems2[i])
           return true;
       }
       return false;
-    };
-    XMLBuilderCBImpl2._VoidElementNames = new Set([
-      "area",
-      "base",
-      "basefont",
-      "bgsound",
-      "br",
-      "col",
-      "embed",
-      "frame",
-      "hr",
-      "img",
-      "input",
-      "keygen",
-      "link",
-      "menuitem",
-      "meta",
-      "param",
-      "source",
-      "track",
-      "wbr"
-    ]);
-    return XMLBuilderCBImpl2;
-  }(events_1.EventEmitter);
+    }
+  }
   exports.XMLBuilderCBImpl = XMLBuilderCBImpl;
-});
-
-// node_modules/xmlbuilder2/lib/builder/BuilderFunctionsCB.js
-var require_BuilderFunctionsCB = __commonJS((exports) => {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  var _1 = require_builder();
-  function createCB(options) {
-    return new _1.XMLBuilderCBImpl(options);
-  }
-  exports.createCB = createCB;
-  function fragmentCB(options) {
-    return new _1.XMLBuilderCBImpl(options, true);
-  }
-  exports.fragmentCB = fragmentCB;
+  XMLBuilderCBImpl._VoidElementNames = new Set([
+    "area",
+    "base",
+    "basefont",
+    "bgsound",
+    "br",
+    "col",
+    "embed",
+    "frame",
+    "hr",
+    "img",
+    "input",
+    "keygen",
+    "link",
+    "menuitem",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr"
+  ]);
 });
 
 // node_modules/xmlbuilder2/lib/builder/index.js
@@ -42059,26 +38526,152 @@ var require_builder = __commonJS((exports) => {
   exports.XMLBuilderImpl = XMLBuilderImpl_1.XMLBuilderImpl;
   var XMLBuilderCBImpl_1 = require_XMLBuilderCBImpl();
   exports.XMLBuilderCBImpl = XMLBuilderCBImpl_1.XMLBuilderCBImpl;
-  var BuilderFunctions_1 = require_BuilderFunctions();
-  exports.builder = BuilderFunctions_1.builder;
-  exports.create = BuilderFunctions_1.create;
-  exports.fragment = BuilderFunctions_1.fragment;
-  exports.convert = BuilderFunctions_1.convert;
-  var BuilderFunctionsCB_1 = require_BuilderFunctionsCB();
-  exports.createCB = BuilderFunctionsCB_1.createCB;
-  exports.fragmentCB = BuilderFunctionsCB_1.fragmentCB;
 });
 
 // node_modules/xmlbuilder2/lib/index.js
-var require_lib11 = __commonJS((exports) => {
+var require_lib12 = __commonJS((exports) => {
   Object.defineProperty(exports, "__esModule", { value: true });
+  var interfaces_1 = require_interfaces();
+  var util_1 = require_lib8();
+  var util_2 = require_util2();
   var builder_1 = require_builder();
-  exports.builder = builder_1.builder;
-  exports.create = builder_1.create;
-  exports.fragment = builder_1.fragment;
-  exports.convert = builder_1.convert;
-  exports.createCB = builder_1.createCB;
-  exports.fragmentCB = builder_1.fragmentCB;
+  var dom_1 = require_dom2();
+  var util_3 = __require("util");
+  var builder_2 = require_builder();
+  function builder(p1, p2) {
+    const options = formatBuilderOptions(isXMLBuilderCreateOptions(p1) ? p1 : interfaces_1.DefaultBuilderOptions);
+    const nodes = util_2.Guard.isNode(p1) || util_3.isArray(p1) ? p1 : p2;
+    if (nodes === undefined) {
+      throw new Error("Invalid arguments.");
+    }
+    if (util_3.isArray(nodes)) {
+      const builders = [];
+      for (let i = 0;i < nodes.length; i++) {
+        const builder2 = new builder_1.XMLBuilderImpl(nodes[i]);
+        builder2.set(options);
+        builders.push(builder2);
+      }
+      return builders;
+    } else {
+      const builder2 = new builder_1.XMLBuilderImpl(nodes);
+      builder2.set(options);
+      return builder2;
+    }
+  }
+  exports.builder = builder;
+  function create(p1, p2) {
+    const options = formatBuilderOptions(p1 === undefined || isXMLBuilderCreateOptions(p1) ? p1 : interfaces_1.DefaultBuilderOptions);
+    const contents = isXMLBuilderCreateOptions(p1) ? p2 : p1;
+    let builder2;
+    if (contents === undefined) {
+      const doc = dom_1.createDocument();
+      builder2 = new builder_1.XMLBuilderImpl(doc);
+      setOptions(doc, options);
+    } else if (util_1.isObject(contents)) {
+      const doc = dom_1.createDocument();
+      builder2 = new builder_1.XMLBuilderImpl(doc);
+      setOptions(doc, options);
+      builder2.ele(contents);
+    } else if (/^\s*</.test(contents)) {
+      const domParser = dom_1.createParser();
+      const doc = domParser.parseFromString(dom_1.sanitizeInput(contents, options.invalidCharReplacement), "text/xml");
+      dom_1.throwIfParserError(doc);
+      builder2 = new builder_1.XMLBuilderImpl(doc);
+      setOptions(doc, options);
+    } else {
+      const doc = dom_1.createDocument();
+      builder2 = new builder_1.XMLBuilderImpl(doc);
+      setOptions(doc, options);
+      const obj = JSON.parse(contents);
+      builder2.ele(obj);
+    }
+    return builder2;
+  }
+  exports.create = create;
+  function fragment(p1, p2) {
+    const options = formatBuilderOptions(p1 === undefined || isXMLBuilderCreateOptions(p1) ? p1 : interfaces_1.DefaultBuilderOptions);
+    const contents = isXMLBuilderCreateOptions(p1) ? p2 : p1;
+    let builder2;
+    if (contents === undefined) {
+      const doc = dom_1.createDocument();
+      setOptions(doc, options, true);
+      builder2 = new builder_1.XMLBuilderImpl(doc.createDocumentFragment());
+    } else if (util_1.isObject(contents)) {
+      const doc = dom_1.createDocument();
+      setOptions(doc, options, true);
+      builder2 = new builder_1.XMLBuilderImpl(doc.createDocumentFragment());
+      builder2.ele(contents);
+    } else if (/^\s*</.test(contents)) {
+      const domParser = dom_1.createParser();
+      const doc = domParser.parseFromString("<TEMP_ROOT>" + dom_1.sanitizeInput(contents, options.invalidCharReplacement) + "</TEMP_ROOT>", "text/xml");
+      dom_1.throwIfParserError(doc);
+      setOptions(doc, options, true);
+      if (doc.documentElement === null) {
+        throw new Error("Document element is null.");
+      }
+      const frag = doc.createDocumentFragment();
+      for (const child of doc.documentElement.childNodes) {
+        const newChild = doc.importNode(child, true);
+        frag.appendChild(newChild);
+      }
+      builder2 = new builder_1.XMLBuilderImpl(frag);
+    } else {
+      const doc = dom_1.createDocument();
+      setOptions(doc, options, true);
+      builder2 = new builder_1.XMLBuilderImpl(doc.createDocumentFragment());
+      const obj = JSON.parse(contents);
+      builder2.ele(obj);
+    }
+    return builder2;
+  }
+  exports.fragment = fragment;
+  function convert(p1, p2, p3) {
+    let builderOptions;
+    let contents;
+    let convertOptions;
+    if (isXMLBuilderCreateOptions(p1) && p2 !== undefined) {
+      builderOptions = p1;
+      contents = p2;
+      convertOptions = p3;
+    } else {
+      builderOptions = interfaces_1.DefaultBuilderOptions;
+      contents = p1;
+      convertOptions = p2 || undefined;
+    }
+    return create(builderOptions, contents).end(convertOptions);
+  }
+  exports.convert = convert;
+  function createCB(options) {
+    return new builder_2.XMLBuilderCBImpl(options);
+  }
+  exports.createCB = createCB;
+  function fragmentCB(options) {
+    return new builder_2.XMLBuilderCBImpl(options, true);
+  }
+  exports.fragmentCB = fragmentCB;
+  function isXMLBuilderCreateOptions(obj) {
+    if (!util_1.isPlainObject(obj))
+      return false;
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (!interfaces_1.XMLBuilderOptionKeys.has(key))
+          return false;
+      }
+    }
+    return true;
+  }
+  function formatBuilderOptions(createOptions = {}) {
+    const options = util_1.applyDefaults(createOptions, interfaces_1.DefaultBuilderOptions);
+    if (options.convert.att.length === 0 || options.convert.ins.length === 0 || options.convert.text.length === 0 || options.convert.cdata.length === 0 || options.convert.comment.length === 0) {
+      throw new Error("JS object converter strings cannot be zero length.");
+    }
+    return options;
+  }
+  function setOptions(doc, options, isFragment) {
+    const docWithSettings = doc;
+    docWithSettings._xmlBuilderOptions = options;
+    docWithSettings._isFragment = isFragment;
+  }
 });
 
 // node_modules/lodash/lodash.js
@@ -57468,7 +54061,7 @@ var import_html_entities = __toESM(require_lib4(), 1);
 var import_html_to_vdom2 = __toESM(require_html_to_vdom2(), 1);
 var import_vnode4 = __toESM(require_vnode(), 1);
 var import_vtext2 = __toESM(require_vtext(), 1);
-var import_xmlbuilder24 = __toESM(require_lib11(), 1);
+var import_xmlbuilder24 = __toESM(require_lib12(), 1);
 
 // src/constants.ts
 var import_lodash = __toESM(require_lodash(), 1);
@@ -57609,7 +54202,7 @@ function nanoid(size = 21) {
 }
 
 // src/docx-document.ts
-var import_xmlbuilder23 = __toESM(require_lib11(), 1);
+var import_xmlbuilder23 = __toESM(require_lib12(), 1);
 
 // src/helpers/render-document-file.ts
 var import_html_to_vdom = __toESM(require_html_to_vdom2(), 1);
@@ -57618,7 +54211,7 @@ var import_is_vnode2 = __toESM(require_is_vnode(), 1);
 var import_is_vtext2 = __toESM(require_is_vtext(), 1);
 var import_vnode2 = __toESM(require_vnode(), 1);
 var import_vtext = __toESM(require_vtext(), 1);
-var import_xmlbuilder22 = __toESM(require_lib11(), 1);
+var import_xmlbuilder22 = __toESM(require_lib12(), 1);
 
 // src/namespaces.ts
 var namespaces = {
@@ -57876,7 +54469,7 @@ var import_image_size = __toESM(require_dist(), 1);
 var import_lodash2 = __toESM(require_lodash(), 1);
 var import_is_vnode = __toESM(require_is_vnode(), 1);
 var import_is_vtext = __toESM(require_is_vtext(), 1);
-var import_xmlbuilder2 = __toESM(require_lib11(), 1);
+var import_xmlbuilder2 = __toESM(require_lib12(), 1);
 
 // src/utils/color-conversion.ts
 var rgbRegex = /rgb\((\d+),\s*([\d.]+),\s*([\d.]+)\)/i;
@@ -58133,7 +54726,7 @@ function fixupMargin(marginString) {
     return pixelToTWIP(matchedParts[1]);
   }
 }
-function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes, options) {
+function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes, options = { isParagraph: false }) {
   const modifiedAttributes = { ...attributes };
   if (import_is_vnode.default(vNode) && vNode.properties && vNode.properties.style) {
     if (vNode.properties.style.color && !colorlessColors.includes(vNode.properties.style.color)) {
@@ -58636,7 +55229,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
         paragraphFragment.import(runOrHyperlinkFragments);
       }
     } else if (vNode.tagName === "blockquote") {
-      const runFragmentOrFragments = await buildRun(vNode, attributes);
+      const runFragmentOrFragments = await buildRun(vNode, attributes, docxDocumentInstance);
       if (Array.isArray(runFragmentOrFragments)) {
         for (let index = 0;index < runFragmentOrFragments.length; index++) {
           paragraphFragment.import(runFragmentOrFragments[index]);
@@ -58653,7 +55246,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
           }
           const base64String = extractBase64Data(childVNode.properties.src)?.base64Content;
           const imageBuffer = Buffer.from(decodeURIComponent(base64String), "base64");
-          const imageProperties = import_image_size.default(imageBuffer);
+          const imageProperties = import_image_size.imageSize(imageBuffer);
           modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth || docxDocumentInstance.availableDocumentSpace;
           modifiedAttributes.originalWidth = imageProperties.width;
           modifiedAttributes.originalHeight = imageProperties.height;
@@ -58682,7 +55275,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
       }
       const base64String = extractBase64Data(imageSource).base64Content;
       const imageBuffer = Buffer.from(decodeURIComponent(base64String), "base64");
-      const imageProperties = import_image_size.default(imageBuffer);
+      const imageProperties = import_image_size.imageSize(imageBuffer);
       modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth || docxDocumentInstance.availableDocumentSpace;
       modifiedAttributes.originalWidth = imageProperties.width;
       modifiedAttributes.originalHeight = imageProperties.height;
@@ -59028,7 +55621,7 @@ async function buildTableRow(vNode, attributes, rowSpanMap, docxDocumentInstance
   return tableRowFragment;
 }
 function buildTableGridCol(gridWidth) {
-  return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "gridCol").att("@w", "w", String(gridWidth));
+  return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "gridCol").att("@w", "w", String(Math.round(gridWidth)));
 }
 function buildTableGrid(vNode, attributes) {
   const tableGridFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "tblGrid");
@@ -59466,7 +56059,7 @@ async function buildImage(docxDocumentInstance, vNode, maximumWidth = null) {
     });
     const documentRelsId = docxDocumentInstance.createDocumentRelationships(docxDocumentInstance.relationshipFilename, imageType, `media/${response.fileNameWithExtension}`, internalRelationship);
     const imageBuffer = Buffer.from(response.fileContent, "base64");
-    const imageProperties = import_image_size2.default(imageBuffer);
+    const imageProperties = import_image_size2.imageSize(imageBuffer);
     const imageFragment = await buildParagraph(vNode, {
       type: "picture",
       inlineOrAnchored: true,
@@ -59579,7 +56172,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
               rowCantSplit: docxDocumentInstance.tableRowCantSplit
             }, docxDocumentInstance);
             xmlFragment.import(tableFragment2);
-            const emptyParagraphFragment2 = await buildParagraph(null, {});
+            const emptyParagraphFragment2 = await buildParagraph(null, {}, docxDocumentInstance);
             xmlFragment.import(emptyParagraphFragment2);
           } else if (childVNode.tagName === "img") {
             const imageFragment2 = await buildImage(docxDocumentInstance, childVNode);
@@ -59596,7 +56189,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
         rowCantSplit: docxDocumentInstance.tableRowCantSplit
       }, docxDocumentInstance);
       xmlFragment.import(tableFragment);
-      const emptyParagraphFragment = await buildParagraph(null, {});
+      const emptyParagraphFragment = await buildParagraph(null, {}, docxDocumentInstance);
       xmlFragment.import(emptyParagraphFragment);
       return;
     case "ol":
@@ -59610,7 +56203,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
       }
       return;
     case "br":
-      const linebreakFragment = await buildParagraph(null, {});
+      const linebreakFragment = await buildParagraph(null, {}, docxDocumentInstance);
       xmlFragment.import(linebreakFragment);
       return;
     case "head":
@@ -60395,6 +56988,50 @@ async function generateSectionXML(vTree, type = "header") {
 }
 
 class DocxDocument {
+  zip;
+  htmlString;
+  orientation;
+  pageSize;
+  width;
+  height;
+  margins;
+  availableDocumentSpace;
+  title;
+  subject;
+  creator;
+  keywords;
+  description;
+  lastModifiedBy;
+  revision;
+  createdAt;
+  modifiedAt;
+  headerType;
+  header;
+  footerType;
+  footer;
+  font;
+  fontSize;
+  complexScriptFontSize;
+  lang;
+  tableRowCantSplit;
+  pageNumber;
+  skipFirstHeaderFooter;
+  lineNumber;
+  lastNumberingId;
+  lastMediaId;
+  lastHeaderId;
+  lastFooterId;
+  stylesObjects;
+  numberingObjects;
+  fontTableObjects;
+  relationshipFilename;
+  relationships;
+  mediaFiles;
+  headerObjects;
+  footerObjects;
+  documentXML;
+  generateSectionXML;
+  ListStyleBuilder;
   constructor(properties) {
     this.zip = properties.zip;
     this.htmlString = properties.htmlString;
@@ -60479,7 +57116,7 @@ class DocxDocument {
     }
     if (this.lineNumber) {
       const { countBy, start, restart } = this.lineNumber;
-      documentXML.root().first().first().import(import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "lnNumType").att("@w", "countBy", countBy).att("@w", "start", start).att("@w", "restart", restart));
+      documentXML.root().first().first().import(import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "lnNumType").att("@w", "countBy", String(countBy)).att("@w", "start", String(start)).att("@w", "restart", String(restart)));
     }
     return documentXML.toString({ prettyPrint: true });
   }
@@ -60549,7 +57186,7 @@ class DocxDocument {
       [
         ...Array(8).keys()
       ].forEach((level) => {
-        const levelFragment = import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "lvl").att("@w", "ilvl", level).ele("@w", "start").att("@w", "val", type === "ol" ? properties.attributes && properties.attributes["data-start"] || 1 : "1").up().ele("@w", "numFmt").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListStyleType(properties.style && properties.style["list-style-type"]) : "bullet").up().ele("@w", "lvlText").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListPrefixSuffix(properties.style, level) : "").up().ele("@w", "lvlJc").att("@w", "val", "left").up().ele("@w", "pPr").ele("@w", "tabs").ele("@w", "tab").att("@w", "val", "num").att("@w", "pos", (level + 1) * 720).up().up().ele("@w", "ind").att("@w", "left", (level + 1) * 720).att("@w", "hanging", 360).up().up().up();
+        const levelFragment = import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "lvl").att("@w", "ilvl", String(level)).ele("@w", "start").att("@w", "val", type === "ol" ? properties.attributes && properties.attributes["data-start"] || 1 : "1").up().ele("@w", "numFmt").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListStyleType(properties.style && properties.style["list-style-type"]) : "bullet").up().ele("@w", "lvlText").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListPrefixSuffix(properties.style, level) : "").up().ele("@w", "lvlJc").att("@w", "val", "left").up().ele("@w", "pPr").ele("@w", "tabs").ele("@w", "tab").att("@w", "val", "num").att("@w", "pos", String((level + 1) * 720)).up().up().ele("@w", "ind").att("@w", "left", String((level + 1) * 720)).att("@w", "hanging", "360").up().up().up();
         if (type === "ul") {
           levelFragment.last().import(import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "rPr").ele("@w", "rFonts").att("@w", "ascii", "Symbol").att("@w", "hAnsi", "Symbol").att("@w", "hint", "default").up().up());
         }
@@ -60811,7 +57448,7 @@ function minifyHTMLString(htmlString) {
     console.error(error);
   }
 }
-async function generateContainer(htmlString, headerHTMLString, documentOptions = {}, footerHTMLString) {
+async function generateContainer(htmlString, headerHTMLString, documentOptions, footerHTMLString) {
   const zip = new import_jszip.default;
   let contentHTML = htmlString;
   let headerHTML = headerHTMLString;

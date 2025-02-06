@@ -41,7 +41,7 @@ test-docx-files:
 
 
 # Run all the tests
-test: fmt lint test-unit
+test: fmt lint check-types test-unit
 
 
 build-esm:
