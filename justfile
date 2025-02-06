@@ -35,6 +35,11 @@ test-unit: node_modules
   node --test --disable-warning=ExperimentalWarning
 
 
+# Run C#'s OpenXmlValidator on the test Docx files
+test-docx-files:
+  cd TestWordFiles && dotnet run
+
+
 # Run all the tests
 test: fmt lint test-unit
 
