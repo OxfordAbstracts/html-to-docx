@@ -43,13 +43,15 @@
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "@stylistic/eslint-plugin": "^3.0.1",
+    "@types/image-size": "^0.7.0",
     "@types/virtual-dom": "^2.1.4",
     "canvas": "^3.1.0",
     "dprint": "^0.48.0",
     "eslint-config-javascript": "^3.0.0",
     "globals": "^15.14.0",
     "lint-staged": "^15.4.3",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@oozcitak/dom": "1.15.10",
@@ -63,7 +65,7 @@
     "mime-types": "^2.1.35",
     "nanoid": "^5.0.9",
     "virtual-dom": "^2.1.1",
-    "xmlbuilder2": "3.1.1"
+    "xmlbuilder2": "2.1.2"
   },
   "lint-staged": {
     "src/**/*.ts": [

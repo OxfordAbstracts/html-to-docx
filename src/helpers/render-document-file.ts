@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import { default as HTMLToVDOM } from "html-to-vdom"
-import sizeOf from "image-size"
+import { imageSize } from "image-size"
 import isVNode from "virtual-dom/vnode/is-vnode.js"
 import isVText from "virtual-dom/vnode/is-vtext.js"
 import VNode from "virtual-dom/vnode/vnode.js"
@@ -58,7 +58,7 @@ export async function buildImage(
     )
 
     const imageBuffer = Buffer.from(response.fileContent, "base64")
-    const imageProperties = sizeOf(imageBuffer)
+    const imageProperties = imageSize(imageBuffer)
 
     const imageFragment = await xmlBuilder.buildParagraph(
       vNode,
@@ -261,6 +261,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
             const emptyParagraphFragment = await xmlBuilder.buildParagraph(
               null,
               {},
+              docxDocumentInstance,
             )
             xmlFragment.import(emptyParagraphFragment)
           }
@@ -287,7 +288,11 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
       )
       xmlFragment.import(tableFragment)
       // Adding empty paragraph for space after table
-      const emptyParagraphFragment = await xmlBuilder.buildParagraph(null, {})
+      const emptyParagraphFragment = await xmlBuilder.buildParagraph(
+        null,
+        {},
+        docxDocumentInstance,
+      )
       xmlFragment.import(emptyParagraphFragment)
       return
     case "ol":
@@ -301,7 +306,11 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
       }
       return
     case "br":
-      const linebreakFragment = await xmlBuilder.buildParagraph(null, {})
+      const linebreakFragment = await xmlBuilder.buildParagraph(
+        null,
+        {},
+        docxDocumentInstance,
+      )
       xmlFragment.import(linebreakFragment)
       return
     case "head":

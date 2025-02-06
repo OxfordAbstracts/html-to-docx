@@ -57534,7 +57534,7 @@ var portraitMargins = {
 var defaultFont = "Times New Roman";
 var defaultFontSize = 22;
 var defaultLang = "en-US";
-var defaultDocumentOptions = {
+var defaultDocumentOptions: DocumentOptions = {
   orientation: defaultOrientation,
   margins: import_lodash.default.cloneDeep(portraitMargins),
   title: "",

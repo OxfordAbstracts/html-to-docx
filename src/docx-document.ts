@@ -34,11 +34,16 @@ import {
   settingsXML as settingsXMLString,
   webSettingsXML as webSettingsXMLString,
 } from "./schemas/index.ts"
+import { type Margins } from "./types.ts"
 import { extractBase64Data } from "./utils/base64.ts"
 import { fontFamilyToTableObject } from "./utils/font-family-conversion.ts"
 import ListStyleBuilder from "./utils/list.ts"
 
-function generateContentTypesFragments(contentTypesXML, type, objects) {
+function generateContentTypesFragments(
+  contentTypesXML,
+  type: string,
+  objects: Record<string, unknown>[],
+) {
   if (objects && Array.isArray(objects)) {
     objects.forEach((object) => {
       const contentTypesFragment = fragment({
@@ -117,7 +122,8 @@ async function generateSectionXML(vTree, type = "header") {
   const XMLFragment = fragment()
   await convertVTreeToXML(this, vTree, XMLFragment)
   if (
-    type === "footer" && XMLFragment.first().node.tagName === "p" &&
+    type === "footer" &&
+    (XMLFragment.first().node as unknown as Element).tagName === "p" &&
     this.pageNumber
   ) {
     XMLFragment.first()
@@ -145,6 +151,51 @@ async function generateSectionXML(vTree, type = "header") {
 }
 
 export default class DocxDocument {
+  zip: unknown
+  htmlString: string
+  orientation: "portrait" | "landscape"
+  pageSize: { height: number; width: number }
+  width: number
+  height: number
+  margins: Margins
+  availableDocumentSpace: number
+  title: string
+  subject: string
+  creator: string
+  keywords: string[]
+  description: string
+  lastModifiedBy: string
+  revision: number
+  createdAt: Date
+  modifiedAt: Date
+  headerType: string
+  header: boolean
+  footerType: string
+  footer: boolean
+  font: string
+  fontSize: number
+  complexScriptFontSize: number
+  lang: string
+  tableRowCantSplit: boolean
+  pageNumber: boolean
+  skipFirstHeaderFooter: boolean
+  lineNumber: { countBy: number; start: number; restart: number }
+  lastNumberingId: number
+  lastMediaId: number
+  lastHeaderId: number
+  lastFooterId: number
+  stylesObjects: unknown[]
+  numberingObjects: unknown[]
+  fontTableObjects: unknown[]
+  relationshipFilename: string
+  relationships: { fileName: string; lastRelsId: number; rels: unknown[] }[]
+  mediaFiles: unknown[]
+  headerObjects: Record<string, unknown>[]
+  footerObjects: Record<string, unknown>[]
+  documentXML: null
+  generateSectionXML: typeof generateSectionXML
+  ListStyleBuilder: ListStyleBuilder
+
   constructor(properties) {
     this.zip = properties.zip
     this.htmlString = properties.htmlString
@@ -300,9 +351,9 @@ export default class DocxDocument {
         .import(
           fragment({ namespaceAlias: { w: namespaces.w } })
             .ele("@w", "lnNumType")
-            .att("@w", "countBy", countBy)
-            .att("@w", "start", start)
-            .att("@w", "restart", restart),
+            .att("@w", "countBy", String(countBy))
+            .att("@w", "start", String(start))
+            .att("@w", "restart", String(restart)),
         )
     }
 
@@ -428,7 +479,7 @@ export default class DocxDocument {
       ].forEach((level) => {
         const levelFragment = fragment({ namespaceAlias: { w: namespaces.w } })
           .ele("@w", "lvl")
-          .att("@w", "ilvl", level)
+          .att("@w", "ilvl", String(level))
           .ele("@w", "start")
           .att(
             "@w",
@@ -469,12 +520,12 @@ export default class DocxDocument {
           .ele("@w", "tabs")
           .ele("@w", "tab")
           .att("@w", "val", "num")
-          .att("@w", "pos", (level + 1) * 720)
+          .att("@w", "pos", String((level + 1) * 720))
           .up()
           .up()
           .ele("@w", "ind")
-          .att("@w", "left", (level + 1) * 720)
-          .att("@w", "hanging", 360)
+          .att("@w", "left", String((level + 1) * 720))
+          .att("@w", "hanging", "360")
           .up()
           .up()
           .up()

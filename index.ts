@@ -1,5 +1,6 @@
 import JSZip from "jszip"
 import addFilesToContainer from "./src/html-to-docx.ts"
+import { type DocumentOptions } from "./src/types.ts"
 
 function minifyHTMLString(htmlString) {
   try {
@@ -23,9 +24,9 @@ function minifyHTMLString(htmlString) {
 }
 
 export default async function generateContainer(
-  htmlString,
-  headerHTMLString,
-  documentOptions = {},
+  htmlString: string,
+  headerHTMLString: string,
+  documentOptions: DocumentOptions,
   footerHTMLString?: string,
 ) {
   const zip = new JSZip()

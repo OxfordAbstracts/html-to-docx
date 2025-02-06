@@ -4,6 +4,7 @@ import fs from "node:fs/promises"
 import { test } from "node:test"
 
 import htmlToDocx from "../index.ts"
+import writeFile from "./write-file.ts"
 
 const createdAt = new Date("2025-01-01")
 
@@ -59,6 +60,7 @@ test("handles a large HTML file", async () => {
     createdAt,
     modifiedAt: createdAt,
   })
+  writeFile(docxContent, "tests/_tmp_large-html.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -78,6 +80,7 @@ test("handles a large and complicated HTML file", async () => {
     createdAt,
     modifiedAt: createdAt,
   })
+  writeFile(docxContent, "tests/_tmp_html5-test-page.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

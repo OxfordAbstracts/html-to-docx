@@ -1,9 +1,11 @@
 import assert from "assert"
 import { createCanvas } from "canvas"
+import fs from "fs/promises"
 import JSZip from "jszip"
 import { test } from "node:test"
 
 import htmlToDocx from "../index.ts"
+import writeFile from "./write-file.ts"
 
 const createdAt = new Date("2025-01-01")
 
@@ -39,8 +41,34 @@ function generateHTMLWithImages(numberOfImages = 4, imgSizeInMb = 4) {
       </body>
     </html>
   `
-  return html
+  return html.replaceAll(/>\s+</gm, "><")
 }
+
+test("handles HTML file with an image", async () => {
+  const html = generateHTMLWithImages(1, 0.2)
+  const docxContent = await htmlToDocx(html, null, {
+    createdAt,
+    modifiedAt: createdAt,
+    footer: true,
+  })
+  writeFile(docxContent, "tests/_tmp_html-with-image.docx")
+
+  const zip = new JSZip()
+  const zipContent = await zip.loadAsync(docxContent)
+
+  assert.ok("word/document.xml" in zipContent.files)
+
+  const imgRegex = /"image-[^.]+\./g
+  const docXml = (await zipContent.file("word/document.xml")
+    ?.async("string") || "")
+    .replaceAll(imgRegex, '"image.')
+    .trim()
+  const expectedDocXml = (await fs
+    .readFile("tests/large-image-document.xml", "utf8"))
+    .replaceAll(imgRegex, '"image.')
+    .trim()
+  assert.strictEqual(docXml, expectedDocXml)
+})
 
 test("handles large images in HTML file", async () => {
   const largeHTML = generateHTMLWithImages()
@@ -48,6 +76,7 @@ test("handles large images in HTML file", async () => {
     createdAt,
     modifiedAt: createdAt,
   })
+  writeFile(docxContent, "tests/_tmp_html-with-images.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -56,5 +85,5 @@ test("handles large images in HTML file", async () => {
 
   const docXml = await zipContent.file("word/document.xml")
     ?.async("string") || ""
-  assert.ok(docXml.includes('<w:cNvPr id="2" name="image-'))
+  assert.ok(docXml.includes('<pic:cNvPr id="2" name="image-'))
 })

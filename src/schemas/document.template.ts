@@ -3,7 +3,7 @@ import namespaces from "../namespaces.ts"
 export default function generateDocumentTemplate(
   width: number,
   height: number,
-  orientation: "horizontal" | "vertical",
+  orientation: "portrait" | "landscape",
   margins: {
     top: number
     right: number

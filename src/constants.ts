@@ -1,4 +1,5 @@
 import lodash from "lodash"
+import { type DocumentOptions } from "./types.ts"
 
 const applicationName = "html-to-docx"
 const defaultOrientation = "portrait"
@@ -25,7 +26,7 @@ const portraitMargins = {
 const defaultFont = "Times New Roman"
 const defaultFontSize = 22
 const defaultLang = "en-US"
-const defaultDocumentOptions = {
+const defaultDocumentOptions: DocumentOptions = {
   orientation: defaultOrientation,
   margins: lodash.cloneDeep(portraitMargins),
   title: "",

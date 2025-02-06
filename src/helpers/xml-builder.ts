@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 
 import colorNames from "color-name"
-import sizeOf from "image-size"
+import { imageSize } from "image-size"
 import lodash from "lodash"
 import isVNode from "virtual-dom/vnode/is-vnode.js"
 import isVText from "virtual-dom/vnode/is-vtext.js"
@@ -321,7 +321,7 @@ function modifiedStyleAttributesBuilder(
   docxDocumentInstance,
   vNode,
   attributes,
-  options,
+  options = { isParagraph: false },
 ) {
   const modifiedAttributes = { ...attributes }
 
@@ -1107,7 +1107,11 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
       }
     }
     else if (vNode.tagName === "blockquote") {
-      const runFragmentOrFragments = await buildRun(vNode, attributes)
+      const runFragmentOrFragments = await buildRun(
+        vNode,
+        attributes,
+        docxDocumentInstance,
+      )
       if (Array.isArray(runFragmentOrFragments)) {
         for (let index = 0; index < runFragmentOrFragments.length; index++) {
           paragraphFragment.import(runFragmentOrFragments[index])
@@ -1132,7 +1136,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
             decodeURIComponent(base64String),
             "base64",
           )
-          const imageProperties = sizeOf(imageBuffer)
+          const imageProperties = imageSize(imageBuffer)
 
           modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
             docxDocumentInstance.availableDocumentSpace
@@ -1184,7 +1188,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
         decodeURIComponent(base64String),
         "base64",
       )
-      const imageProperties = sizeOf(imageBuffer)
+      const imageProperties = imageSize(imageBuffer)
 
       modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
         docxDocumentInstance.availableDocumentSpace
@@ -1771,7 +1775,7 @@ async function buildTableRow(
 function buildTableGridCol(gridWidth) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "gridCol")
-    .att("@w", "w", String(gridWidth))
+    .att("@w", "w", String(Math.round(gridWidth)))
 }
 
 function buildTableGrid(vNode, attributes) {
@@ -2343,7 +2347,7 @@ function buildPicture(
   return pictureFragment
 }
 
-function buildGraphicData(graphicType, attributes) {
+function buildGraphicData(graphicType: "picture", attributes) {
   const graphicDataFragment = fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "graphicData")
     .att("uri", "http://schemas.openxmlformats.org/drawingml/2006/picture")
@@ -2356,7 +2360,7 @@ function buildGraphicData(graphicType, attributes) {
   return graphicDataFragment
 }
 
-function buildGraphic(graphicType, attributes) {
+function buildGraphic(graphicType: "picture", attributes) {
   const graphicFragment = fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "graphic")
   // TODO: Handle drawing type
@@ -2386,11 +2390,12 @@ function buildWrapSquare() {
     .up()
 }
 
-// function buildWrapNone() {
-//   fragment({ namespaceAlias: { wp: namespaces.wp } })
-//     .ele("@wp", "wrapNone")
-//     .up()
-// }
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+function buildWrapNone() {
+  return fragment({ namespaceAlias: { wp: namespaces.wp } })
+    .ele("@wp", "wrapNone")
+    .up()
+}
 
 function buildEffectExtentFragment() {
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
@@ -2436,7 +2441,7 @@ function buildSimplePos() {
     .up()
 }
 
-function buildAnchoredDrawing(graphicType, attributes) {
+function buildAnchoredDrawing(graphicType: "picture", attributes) {
   const anchoredDrawingFragment = fragment({
     namespaceAlias: { wp: namespaces.wp },
   })
@@ -2481,7 +2486,7 @@ function buildAnchoredDrawing(graphicType, attributes) {
   return anchoredDrawingFragment
 }
 
-function buildInlineDrawing(graphicType, attributes) {
+function buildInlineDrawing(graphicType: "picture", attributes) {
   const inlineDrawingFragment = fragment({
     namespaceAlias: { wp: namespaces.wp },
   })
@@ -2512,7 +2517,16 @@ function buildInlineDrawing(graphicType, attributes) {
   return inlineDrawingFragment
 }
 
-function buildDrawing(inlineOrAnchored = false, graphicType, attributes) {
+function buildDrawing(
+  inlineOrAnchored = false,
+  graphicType: "picture",
+  attributes: {
+    width: number
+    height: number
+    id: number
+    fileNameWithExtension: string
+  },
+) {
   const drawingFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "drawing")
   const inlineOrAnchoredDrawingFragment = inlineOrAnchored

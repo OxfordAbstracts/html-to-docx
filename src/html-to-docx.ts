@@ -22,6 +22,7 @@ import {
 import DocxDocument from "./docx-document.ts"
 import { renderDocumentFile } from "./helpers/index.ts"
 import { relsXML } from "./schemas/index.ts"
+import { type DocumentOptions } from "./types.ts"
 import {
   cmRegex,
   cmToTWIP,
@@ -121,10 +122,10 @@ function normalizeDocumentOptions(documentOptions) {
 // http://officeopenxml.com/anatomyofOOXML.php
 export default async function addFilesToContainer(
   zip,
-  htmlString,
-  suppliedDocumentOptions,
-  headerHTMLString,
-  footerHTMLString,
+  htmlString: string,
+  suppliedDocumentOptions: DocumentOptions,
+  headerHTMLString: string,
+  footerHTMLString: string,
 ) {
   const normalizedDocumentOptions = normalizeDocumentOptions(
     suppliedDocumentOptions,
