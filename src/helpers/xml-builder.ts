@@ -2171,11 +2171,11 @@ function buildPresetGeometry() {
     .up()
 }
 
-function buildExtents({ width, height }) {
+function buildExtents({ width = 0, height = 0 }) {
   return fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "ext")
-    .att("cx", width)
-    .att("cy", height)
+    .att("cx", String(width))
+    .att("cy", String(height))
     .up()
 }
 
@@ -2407,11 +2407,11 @@ function buildEffectExtentFragment() {
     .up()
 }
 
-function buildExtent({ width, height }) {
+function buildExtent({ width = 0, height = 0 }) {
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
     .ele("@wp", "extent")
-    .att("cx", width)
-    .att("cy", height)
+    .att("cx", String(width))
+    .att("cy", String(height))
     .up()
 }
 
