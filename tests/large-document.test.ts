@@ -74,6 +74,26 @@ test("handles a large HTML file", async () => {
   )
 })
 
+// TODO: Fix this test
+test.skip("handles an HTML file that embeds other content", async () => {
+  const largeHTML = await fs.readFile("tests/html5-embed.html", "utf8")
+  const docxContent = await htmlToDocx(largeHTML, null, {
+    createdAt,
+    modifiedAt: createdAt,
+  })
+  writeFile(docxContent, "tests/_tmp_html5-embed.docx")
+
+  const zip = new JSZip()
+  const zipContent = await zip.loadAsync(docxContent)
+
+  assert.ok("word/document.xml" in zipContent.files)
+
+  const docXml = await zipContent.file("word/document.xml")
+    ?.async("string") || ""
+  assert.ok(docXml.includes("<w:body>"))
+  assert.ok(docXml.includes("</w:body>"))
+})
+
 test("handles a large and complicated HTML file", async () => {
   const largeHTML = await fs.readFile("tests/html5-test-page.html", "utf8")
   const docxContent = await htmlToDocx(largeHTML, null, {
