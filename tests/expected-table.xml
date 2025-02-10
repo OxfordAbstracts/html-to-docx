@@ -12,11 +12,6 @@
   xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
   xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">
   <w:body>
-    <w:sectPr>
-      <w:pgSz w:w="12240" w:h="15840" w:orient="portrait" />
-      <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720"
-        w:footer="720" w:gutter="0" />
-    </w:sectPr>
     <w:p>
       <w:pPr>
         <w:spacing w:lineRule="auto" />
@@ -97,5 +92,10 @@
         <w:rPr />
       </w:r>
     </w:p>
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840" w:orient="portrait" />
+      <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720"
+        w:footer="720" w:gutter="0" />
+    </w:sectPr>
   </w:body>
 </w:document>

@@ -1,6 +1,6 @@
 import mimeTypes from "mime-types"
 
-export async function fetchImageToDataUrl(imageUrl) {
+export async function fetchImageToDataUrl(imageUrl: string) {
   try {
     const imageResponse = await fetch(imageUrl)
     if (!imageResponse.ok) {

@@ -2,6 +2,7 @@
 import { nanoid } from "nanoid"
 import { create, fragment } from "xmlbuilder2"
 
+import type { XMLBuilder } from "xmlbuilder2/lib/interfaces.d.ts"
 import {
   applicationName,
   defaultDocumentOptions,
@@ -41,7 +42,7 @@ import { fontFamilyToTableObject } from "./utils/font-family-conversion.ts"
 import ListStyleBuilder from "./utils/list.ts"
 
 function generateContentTypesFragments(
-  contentTypesXML,
+  contentTypesXML: XMLBuilder,
   type: string,
   objects: Record<string, unknown>[],
 ) {
@@ -66,10 +67,10 @@ function generateContentTypesFragments(
 }
 
 function generateSectionReferenceXML(
-  documentXML,
-  documentSectionType,
-  objects,
-  isEnabled,
+  documentXML: XMLBuilder,
+  documentSectionType: string,
+  objects: { relationshipId: number; type: string }[],
+  isEnabled: boolean,
 ) {
   if (isEnabled && objects && Array.isArray(objects) && objects.length) {
     const xmlFragment = fragment()
@@ -83,15 +84,14 @@ function generateSectionReferenceXML(
         .up()
       xmlFragment.import(objectFragment)
     })
-
-    documentXML.root()
+    const sectPr = documentXML.root()
       .first()
-      .first()
-      .import(xmlFragment)
+      .last()
+    sectPr.import(xmlFragment)
   }
 }
 
-function generateXMLString(xmlString) {
+function generateXMLString(xmlString: string) {
   const xmlDocumentString = create(
     { encoding: "UTF-8", standalone: true },
     xmlString,
@@ -99,7 +99,7 @@ function generateXMLString(xmlString) {
   return xmlDocumentString.toString({ prettyPrint: true })
 }
 
-async function generateSectionXML(vTree, type = "header") {
+async function generateSectionXML(vTree: XMLBuilder, type = "header") {
   const sectionXML = create({
     encoding: "UTF-8",
     standalone: true,
@@ -191,8 +191,16 @@ export default class DocxDocument {
   relationshipFilename: string
   relationships: { fileName: string; lastRelsId: number; rels: unknown[] }[]
   mediaFiles: unknown[]
-  headerObjects: Record<string, unknown>[]
-  footerObjects: Record<string, unknown>[]
+  headerObjects: {
+    headerId: string
+    relationshipId: number
+    type: string
+  }[]
+  footerObjects: {
+    footerId: string
+    relationshipId: number
+    type: string
+  }[]
   documentXML: null
   generateSectionXML: typeof generateSectionXML
   ListStyleBuilder: ListStyleBuilder
@@ -309,16 +317,38 @@ export default class DocxDocument {
   generateDocumentXML() {
     const documentXML = create(
       { encoding: "UTF-8", standalone: true },
-      generateDocumentTemplate(
-        this.width,
-        this.height,
-        this.orientation,
-        this.margins,
-      ),
+      generateDocumentTemplate(),
     )
-    documentXML.root()
+
+    const body = documentXML
+      .root()
       .first()
-      .import(this.documentXML)
+    body.import(this.documentXML)
+
+    const sectPr = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "sectPr")
+      .ele("@w", "pgSz")
+      .att("@w", "w", String(this.width))
+      .att("@w", "h", String(this.height))
+      .att("@w", "orient", this.orientation)
+      .up()
+      .ele("@w", "pgMar")
+      .att("@w", "top", String(this.margins.top))
+      .att("@w", "right", String(this.margins.right))
+      .att("@w", "bottom", String(this.margins.bottom))
+      .att("@w", "left", String(this.margins.left))
+      .att("@w", "header", String(this.margins.header))
+      .att("@w", "footer", String(this.margins.footer))
+      .att("@w", "gutter", String(this.margins.gutter))
+      .up()
+      .up()
+    body.import(sectPr)
+
+    // console.log(
+    //   documentXML.root()
+    //     .first()
+    //     .toString({ prettyPrint: true }),
+    // )
 
     generateSectionReferenceXML(
       documentXML,
@@ -618,7 +648,7 @@ export default class DocxDocument {
     return fontTableObject.fontName
   }
 
-  createMediaFile(srcString) {
+  createMediaFile(srcString: string) {
     const fileData = extractBase64Data(srcString)
     if (!fileData) {
       throw new Error("Invalid data URL")
