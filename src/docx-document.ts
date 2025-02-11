@@ -174,7 +174,7 @@ export default class DocxDocument {
   pageSize?: { height: number; width: number }
   width: number
   height: number
-  margins: Margins
+  margins?: Margins
   availableDocumentSpace: number
   title: string
   subject: string
@@ -253,7 +253,7 @@ export default class DocxDocument {
     htmlString: string
     orientation: "portrait" | "landscape"
     pageSize?: { height: number; width: number }
-    margins: Margins
+    margins?: Margins
     title?: string
     subject?: string
     creator?: string
@@ -427,13 +427,13 @@ export default class DocxDocument {
       .att("@w", "orient", this.orientation)
       .up()
       .ele("@w", "pgMar")
-      .att("@w", "top", String(this.margins.top))
-      .att("@w", "right", String(this.margins.right))
-      .att("@w", "bottom", String(this.margins.bottom))
-      .att("@w", "left", String(this.margins.left))
-      .att("@w", "header", String(this.margins.header))
-      .att("@w", "footer", String(this.margins.footer))
-      .att("@w", "gutter", String(this.margins.gutter))
+      .att("@w", "top", String(this.margins?.top || 0))
+      .att("@w", "right", String(this.margins?.right || 0))
+      .att("@w", "bottom", String(this.margins?.bottom || 0))
+      .att("@w", "left", String(this.margins?.left || 0))
+      .att("@w", "header", String(this.margins?.header || 0))
+      .att("@w", "footer", String(this.margins?.footer || 0))
+      .att("@w", "gutter", String(this.margins?.gutter || 0))
       .up()
       .up()
     body.import(sectPr)

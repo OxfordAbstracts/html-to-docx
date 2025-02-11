@@ -57161,7 +57161,7 @@ class DocxDocument {
     } else {
       throw new Error("Document XML must be created before importing");
     }
-    const sectPr = import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "sectPr").ele("@w", "pgSz").att("@w", "w", String(this.width)).att("@w", "h", String(this.height)).att("@w", "orient", this.orientation).up().ele("@w", "pgMar").att("@w", "top", String(this.margins.top)).att("@w", "right", String(this.margins.right)).att("@w", "bottom", String(this.margins.bottom)).att("@w", "left", String(this.margins.left)).att("@w", "header", String(this.margins.header)).att("@w", "footer", String(this.margins.footer)).att("@w", "gutter", String(this.margins.gutter)).up().up();
+    const sectPr = import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "sectPr").ele("@w", "pgSz").att("@w", "w", String(this.width)).att("@w", "h", String(this.height)).att("@w", "orient", this.orientation).up().ele("@w", "pgMar").att("@w", "top", String(this.margins?.top || 0)).att("@w", "right", String(this.margins?.right || 0)).att("@w", "bottom", String(this.margins?.bottom || 0)).att("@w", "left", String(this.margins?.left || 0)).att("@w", "header", String(this.margins?.header || 0)).att("@w", "footer", String(this.margins?.footer || 0)).att("@w", "gutter", String(this.margins?.gutter || 0)).up().up();
     body.import(sectPr);
     generateSectionReferenceXML(documentXML, "header", this.headerObjects, this.header);
     generateSectionReferenceXML(documentXML, "footer", this.footerObjects, this.footer);
@@ -57425,15 +57425,6 @@ async function addFilesToContainer(zip, htmlString, suppliedDocumentOptions, hea
     zip,
     htmlString,
     orientation: documentOptions.orientation || "portrait",
-    margins: documentOptions.margins || {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      header: 0,
-      footer: 0,
-      gutter: 0
-    },
     table: documentOptions.table || { row: { cantSplit: false } },
     numbering: documentOptions.numbering || { defaultOrderedListStyleType: "decimal" }
   });

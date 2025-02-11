@@ -170,15 +170,6 @@ export default async function addFilesToContainer(
     zip,
     htmlString,
     orientation: documentOptions.orientation || "portrait",
-    margins: documentOptions.margins || {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      header: 0,
-      footer: 0,
-      gutter: 0,
-    },
     table: documentOptions.table || { row: { cantSplit: false } },
     numbering: documentOptions.numbering ||
       { defaultOrderedListStyleType: "decimal" },
