@@ -1,4 +1,5 @@
 import stylistic from "@stylistic/eslint-plugin"
+// @ts-expect-error  Could not find a declaration file
 import eslintConfJs from "eslint-config-javascript"
 import globals from "globals"
 

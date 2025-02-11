@@ -214,11 +214,16 @@ const htmlString = `<!DOCTYPE html>
 </html>`
 
 test("creates a valid Docx file from a full HTML document", async () => {
-  const fileBuffer = await htmlToDocx(htmlString, null, {
-    table: { row: { cantSplit: true } },
-    footer: true,
-    pageNumber: true,
-  })
+  const fileBuffer = await htmlToDocx(
+    htmlString,
+    null,
+    {
+      table: { row: { cantSplit: true } },
+      footer: true,
+      pageNumber: true,
+    },
+    null,
+  )
 
   assert.ok(fileBuffer)
 })

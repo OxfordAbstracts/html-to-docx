@@ -2,6 +2,8 @@
 import { nanoid } from "nanoid"
 import { create, fragment } from "xmlbuilder2"
 
+import JSZip from "jszip"
+import type { VTree } from "virtual-dom"
 import type { XMLBuilder } from "xmlbuilder2/lib/interfaces.d.ts"
 import {
   applicationName,
@@ -36,7 +38,7 @@ import {
   settingsXML as settingsXMLString,
   webSettingsXML as webSettingsXMLString,
 } from "./schemas/index.ts"
-import { type Margins } from "./types.ts"
+import type { ListType, Margins } from "./types.ts"
 import { extractBase64Data } from "./utils/base64.ts"
 import { fontFamilyToTableObject } from "./utils/font-family-conversion.ts"
 import ListStyleBuilder from "./utils/list.ts"
@@ -99,7 +101,14 @@ function generateXMLString(xmlString: string) {
   return xmlDocumentString.toString({ prettyPrint: true })
 }
 
-async function generateSectionXML(vTree: XMLBuilder, type = "header") {
+async function generateSectionXML(
+  this: DocxDocument,
+  vTree: VTree,
+  type: "header" | "footer",
+): Promise<
+  | { headerId: number; headerXML: XMLBuilder }
+  | { footerId: number; footerXML: XMLBuilder }
+> {
   const sectionXML = create({
     encoding: "UTF-8",
     standalone: true,
@@ -140,22 +149,29 @@ async function generateSectionXML(vTree: XMLBuilder, type = "header") {
   sectionXML.root()
     .import(XMLFragment)
 
-  const referenceName = type === "header"
-    ? "Header"
-    : "Footer"
-  this[`last${referenceName}Id`] += 1
+  if (type === "header") {
+    this.lastHeaderId += 1
 
-  return {
-    [`${type}Id`]: this[`last${referenceName}Id`],
-    [`${type}XML`]: sectionXML,
+    return {
+      headerId: this.lastHeaderId,
+      headerXML: sectionXML,
+    }
+  }
+  else {
+    this.lastFooterId += 1
+
+    return {
+      footerId: this.lastFooterId,
+      footerXML: sectionXML,
+    }
   }
 }
 
 export default class DocxDocument {
-  zip: unknown
+  zip: JSZip
   htmlString: string
   orientation: "portrait" | "landscape"
-  pageSize: { height: number; width: number }
+  pageSize?: { height: number; width: number }
   width: number
   height: number
   margins: Margins
@@ -180,42 +196,114 @@ export default class DocxDocument {
   tableRowCantSplit: boolean
   pageNumber: boolean
   skipFirstHeaderFooter: boolean
-  lineNumber: { countBy: number; start: number; restart: number }
+  lineNumberOptions?: {
+    countBy: number
+    start: number
+    restart: "continuous" | "newPage" | "newSection"
+  }
   lastNumberingId: number
   lastMediaId: number
   lastHeaderId: number
   lastFooterId: number
   stylesObjects: unknown[]
-  numberingObjects: unknown[]
-  fontTableObjects: unknown[]
+  numberingObjects: {
+    numberingId: number
+    type: string
+    properties: {
+      style?: {
+        "list-style-type": ListType
+      }
+      attributes?: {
+        "data-start": number
+      }
+    }
+  }[]
+  fontTableObjects: {
+    fontName: string
+    genericFontName: string
+  }[]
   relationshipFilename: string
-  relationships: { fileName: string; lastRelsId: number; rels: unknown[] }[]
+  relationships: {
+    fileName: string
+    lastRelsId: number
+    rels: {
+      relationshipId: number
+      type: string
+      target: string
+      targetMode: string
+    }[]
+  }[]
   mediaFiles: unknown[]
   headerObjects: {
-    headerId: string
+    headerId: number
     relationshipId: number
     type: string
   }[]
   footerObjects: {
-    footerId: string
+    footerId: number
     relationshipId: number
     type: string
   }[]
-  documentXML: null
+  documentXML: XMLBuilder | null
   generateSectionXML: typeof generateSectionXML
   ListStyleBuilder: ListStyleBuilder
 
-  constructor(properties) {
+  constructor(properties: {
+    zip: JSZip
+    htmlString: string
+    orientation: "portrait" | "landscape"
+    pageSize?: { height: number; width: number }
+    margins: Margins
+    title?: string
+    subject?: string
+    creator?: string
+    keywords?: string[]
+    description?: string
+    lastModifiedBy?: string
+    revision?: number
+    createdAt?: Date
+    modifiedAt?: Date
+    headerType?: string
+    header?: boolean
+    footerType?: string
+    footer?: boolean
+    font?: string
+    fontSize?: number
+    complexScriptFontSize?: number
+    lang?: string
+    table: { row: { cantSplit: boolean } }
+    tableRowCantSplit?: boolean
+    pageNumber?: boolean
+    skipFirstHeaderFooter?: boolean
+    lineNumber?: boolean
+    lineNumberOptions?: {
+      countBy: number
+      start: number
+      restart: "continuous" | "newPage" | "newSection"
+    }
+    numbering: { defaultOrderedListStyleType: ListType }
+    mediaFiles?: string[]
+    headerObjects?: {
+      headerId: number
+      relationshipId: number
+      type: string
+    }[]
+    footerObjects?: {
+      footerId: number
+      relationshipId: number
+      type: string
+    }[]
+  }) {
     this.zip = properties.zip
     this.htmlString = properties.htmlString
     this.orientation = properties.orientation
     this.pageSize = properties.pageSize || defaultDocumentOptions.pageSize
 
     const isPortraitOrientation = this.orientation === defaultOrientation
-    const height = this.pageSize.height
+    const height = this.pageSize?.height
       ? this.pageSize.height
       : landscapeHeight
-    const width = this.pageSize.width ? this.pageSize.width : landscapeWidth
+    const width = this.pageSize?.width ? this.pageSize.width : landscapeWidth
 
     this.width = isPortraitOrientation ? width : height
     this.height = isPortraitOrientation ? height : width
@@ -251,9 +339,9 @@ export default class DocxDocument {
       properties.table.row.cantSplit) || false
     this.pageNumber = properties.pageNumber || false
     this.skipFirstHeaderFooter = properties.skipFirstHeaderFooter || false
-    this.lineNumber = properties.lineNumber
+    this.lineNumberOptions = properties.lineNumber
       ? properties.lineNumberOptions
-      : null
+      : undefined
 
     this.lastNumberingId = 0
     this.lastMediaId = 0
@@ -323,7 +411,13 @@ export default class DocxDocument {
     const body = documentXML
       .root()
       .first()
-    body.import(this.documentXML)
+
+    if (this.documentXML) {
+      body.import(this.documentXML)
+    }
+    else {
+      throw new Error("Document XML must be created before importing")
+    }
 
     const sectPr = fragment({ namespaceAlias: { w: namespaces.w } })
       .ele("@w", "sectPr")
@@ -373,8 +467,8 @@ export default class DocxDocument {
             .ele("@w", "titlePg"),
         )
     }
-    if (this.lineNumber) {
-      const { countBy, start, restart } = this.lineNumber
+    if (this.lineNumberOptions) {
+      const { countBy, start, restart } = this.lineNumberOptions
       documentXML
         .root()
         .first()
@@ -508,7 +602,9 @@ export default class DocxDocument {
         ...Array(8)
           .keys(),
       ].forEach((level) => {
-        const levelFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+        const levelFragment = fragment({
+          namespaceAlias: { w: namespaces.w },
+        })
           .ele("@w", "lvl")
           .att("@w", "ilvl", String(level))
           .ele("@w", "start")
@@ -516,8 +612,7 @@ export default class DocxDocument {
             "@w",
             "val",
             type === "ol"
-              ? (properties.attributes &&
-                properties.attributes["data-start"]) || 1
+              ? String(properties?.attributes?.["data-start"] || 1)
               : "1",
           )
           .up()
@@ -527,7 +622,7 @@ export default class DocxDocument {
             "val",
             type === "ol"
               ? this.ListStyleBuilder.getListStyleType(
-                properties.style && properties.style["list-style-type"],
+                properties?.style?.["list-style-type"] || "decimal",
               )
               : "bullet",
           )
@@ -538,7 +633,7 @@ export default class DocxDocument {
             "val",
             type === "ol"
               ? this.ListStyleBuilder.getListPrefixSuffix(
-                properties.style,
+                properties.style || { "list-style-type": "decimal" },
                 level,
               )
               : "",
@@ -598,7 +693,15 @@ export default class DocxDocument {
     return numberingXML.toString({ prettyPrint: true })
   }
 
-  appendRelationships(xmlFragment, relationships) {
+  appendRelationships(
+    xmlFragment: XMLBuilder,
+    relationships: {
+      relationshipId: number
+      type: string
+      target: string
+      targetMode: string
+    }[],
+  ) {
     relationships.forEach(({ relationshipId, type, target, targetMode }) => {
       xmlFragment.import(
         fragment({ defaultNamespace: { ele: namespaces.relationship } })
@@ -633,7 +736,10 @@ export default class DocxDocument {
     return relationshipXMLStrings
   }
 
-  createNumbering(type, properties) {
+  createNumbering(
+    type: string,
+    properties: { attributes: { "data-start": number } },
+  ) {
     this.lastNumberingId += 1
     this.numberingObjects.push(
       { numberingId: this.lastNumberingId, type, properties },
@@ -642,10 +748,10 @@ export default class DocxDocument {
     return this.lastNumberingId
   }
 
-  createFont(fontFamily) {
+  createFont(fontFamily: string) {
     const fontTableObject = fontFamilyToTableObject(fontFamily, this.font)
     this.fontTableObjects.push(fontTableObject)
-    return fontTableObject.fontName
+    return fontTableObject.fontName || ""
   }
 
   createMediaFile(srcString: string) {
@@ -671,8 +777,8 @@ export default class DocxDocument {
 
   createDocumentRelationships(
     fileName = "document",
-    type,
-    target,
+    type: string,
+    target: string,
     targetMode = "External",
   ) {
     let relationshipObject = this.relationships.find(
@@ -710,7 +816,7 @@ export default class DocxDocument {
 
     relationshipObject.rels.push({
       relationshipId: lastRelsId,
-      type: relationshipType,
+      type: relationshipType || "",
       target,
       targetMode,
     })
@@ -718,11 +824,17 @@ export default class DocxDocument {
     return lastRelsId
   }
 
-  generateHeaderXML(vTree) {
-    return this.generateSectionXML(vTree, "header")
+  generateHeaderXML(vTree: VTree) {
+    return this.generateSectionXML(vTree, "header") as Promise<{
+      headerId: number
+      headerXML: XMLBuilder
+    }>
   }
 
-  generateFooterXML(vTree) {
-    return this.generateSectionXML(vTree, "footer")
+  generateFooterXML(vTree: VTree) {
+    return this.generateSectionXML(vTree, "footer") as Promise<{
+      footerId: number
+      footerXML: XMLBuilder
+    }>
   }
 }

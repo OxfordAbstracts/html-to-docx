@@ -56,11 +56,16 @@ function generateLargeHTML(sizeInMB = 2) {
 
 test("handles a large HTML file", async () => {
   const largeHTML = generateLargeHTML()
-  const docxContent = await htmlToDocx(largeHTML, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
-  writeFile(docxContent, "tests/_tmp_large-html.docx")
+  const docxContent = await htmlToDocx(
+    largeHTML,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
+  )
+  await writeFile(docxContent, "tests/_tmp_large-html.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -77,11 +82,16 @@ test("handles a large HTML file", async () => {
 // TODO: Fix this test
 test.skip("handles an HTML file that embeds other content", async () => {
   const largeHTML = await fs.readFile("tests/html5-embed.html", "utf8")
-  const docxContent = await htmlToDocx(largeHTML, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
-  writeFile(docxContent, "tests/_tmp_html5-embed.docx")
+  const docxContent = await htmlToDocx(
+    largeHTML,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
+  )
+  await writeFile(docxContent, "tests/_tmp_html5-embed.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -96,11 +106,16 @@ test.skip("handles an HTML file that embeds other content", async () => {
 
 test("handles a large and complicated HTML file", async () => {
   const largeHTML = await fs.readFile("tests/html5-test-page.html", "utf8")
-  const docxContent = await htmlToDocx(largeHTML, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
-  writeFile(docxContent, "tests/_tmp_html5-test-page.docx")
+  const docxContent = await htmlToDocx(
+    largeHTML,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
+  )
+  await writeFile(docxContent, "tests/_tmp_html5-test-page.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

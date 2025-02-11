@@ -3,11 +3,14 @@ export const hslRegex = /hsl\((\d+),\s*([\d.]+)%,\s*([\d.]+)%\)/i
 export const hexRegex = /#([0-9A-F]{6})/i
 export const hex3Regex = /#([0-9A-F])([0-9A-F])([0-9A-F])/i
 
-export function rgbToHex(red: string, green: string, blue: string): string {
+export function rgbToHex(
+  red?: string | number,
+  green?: string | number,
+  blue?: string | number,
+): string {
   const hexColorCode = [red, green, blue]
     .map((x) => {
-      x = parseInt(x)
-        .toString(16)
+      x = (typeof x === "string" ? parseInt(x) : x || 0).toString(16)
       return x.length === 1 ? `0${x}` : x
     })
     .join("")
@@ -15,10 +18,14 @@ export function rgbToHex(red: string, green: string, blue: string): string {
   return hexColorCode
 }
 
-export function hslToHex(hue, saturation, luminosity) {
-  hue /= 360
-  saturation /= 100
-  luminosity /= 100
+export function hslToHex(
+  hue?: number,
+  saturation?: number,
+  luminosity?: number,
+) {
+  hue = (hue || 0) / 360
+  saturation = (saturation || 0) / 100
+  luminosity = (luminosity || 0) / 100
 
   let red
   let green
@@ -27,7 +34,7 @@ export function hslToHex(hue, saturation, luminosity) {
     red = green = blue = luminosity // achromatic
   }
   else {
-    function hue2rgb(p, q, t) {
+    function hue2rgb(p: number, q: number, t: number) {
       if (t < 0) t += 1
       if (t > 1) t -= 1
       if (t < 1 / 6) return p + (q - p) * 6 * t

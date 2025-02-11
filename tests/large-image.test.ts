@@ -47,12 +47,17 @@ function generateHTMLWithImages(numberOfImages = 4, imgSizeInMb = 4) {
 
 test("handles HTML file with an image", async () => {
   const html = generateHTMLWithImages(1, 0.2)
-  const docxContent = await htmlToDocx(html, null, {
-    createdAt,
-    modifiedAt: createdAt,
-    footer: true,
-  })
-  writeFile(docxContent, "tests/_tmp_html-with-image.docx")
+  const docxContent = await htmlToDocx(
+    html,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+      footer: true,
+    },
+    null,
+  )
+  await writeFile(docxContent, "tests/_tmp_html-with-image.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -73,11 +78,16 @@ test("handles HTML file with an image", async () => {
 
 test("handles large images in HTML file", async () => {
   const largeHTML = generateHTMLWithImages()
-  const docxContent = await htmlToDocx(largeHTML, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
-  writeFile(docxContent, "tests/_tmp_html-with-images.docx")
+  const docxContent = await htmlToDocx(
+    largeHTML,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
+  )
+  await writeFile(docxContent, "tests/_tmp_html-with-images.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

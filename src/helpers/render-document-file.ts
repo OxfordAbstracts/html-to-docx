@@ -1,13 +1,20 @@
 /* eslint-disable no-case-declarations */
 import { default as HTMLToVDOM } from "html-to-vdom"
 import { imageSize } from "image-size"
+// @ts-expect-error  Could not find a declaration file
 import isVNode from "virtual-dom/vnode/is-vnode.js"
+// @ts-expect-error  Could not find a declaration file
 import isVText from "virtual-dom/vnode/is-vtext.js"
+// @ts-expect-error  Could not find a declaration file
 import VNode from "virtual-dom/vnode/vnode.js"
+// @ts-expect-error  Could not find a declaration file
 import VText from "virtual-dom/vnode/vtext.js"
 import { fragment } from "xmlbuilder2"
 
+import type { VTree } from "virtual-dom"
+import type { XMLBuilder } from "xmlbuilder2/lib/interfaces.d.ts"
 import { imageType, internalRelationship } from "../constants.ts"
+import DocxDocument from "../docx-document.ts"
 import namespaces from "../namespaces.ts"
 import { fetchImageToDataUrl } from "../utils/base64.ts"
 import { isValidUrl } from "../utils/url.ts"
@@ -21,9 +28,9 @@ const convertHTML = HTMLToVDOM({
 })
 
 export async function buildImage(
-  docxDocumentInstance,
-  vNode,
-  maximumWidth = null,
+  docxDocumentInstance: DocxDocument,
+  vNode: VNode,
+  maximumWidth: number,
 ) {
   let response = null
   try {
@@ -41,8 +48,8 @@ export async function buildImage(
   if (response) {
     docxDocumentInstance.zip
       .folder("word")
-      .folder("media")
-      .file(
+      ?.folder("media")
+      ?.file(
         response.fileNameWithExtension,
         Buffer.from(response.fileContent, "base64"),
         {
@@ -80,8 +87,22 @@ export async function buildImage(
   }
 }
 
-export async function buildList(vNode, docxDocumentInstance, xmlFragment) {
-  const listElements = []
+export async function buildList(
+  vNode: VNode,
+  docxDocumentInstance: DocxDocument,
+  xmlFragment: XMLBuilder,
+): Promise<{
+  node: VNode
+  level: number
+  type: string
+  numberingId: number
+}[]> {
+  const listElements: {
+    node: VNode
+    level: number
+    type: string
+    numberingId: number
+  }[] = []
 
   let vNodeObjects = [
     {
@@ -96,33 +117,42 @@ export async function buildList(vNode, docxDocumentInstance, xmlFragment) {
   ]
   while (vNodeObjects.length) {
     const tempVNodeObject = vNodeObjects.shift()
-
-    if (
-      isVText(tempVNodeObject.node) ||
-      (isVNode(tempVNodeObject.node) &&
-        !["ul", "ol", "li"].includes(tempVNodeObject.node.tagName))
-    ) {
-      const paragraphFragment = await xmlBuilder.buildParagraph(
-        tempVNodeObject.node,
-        {
-          numbering: {
-            levelId: tempVNodeObject.level,
-            numberingId: tempVNodeObject.numberingId,
+    if (tempVNodeObject) {
+      if (
+        isVText(tempVNodeObject.node) ||
+        (isVNode(tempVNodeObject.node) &&
+          !["ul", "ol", "li"].includes(tempVNodeObject.node.tagName))
+      ) {
+        const paragraphFragment = await xmlBuilder.buildParagraph(
+          tempVNodeObject.node,
+          {
+            numbering: {
+              levelId: tempVNodeObject.level,
+              numberingId: tempVNodeObject.numberingId,
+            },
           },
-        },
-        docxDocumentInstance,
-      )
+          docxDocumentInstance,
+        )
 
-      xmlFragment.import(paragraphFragment)
+        xmlFragment.import(paragraphFragment)
+      }
     }
 
     if (
-      tempVNodeObject.node.children &&
-      tempVNodeObject.node.children.length &&
-      ["ul", "ol", "li"].includes(tempVNodeObject.node.tagName)
+      tempVNodeObject?.node.children &&
+      tempVNodeObject?.node.children.length &&
+      ["ul", "ol", "li"].includes(tempVNodeObject?.node.tagName)
     ) {
       const tempVNodeObjects = tempVNodeObject.node.children.reduce(
-        (accumulator, childVNode) => {
+        (
+          accumulator: {
+            node: VNode
+            level: number
+            type: string
+            numberingId: number
+          }[],
+          childVNode: VNode,
+        ) => {
           if (["ul", "ol"].includes(childVNode.tagName)) {
             accumulator.push({
               node: childVNode,
@@ -183,7 +213,11 @@ export async function buildList(vNode, docxDocumentInstance, xmlFragment) {
   return listElements
 }
 
-async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
+async function findXMLEquivalent(
+  docxDocumentInstance: DocxDocument,
+  vNode: VNode,
+  xmlFragment: XMLBuilder,
+) {
   if (
     vNode.tagName === "div" &&
     (vNode.properties.attributes.class === "page-break" ||
@@ -269,6 +303,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
             const imageFragment = await buildImage(
               docxDocumentInstance,
               childVNode,
+              docxDocumentInstance.availableDocumentSpace,
             )
             if (imageFragment) {
               xmlFragment.import(imageFragment)
@@ -300,7 +335,11 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
       await buildList(vNode, docxDocumentInstance, xmlFragment)
       return
     case "img":
-      const imageFragment = await buildImage(docxDocumentInstance, vNode)
+      const imageFragment = await buildImage(
+        docxDocumentInstance,
+        vNode,
+        docxDocumentInstance.availableDocumentSpace,
+      )
       if (imageFragment) {
         xmlFragment.import(imageFragment)
       }
@@ -328,12 +367,12 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
 }
 
 export async function convertVTreeToXML(
-  docxDocumentInstance,
-  vTree,
-  xmlFragment,
+  docxDocumentInstance: DocxDocument,
+  vTree: VTree,
+  xmlFragment: XMLBuilder,
 ) {
   if (!vTree) {
-    return ""
+    return xmlFragment
   }
   if (Array.isArray(vTree) && vTree.length) {
     for (let index = 0; index < vTree.length; index++) {
@@ -346,16 +385,23 @@ export async function convertVTreeToXML(
   }
   else if (isVText(vTree)) {
     const paragraphFragment = await xmlBuilder.buildParagraph(
-      vTree,
+      vTree as VText,
       {},
       docxDocumentInstance,
     )
     xmlFragment.import(paragraphFragment)
   }
+
   return xmlFragment
 }
 
-export default async function renderDocumentFile(docxDocumentInstance) {
+export default async function renderDocumentFile(
+  docxDocumentInstance: DocxDocument,
+) {
+  if (!docxDocumentInstance.htmlString) {
+    throw new Error("HTML string is required")
+  }
+
   const vTree = convertHTML(docxDocumentInstance.htmlString)
 
   const xmlFragment = fragment({ namespaceAlias: { w: namespaces.w } })

@@ -29,43 +29,16 @@ const defaultLang = "en-US"
 const defaultDocumentOptions: DocumentOptions = {
   orientation: defaultOrientation,
   margins: lodash.cloneDeep(portraitMargins),
-  title: "",
-  subject: "",
   creator: applicationName,
   keywords: [applicationName],
-  description: "",
   lastModifiedBy: applicationName,
-  revision: 1,
-  createdAt: new Date(),
-  modifiedAt: new Date(),
-  headerType: "default",
-  header: false,
-  footerType: "default",
-  footer: false,
   font: defaultFont,
   fontSize: defaultFontSize,
   complexScriptFontSize: defaultFontSize,
-  table: {
-    row: {
-      cantSplit: false,
-    },
-  },
   pageSize: {
     width: landscapeHeight,
     height: landscapeWidth,
   },
-  pageNumber: false,
-  skipFirstHeaderFooter: false,
-  lineNumber: false,
-  lineNumberOptions: {
-    countBy: 1,
-    start: 0,
-    restart: "continuous",
-  },
-  numbering: {
-    defaultOrderedListStyleType: "decimal",
-  },
-  decodeUnicode: false,
   defaultLang,
 }
 const defaultHTMLString = "<p></p>"

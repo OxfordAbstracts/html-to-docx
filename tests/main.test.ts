@@ -3,6 +3,7 @@ import fs from "fs/promises"
 import JSZip from "jszip"
 import { test } from "node:test"
 
+import { create } from "xmlbuilder2"
 import htmlToDocx from "../index.ts"
 
 const createdAt = new Date("2025-01-01")
@@ -18,10 +19,15 @@ test("creates a valid Docx file", async () => {
       </body>
     </html>
   `
-  const docxContentActual = await htmlToDocx(htmlStr, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
+  const docxContentActual = await htmlToDocx(
+    htmlStr,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
+  )
   const zip = new JSZip()
 
   const zipContent = await zip.loadAsync(docxContentActual)
@@ -57,20 +63,28 @@ test("converts HTML with table", async () => {
       </body>
     </html>
   `
-  const docxContentActual = await htmlToDocx(htmlStr, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
+  const docxContentActual = await htmlToDocx(
+    htmlStr,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
+  )
   const zip = new JSZip()
-
   const zipContent = await zip.loadAsync(docxContentActual)
-  const expectedContent = await fs.readFile("tests/expected-table.xml", "utf8")
-  const actualContent = await zipContent.file("word/document.xml")
-    ?.async("string") || ""
+  const actualContent = create(
+    await zipContent.file("word/document.xml")
+      ?.async("string") || "",
+  )
+  const expectedContent = create(
+    await fs.readFile("tests/expected-table.xml", "utf8"),
+  )
 
   assert.strictEqual(
-    actualContent.replaceAll(/\s/g, ""),
-    expectedContent.replaceAll(/\s/g, ""),
+    actualContent.toString({ prettyPrint: true }),
+    expectedContent.toString({ prettyPrint: true }),
   )
 })
 
@@ -86,22 +100,27 @@ test("converts HTML with percentage width table", async () => {
       </body>
     </html>
   `
-  const docxContentActual = await htmlToDocx(htmlStr, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
-  const zip = new JSZip()
-
-  const zipContent = await zip.loadAsync(docxContentActual)
-  const expectedContent = await fs.readFile(
-    "tests/expected-table-pct.xml",
-    "utf8",
+  const docxContentActual = await htmlToDocx(
+    htmlStr,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
   )
-  const actualContent = await zipContent.file("word/document.xml")
-    ?.async("string") || ""
+  const zip = new JSZip()
+  const zipContent = await zip.loadAsync(docxContentActual)
+  const actualContent = create(
+    await zipContent.file("word/document.xml")
+      ?.async("string") || "",
+  )
+  const expectedContent = create(
+    await fs.readFile("tests/expected-table-pct.xml", "utf8"),
+  )
 
   assert.strictEqual(
-    actualContent.replaceAll(/\s/g, ""),
-    expectedContent.replaceAll(/\s/g, ""),
+    actualContent.toString({ prettyPrint: true }),
+    expectedContent.toString({ prettyPrint: true }),
   )
 })

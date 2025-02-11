@@ -1,3 +1,16 @@
+import JSZip from "jszip"
+
+export type ListType =
+  | "upper-roman"
+  | "lower-roman"
+  | "upper-alpha"
+  | "upper-alpha-bracket-end"
+  | "lower-alpha"
+  | "lower-alpha-bracket-end"
+  | "decimal"
+  | "decimal-bracket"
+  | "decimal-bracket-end"
+
 export type Margins = {
   top: number
   right: number
@@ -9,7 +22,9 @@ export type Margins = {
 }
 
 export type DocumentOptions = {
-  orientation?: string
+  zip?: JSZip
+  htmlString?: string
+  orientation?: "portrait" | "landscape"
   margins?: Margins
   title?: string
   subject?: string
@@ -42,10 +57,10 @@ export type DocumentOptions = {
   lineNumberOptions?: {
     countBy: number
     start: number
-    restart: string
+    restart: "continuous" | "newPage" | "newSection"
   }
   numbering?: {
-    defaultOrderedListStyleType: string
+    defaultOrderedListStyleType: ListType
   }
   decodeUnicode?: boolean
   defaultLang?: string

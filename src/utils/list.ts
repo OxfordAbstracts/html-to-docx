@@ -1,12 +1,14 @@
+import type { ListType } from "../types"
+
 export default class ListStyleBuilder {
-  defaults: { defaultOrderedListStyleType: string }
+  defaults: { defaultOrderedListStyleType: ListType }
 
   // defaults is passed in from constants.ts
-  constructor(defaults) {
+  constructor(defaults: { defaultOrderedListStyleType: ListType }) {
     this.defaults = defaults || { defaultOrderedListStyleType: "decimal" }
   }
 
-  getListStyleType(listType) {
+  getListStyleType(listType: ListType) {
     switch (listType) {
       case "upper-roman":
         return "upperRoman"
@@ -26,7 +28,7 @@ export default class ListStyleBuilder {
     }
   }
 
-  getListPrefixSuffix(style, lvl) {
+  getListPrefixSuffix(style: { "list-style-type": ListType }, lvl: number) {
     let listType = this.defaults.defaultOrderedListStyleType
 
     if (style && style["list-style-type"]) {

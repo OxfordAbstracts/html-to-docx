@@ -32,13 +32,15 @@ export async function fetchImageToDataUrl(imageUrl: string) {
   catch (error) {
     console.warn(
       `WARNING: Image download failed for "${imageUrl}" with following error:`,
-      error.cause.message,
+      // @ts-expect-error  Property does not exist on type
+      error?.cause?.message,
     )
+
     return emptyPngDataURL
   }
 }
 
-export function extractBase64Data(src) {
+export function extractBase64Data(src: string) {
   if (!src) {
     console.error("ERROR: Empty base64 data URL")
     return null

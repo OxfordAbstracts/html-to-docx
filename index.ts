@@ -2,54 +2,32 @@ import JSZip from "jszip"
 import addFilesToContainer from "./src/html-to-docx.ts"
 import { type DocumentOptions } from "./src/types.ts"
 
-function minifyHTMLString(htmlString) {
-  try {
-    if (typeof htmlString === "string" || htmlString instanceof String) {
-      const minifiedHTMLString = htmlString
-        .replace(/\n/g, " ")
-        .replace(/\r/g, " ")
-        .replace(/\r\n/g, " ")
-        .replace(/[\t]+</g, "<")
-        .replace(/>[\t ]+</g, "><")
-        .replace(/>[\t ]+$/g, ">")
+function minifyHTMLString(htmlString: string) {
+  const minifiedHTMLString = htmlString
+    .replace(/\n/g, " ")
+    .replace(/\r/g, " ")
+    .replace(/\r\n/g, " ")
+    .replace(/[\t]+</g, "<")
+    .replace(/>[\t ]+</g, "><")
+    .replace(/>[\t ]+$/g, ">")
 
-      return minifiedHTMLString
-    }
-
-    throw new Error("invalid html string")
-  }
-  catch (error) {
-    console.error(error)
-  }
+  return minifiedHTMLString
 }
 
 export default async function generateContainer(
-  htmlString: string,
-  headerHTMLString: string,
+  htmlString: string | null,
+  headerHTMLString: string | null,
   documentOptions: DocumentOptions,
-  footerHTMLString?: string,
+  footerHTMLString: string | null,
 ) {
   const zip = new JSZip()
 
-  let contentHTML = htmlString
-  let headerHTML = headerHTMLString
-  let footerHTML = footerHTMLString
-  if (htmlString) {
-    contentHTML = minifyHTMLString(contentHTML)
-  }
-  if (headerHTMLString) {
-    headerHTML = minifyHTMLString(headerHTML)
-  }
-  if (footerHTMLString) {
-    footerHTML = minifyHTMLString(footerHTML)
-  }
-
   await addFilesToContainer(
     zip,
-    contentHTML,
+    htmlString ? minifyHTMLString(htmlString) : "",
     documentOptions,
-    headerHTML,
-    footerHTML,
+    headerHTMLString ? minifyHTMLString(headerHTMLString) : "",
+    footerHTMLString ? minifyHTMLString(footerHTMLString) : "",
   )
 
   const buffer = await zip.generateAsync({ type: "arraybuffer" })

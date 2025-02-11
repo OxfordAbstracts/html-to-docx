@@ -1,12 +1,17 @@
 /* eslint-disable new-cap */
 
-import colorNames from "color-name"
+import { default as colorNames } from "color-name"
 import { imageSize } from "image-size"
 import lodash from "lodash"
+import type { VNode, VText, VTree } from "virtual-dom"
+// @ts-expect-error  Could not find a declaration file
 import isVNode from "virtual-dom/vnode/is-vnode.js"
+// @ts-expect-error  Could not find a declaration file
 import isVText from "virtual-dom/vnode/is-vtext.js"
 import { fragment } from "xmlbuilder2"
 
+import JSZip from "jszip"
+import type { XMLBuilder } from "xmlbuilder2/lib/interfaces.d.ts"
 import {
   colorlessColors,
   defaultFont,
@@ -16,6 +21,7 @@ import {
   paragraphBordersObject,
   verticalAlignValues,
 } from "../constants.ts"
+import DocxDocument from "../docx-document.ts"
 import namespaces from "../namespaces.ts"
 import { extractBase64Data, fetchImageToDataUrl } from "../utils/base64.ts"
 import {
@@ -49,43 +55,49 @@ import { isValidUrl } from "../utils/url.ts"
 import { vNodeHasChildren } from "../utils/vnode.ts"
 import { buildImage, buildList } from "./render-document-file.ts"
 
-function fixupColorCode(colorCodeString) {
+function fixupColorCode(colorCodeString: string): string {
   if (
     Object.prototype.hasOwnProperty.call(
       colorNames,
       colorCodeString.toLowerCase(),
     )
   ) {
-    const [red, green, blue] = colorNames[colorCodeString.toLowerCase()]
+    const [red, green, blue]: [number, number, number] =
+      Object.prototype.hasOwnProperty.call(
+        colorNames,
+        colorCodeString.toLowerCase(),
+      )
+        ? colorNames[colorCodeString.toLowerCase() as keyof typeof colorNames]
+        : [0, 0, 0]
 
     return rgbToHex(red, green, blue)
   }
   else if (rgbRegex.test(colorCodeString)) {
     const matchedParts = colorCodeString.match(rgbRegex)
-    const red = matchedParts[1]
-    const green = matchedParts[2]
-    const blue = matchedParts[3]
+    const red = matchedParts?.[1]
+    const green = matchedParts?.[2]
+    const blue = matchedParts?.[3]
 
     return rgbToHex(red, green, blue)
   }
   else if (hslRegex.test(colorCodeString)) {
     const matchedParts = colorCodeString.match(hslRegex)
-    const hue = matchedParts[1]
-    const saturation = matchedParts[2]
-    const luminosity = matchedParts[3]
+    const hue = Number(matchedParts?.[1])
+    const saturation = Number(matchedParts?.[2])
+    const luminosity = Number(matchedParts?.[3])
 
     return hslToHex(hue, saturation, luminosity)
   }
   else if (hexRegex.test(colorCodeString)) {
     const matchedParts = colorCodeString.match(hexRegex)
 
-    return matchedParts[1]
+    return matchedParts?.[1] || ""
   }
   else if (hex3Regex.test(colorCodeString)) {
     const matchedParts = colorCodeString.match(hex3Regex)
-    const red = matchedParts[1]
-    const green = matchedParts[2]
-    const blue = matchedParts[3]
+    const red = Number(matchedParts?.[1])
+    const green = Number(matchedParts?.[2])
+    const blue = Number(matchedParts?.[3])
 
     return hex3ToHex(red, green, blue)
   }
@@ -109,22 +121,22 @@ function buildRunStyleFragment(type = "Hyperlink") {
     .up()
 }
 
-function buildTableRowHeight(tableRowHeight) {
+function buildTableRowHeight(tableRowHeight: number) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "trHeight")
-    .att("@w", "val", tableRowHeight)
+    .att("@w", "val", String(tableRowHeight))
     .att("@w", "hRule", "atLeast")
     .up()
 }
 
-function buildVerticalAlignment(verticalAlignment) {
-  if (verticalAlignment.toLowerCase() === "middle") {
-    verticalAlignment = "center"
-  }
+function buildVerticalAlignment(verticalAlignment: string) {
+  const vertAlign = verticalAlignment.toLowerCase() === "middle"
+    ? "center"
+    : verticalAlignment
 
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "vAlign")
-    .att("@w", "val", verticalAlignment)
+    .att("@w", "val", vertAlign)
     .up()
 }
 
@@ -135,21 +147,21 @@ function buildVerticalMerge(verticalMerge = "continue") {
     .up()
 }
 
-function buildColor(colorCode) {
+function buildColor(colorCode: string) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "color")
     .att("@w", "val", colorCode)
     .up()
 }
 
-function buildFontSize(fontSize) {
+function buildFontSize(fontSize: number) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "sz")
-    .att("@w", "val", fontSize)
+    .att("@w", "val", String(fontSize))
     .up()
 }
 
-function buildShading(colorCode) {
+function buildShading(colorCode: string) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "shd")
     .att("@w", "val", "clear")
@@ -220,7 +232,7 @@ function buildBorder(
     .up()
 }
 
-function buildTextElement(text) {
+function buildTextElement(text: string) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "t")
     .att("@xml", "space", "preserve")
@@ -228,12 +240,10 @@ function buildTextElement(text) {
     .up()
 }
 
-function fixupLineHeight(lineHeight, fontSize) {
-  // FIXME: If line height is anything other than a number
-
-  if (!isNaN(lineHeight)) {
-    if (fontSize) {
-      const actualLineHeight = Number(lineHeight) * fontSize
+function fixupLineHeight(lineHeight?: number, fontSize?: number): number {
+  if (Number.isFinite(lineHeight)) {
+    if (Number.isFinite(fontSize)) {
+      const actualLineHeight = Number(lineHeight) * Number(fontSize)
 
       return HIPToTWIP(actualLineHeight)
     }
@@ -248,85 +258,93 @@ function fixupLineHeight(lineHeight, fontSize) {
   }
 }
 
-function fixupFontSize(fontSizeString) {
+function fixupFontSize(fontSizeString: string): number {
   if (pointRegex.test(fontSizeString)) {
     const matchedParts = fontSizeString.match(pointRegex)
     // convert point to half point
-    return pointToHIP(matchedParts[1])
+    return pointToHIP(Number(matchedParts?.[1]))
   }
   else if (pixelRegex.test(fontSizeString)) {
     const matchedParts = fontSizeString.match(pixelRegex)
     // convert pixels to half point
-    return pixelToHIP(matchedParts[1])
+    return pixelToHIP(Number(matchedParts?.[1]))
+  }
+  else {
+    // Return default font size
+    return 24
   }
 }
 
-function fixupRowHeight(rowHeightString) {
+function fixupRowHeight(rowHeightString: string) {
   if (pointRegex.test(rowHeightString)) {
     const matchedParts = rowHeightString.match(pointRegex)
     // convert point to half point
-    return pointToTWIP(matchedParts[1])
+    return pointToTWIP(Number(matchedParts?.[1]))
   }
   else if (pixelRegex.test(rowHeightString)) {
     const matchedParts = rowHeightString.match(pixelRegex)
     // convert pixels to half point
-    return pixelToTWIP(matchedParts[1])
+    return pixelToTWIP(Number(matchedParts?.[1]))
   }
   else if (cmRegex.test(rowHeightString)) {
     const matchedParts = rowHeightString.match(cmRegex)
-    return cmToTWIP(matchedParts[1])
+    return cmToTWIP(Number(matchedParts?.[1]))
   }
   else if (inchRegex.test(rowHeightString)) {
     const matchedParts = rowHeightString.match(inchRegex)
-    return inchToTWIP(matchedParts[1])
+    return inchToTWIP(Number(matchedParts?.[1]))
   }
 }
 
-function fixupColumnWidth(columnWidthString) {
-  if (pointRegex.test(columnWidthString)) {
-    const matchedParts = columnWidthString.match(pointRegex)
-    return pointToTWIP(matchedParts[1])
+function fixupColumnWidth(columnWidth: string | number) {
+  if (typeof columnWidth === "number") {
+    return columnWidth
   }
-  else if (pixelRegex.test(columnWidthString)) {
-    const matchedParts = columnWidthString.match(pixelRegex)
-    return pixelToTWIP(matchedParts[1])
+
+  if (pointRegex.test(columnWidth)) {
+    const matchedParts = columnWidth.match(pointRegex)
+    return pointToTWIP(Number(matchedParts?.[1]))
   }
-  else if (cmRegex.test(columnWidthString)) {
-    const matchedParts = columnWidthString.match(cmRegex)
-    return cmToTWIP(matchedParts[1])
+  else if (pixelRegex.test(columnWidth)) {
+    const matchedParts = columnWidth.match(pixelRegex)
+    return pixelToTWIP(Number(matchedParts?.[1]))
   }
-  else if (inchRegex.test(columnWidthString)) {
-    const matchedParts = columnWidthString.match(inchRegex)
-    return inchToTWIP(matchedParts[1])
+  else if (cmRegex.test(columnWidth)) {
+    const matchedParts = columnWidth.match(cmRegex)
+    return cmToTWIP(Number(matchedParts?.[1]))
+  }
+  else if (inchRegex.test(columnWidth)) {
+    const matchedParts = columnWidth.match(inchRegex)
+    return inchToTWIP(Number(matchedParts?.[1]))
   }
   else {
-    return columnWidthString
+    return columnWidth
   }
 }
 
-function fixupMargin(marginString) {
+function fixupMargin(marginString: string) {
   if (pointRegex.test(marginString)) {
     const matchedParts = marginString.match(pointRegex)
     // convert point to half point
-    return pointToTWIP(matchedParts[1])
+    return pointToTWIP(Number(matchedParts?.[1]))
   }
   else if (pixelRegex.test(marginString)) {
     const matchedParts = marginString.match(pixelRegex)
     // convert pixels to half point
-    return pixelToTWIP(matchedParts[1])
+    return pixelToTWIP(Number(matchedParts?.[1]))
   }
 }
 
 function modifiedStyleAttributesBuilder(
-  docxDocumentInstance,
-  vNode,
-  attributes,
+  docxDocumentInstance: DocxDocument,
+  vNode: VNode | null,
+  attributes: Attributes,
   options = { isParagraph: false },
 ) {
   const modifiedAttributes = { ...attributes }
 
   // styles
-  if (isVNode(vNode) && vNode.properties && vNode.properties.style) {
+  if (vNode && isVNode(vNode) && vNode.properties && vNode.properties.style) {
     if (
       vNode.properties.style.color &&
       !colorlessColors.includes(vNode.properties.style.color)
@@ -382,7 +400,7 @@ function modifiedStyleAttributesBuilder(
         vNode.properties.style["line-height"],
         vNode.properties.style["font-size"]
           ? fixupFontSize(vNode.properties.style["font-size"])
-          : null,
+          : undefined,
       )
     }
     if (
@@ -391,15 +409,12 @@ function modifiedStyleAttributesBuilder(
     ) {
       const leftMargin = fixupMargin(vNode.properties.style["margin-left"])
       const rightMargin = fixupMargin(vNode.properties.style["margin-right"])
-      const indentation: { left?: number; right?: number } = {}
-      if (leftMargin) {
-        indentation.left = leftMargin
-      }
-      if (rightMargin) {
-        indentation.right = rightMargin
-      }
+
       if (leftMargin || rightMargin) {
-        modifiedAttributes.indentation = indentation
+        modifiedAttributes.indentation = {
+          left: leftMargin,
+          right: rightMargin,
+        }
       }
     }
     if (vNode.properties.style.display) {
@@ -413,14 +428,14 @@ function modifiedStyleAttributesBuilder(
 
   // paragraph only
   if (options?.isParagraph) {
-    if (isVNode(vNode) && vNode.tagName === "blockquote") {
-      modifiedAttributes.indentation = { left: 284 }
+    if (vNode && isVNode(vNode) && vNode.tagName === "blockquote") {
+      modifiedAttributes.indentation = { left: 284, right: 0 }
       modifiedAttributes.textAlign = "justify"
     }
-    else if (isVNode(vNode) && vNode.tagName === "code") {
+    else if (vNode && isVNode(vNode) && vNode.tagName === "code") {
       modifiedAttributes.highlightColor = "lightGray"
     }
-    else if (isVNode(vNode) && vNode.tagName === "pre") {
+    else if (vNode && isVNode(vNode) && vNode.tagName === "pre") {
       modifiedAttributes.font = "Courier"
     }
   }
@@ -428,9 +443,10 @@ function modifiedStyleAttributesBuilder(
   return modifiedAttributes
 }
 
-// html tag to formatting function
-// options are passed to the formatting function if needed
-function buildFormatting(htmlTag, options) {
+function buildFormatting(
+  htmlTag: string,
+  options: { color?: string; fontSize?: number; font?: string },
+) {
   switch (htmlTag) {
     case "strong":
     case "b":
@@ -454,18 +470,30 @@ function buildFormatting(htmlTag, options) {
     case "code":
       return buildHighlight("lightGray")
     case "highlightColor":
-      return buildHighlight(options?.color ?? "lightGray")
+      if (options.color) {
+        return buildHighlight(options.color)
+      }
+      break
     case "font":
-      return buildRunFontFragment(options.font)
+      if (options.font) {
+        return buildRunFontFragment(options.font)
+      }
+      break
     case "pre":
       return buildRunFontFragment("Courier")
     case "color":
-      return buildColor(options?.color ?? "black")
+      if (options.color) {
+        return buildColor(options.color)
+      }
+      break
     case "backgroundColor":
-      return buildShading(options?.color ?? "black")
+      if (options.color) {
+        return buildShading(options.color)
+      }
+      break
     case "fontSize":
       // does this need a unit of measure?
-      return buildFontSize(options?.fontSize ? options.fontSize : 10)
+      return buildFontSize(options.fontSize ? options.fontSize : 10)
     case "hyperlink":
       return buildRunStyleFragment("Hyperlink")
     default:
@@ -474,8 +502,66 @@ function buildFormatting(htmlTag, options) {
 
   return null
 }
+type Attributes = {
+  color?: string
+  fontSize?: number
+  font?: string
+  description?: string
+  backgroundColor?: string
+  highlightColor?: string
+  numbering?: { levelId: number; numberingId: number }
+  textAlign?: "left" | "center" | "justify"
+  strong?: boolean
+  i?: boolean
+  u?: boolean
+  sub?: boolean
+  sup?: boolean
+  type?: string
+  graphicType?: "picture"
+  indentation?: { left?: number; right?: number }
+  verticalAlign?: string
+  lineHeight?: number
+  beforeSpacing?: number
+  afterSpacing?: number
+  paragraphStyle?: string
+  hyperlink?: boolean
+  display?: string
+  height?: number
+  width?: number
+  maximumWidth?: number
+  originalWidth?: number
+  originalHeight?: number
+  inlineOrAnchored?: boolean
+  relationshipId?: number
+  id?: number
+  fileContent?: string
+  fileNameWithExtension?: string
+  tableRowHeight?: number
+  rowCantSplit?: boolean
+  rowSpan?: string
+  colSpan?: number
+  tableCellBorder?: {
+    top: number
+    bottom: number
+    left: number
+    right: number
+    color: string
+    stroke: string
+  }
+  tableBorder?: {
+    top: number
+    bottom: number
+    left: number
+    right: number
+    stroke: string
+    color: string
+    insideV: number
+    insideH: number
+  }
+  tableCellSpacing?: number
+}
 
-function buildRunProperties(attributes) {
+function buildRunProperties(attributes: Attributes) {
   const runPropertiesFragment = fragment({
     namespaceAlias: { w: namespaces.w },
   })
@@ -483,16 +569,13 @@ function buildRunProperties(attributes) {
   if (attributes && attributes.constructor === Object) {
     Object.keys(attributes)
       .forEach((key) => {
-        const options: { [key: string]: string | number } = {}
-        if (
-          key === "color" || key === "backgroundColor" ||
-          key === "highlightColor"
-        ) {
-          options.color = attributes[key]
-        }
-
-        if (key === "fontSize" || key === "font") {
-          options[key] = attributes[key]
+        const options = {
+          color: key === "color" || key === "backgroundColor" ||
+              key === "highlightColor"
+            ? attributes[key] || undefined
+            : undefined,
+          fontSize: key === "fontSize" ? attributes.fontSize : undefined,
+          font: key === "font" ? attributes.font : undefined,
         }
 
         const formattingFragment = buildFormatting(key, options)
@@ -506,7 +589,11 @@ function buildRunProperties(attributes) {
   return runPropertiesFragment
 }
 
-async function buildRun(vNode, attributes, docxDocumentInstance) {
+async function buildRun(
+  vNode: VTree | null,
+  attributes: Attributes,
+  docxDocumentInstance: DocxDocument,
+): Promise<XMLBuilder | XMLBuilder[]> {
   const runFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "r")
   const runPropertiesFragment = buildRunProperties(
@@ -514,11 +601,12 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
   )
 
   // case where we have recursive spans representing font changes
-  if (isVNode(vNode) && vNode.tagName === "span") {
-    return buildRunOrRuns(vNode, attributes, docxDocumentInstance)
+  if (isVNode(vNode) && (vNode as VNode).tagName === "span") {
+    return buildRunOrRuns(vNode as VNode, attributes, docxDocumentInstance)
   }
 
   if (
+    vNode &&
     isVNode(vNode) &&
     [
       "strong",
@@ -536,9 +624,9 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
       "blockquote",
       "code",
       "pre",
-    ].includes(vNode.tagName)
+    ].includes((vNode as VNode).tagName)
   ) {
-    const runFragmentsArray = []
+    const runFragmentsArray: XMLBuilder[] = []
 
     let vNodes = [vNode]
     // create temp run fragments to split the paragraph into different runs
@@ -548,7 +636,7 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
     while (vNodes.length) {
       const tempVNode = vNodes.shift()
       if (isVText(tempVNode)) {
-        const textFragment = buildTextElement(tempVNode.text)
+        const textFragment = buildTextElement((tempVNode as VText).text)
         const tempRunPropertiesFragment = buildRunProperties({
           ...attributes,
           ...tempAttributes,
@@ -579,10 +667,9 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
             "mark",
             "code",
             "pre",
-          ].includes(tempVNode.tagName)
+          ].includes((tempVNode as VNode).tagName)
         ) {
-          tempAttributes = {}
-          switch (tempVNode.tagName) {
+          switch ((tempVNode as VNode).tagName) {
             case "strong":
             case "b":
               tempAttributes.strong = true
@@ -602,16 +689,19 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
             default:
               break
           }
-          const formattingFragment = buildFormatting(tempVNode, {})
+          const formattingFragment = buildFormatting(
+            (tempVNode as VNode).tagName,
+            {},
+          )
 
           if (formattingFragment) {
             runPropertiesFragment.import(formattingFragment)
           }
           // go a layer deeper if there is a span somewhere in the children
         }
-        else if (tempVNode.tagName === "span") {
+        else if ((tempVNode as VNode).tagName === "span") {
           const spanFragment = await buildRunOrRuns(
-            tempVNode,
+            tempVNode as VNode,
             { ...attributes, ...tempAttributes },
             docxDocumentInstance,
           )
@@ -636,12 +726,12 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
         }
       }
 
-      if (tempVNode.children && tempVNode.children.length) {
-        if (tempVNode.children.length > 1) {
+      if ((tempVNode as VNode).children?.length) {
+        if ((tempVNode as VNode).children.length > 1) {
           attributes = { ...attributes, ...tempAttributes }
         }
 
-        vNodes = tempVNode.children.slice()
+        vNodes = (tempVNode as VNode).children.slice()
           .concat(vNodes)
       }
     }
@@ -652,22 +742,22 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
 
   runFragment.import(runPropertiesFragment)
   if (isVText(vNode)) {
-    const textFragment = buildTextElement(vNode.text)
+    const textFragment = buildTextElement((vNode as VText).text)
     runFragment.import(textFragment)
   }
   else if (attributes && attributes.type === "picture") {
     let response = null
 
-    const base64Uri = decodeURIComponent(vNode.properties.src)
+    const base64Uri = decodeURIComponent((vNode as VNode).properties.src)
     if (base64Uri) {
       response = docxDocumentInstance.createMediaFile(base64Uri)
     }
 
     if (response) {
-      docxDocumentInstance.zip
+      ;(docxDocumentInstance.zip as JSZip)
         .folder("word")
-        .folder("media")
-        .file(
+        ?.folder("media")
+        ?.file(
           response.fileNameWithExtension,
           Buffer.from(response.fileContent, "base64"),
           {
@@ -689,12 +779,10 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
       attributes.fileNameWithExtension = response.fileNameWithExtension
     }
 
-    const { type, inlineOrAnchored, ...otherAttributes } = attributes
-
-    const imageFragment = buildDrawing(inlineOrAnchored, type, otherAttributes)
+    const imageFragment = buildDrawing(attributes)
     runFragment.import(imageFragment)
   }
-  else if (isVNode(vNode) && vNode.tagName === "br") {
+  else if (isVNode(vNode) && (vNode as VNode).tagName === "br") {
     const lineBreakFragment = buildLineBreak()
     runFragment.import(lineBreakFragment)
   }
@@ -703,9 +791,13 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
   return runFragment
 }
 
-async function buildRunOrRuns(vNode, attributes, docxDocumentInstance) {
-  if (isVNode(vNode) && vNode.tagName === "span") {
-    let runFragments = []
+async function buildRunOrRuns(
+  vNode: VNode | null,
+  attributes: Attributes,
+  docxDocumentInstance: DocxDocument,
+): Promise<XMLBuilder | XMLBuilder[]> {
+  if (vNode && isVNode(vNode) && vNode.tagName === "span") {
+    let runFragments: XMLBuilder[] = []
 
     for (let index = 0; index < vNode.children.length; index++) {
       const childVNode = vNode.children[index]
@@ -736,7 +828,11 @@ async function buildRunOrRuns(vNode, attributes, docxDocumentInstance) {
   }
 }
 
-async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance) {
+async function buildRunOrHyperLink(
+  vNode: VNode,
+  attributes: Attributes,
+  docxDocumentInstance: DocxDocument,
+) {
   if (isVNode(vNode) && vNode.tagName === "a") {
     const relationshipId = docxDocumentInstance.createDocumentRelationships(
       docxDocumentInstance.relationshipFilename,
@@ -753,7 +849,7 @@ async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance) {
     modifiedAttributes.hyperlink = true
 
     const runFragments = await buildRunOrRuns(
-      vNode.children[0],
+      vNode.children[0] as VNode,
       modifiedAttributes,
       docxDocumentInstance,
     )
@@ -781,7 +877,7 @@ async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance) {
   return runFragments
 }
 
-function buildNumberingProperties(levelId, numberingId) {
+function buildNumberingProperties(levelId: number, numberingId: number) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "numPr")
     .ele("@w", "ilvl")
@@ -799,18 +895,22 @@ function buildNumberingInstances() {
     .up()
 }
 
-function buildSpacing(lineSpacing, beforeSpacing, afterSpacing) {
+function buildSpacing(
+  lineSpacing?: number,
+  beforeSpacing?: number,
+  afterSpacing?: number,
+) {
   const spacingFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "spacing")
 
   if (lineSpacing) {
-    spacingFragment.att("@w", "line", lineSpacing)
+    spacingFragment.att("@w", "line", String(lineSpacing))
   }
   if (beforeSpacing) {
-    spacingFragment.att("@w", "before", beforeSpacing)
+    spacingFragment.att("@w", "before", String(beforeSpacing))
   }
   if (afterSpacing) {
-    spacingFragment.att("@w", "after", afterSpacing)
+    spacingFragment.att("@w", "after", String(afterSpacing))
   }
 
   spacingFragment.att("@w", "lineRule", "auto")
@@ -819,17 +919,20 @@ function buildSpacing(lineSpacing, beforeSpacing, afterSpacing) {
   return spacingFragment
 }
 
-function buildIndentation({ left, right }) {
+function buildIndentation({ left, right }: { left?: number; right?: number }) {
+  if (!left && !right) {
+    return
+  }
   const indentationFragment = fragment({
     namespaceAlias: { w: namespaces.w },
   })
     .ele("@w", "ind")
 
   if (left) {
-    indentationFragment.att("@w", "left", left)
+    indentationFragment.att("@w", "left", String(left))
   }
   if (right) {
-    indentationFragment.att("@w", "right", right)
+    indentationFragment.att("@w", "right", String(right))
   }
 
   indentationFragment.up()
@@ -844,13 +947,16 @@ function buildPStyle(style = "Normal") {
     .up()
 }
 
-function buildHorizontalAlignment(horizontalAlignment) {
-  if (horizontalAlignment === "justify") {
-    horizontalAlignment = "both"
-  }
+function buildHorizontalAlignment(
+  horizontalAlignment: "left" | "justify" | "center",
+) {
+  const horAlign = horizontalAlignment === "justify"
+    ? "both"
+    : horizontalAlignment
+
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "jc")
-    .att("@w", "val", horizontalAlignment)
+    .att("@w", "val", horAlign)
     .up()
 }
 
@@ -866,10 +972,11 @@ function buildParagraphBorder() {
 
   Object.keys(bordersObject)
     .forEach((borderName) => {
-      if (bordersObject[borderName]) {
-        const { size, spacing, color } = bordersObject[borderName]
+      const bName = borderName as "top" | "left" | "bottom" | "right"
+      if (bordersObject[bName]) {
+        const { size, spacing, color } = bordersObject[bName]
 
-        const borderFragment = buildBorder(borderName, size, spacing, color)
+        const borderFragment = buildBorder(bName, size, spacing, color)
         paragraphBorderFragment.import(borderFragment)
       }
     })
@@ -879,44 +986,47 @@ function buildParagraphBorder() {
   return paragraphBorderFragment
 }
 
-function buildParagraphProperties(attributes) {
+function buildParagraphProperties(attributes: Attributes) {
   const paragraphPropertiesFragment = fragment({
     namespaceAlias: { w: namespaces.w },
   })
-    .ele(
-      "@w",
-      "pPr",
-    )
+    .ele("@w", "pPr")
 
   if (attributes && attributes.constructor === Object) {
     Object.keys(attributes)
       .forEach((key) => {
         switch (key) {
           case "numbering": {
-            const { levelId, numberingId } = attributes[key]
-            const numberingPropertiesFragment = buildNumberingProperties(
-              levelId,
-              numberingId,
-            )
-            paragraphPropertiesFragment.import(numberingPropertiesFragment)
+            if (
+              attributes.numbering?.levelId &&
+              attributes.numbering?.numberingId
+            ) {
+              const numberingPropertiesFragment = buildNumberingProperties(
+                attributes.numbering.levelId,
+                attributes.numbering.numberingId,
+              )
+              paragraphPropertiesFragment.import(numberingPropertiesFragment)
 
-            delete attributes.numbering
+              delete attributes.numbering
+            }
             break
           }
           case "textAlign": {
-            const horizontalAlignmentFragment = buildHorizontalAlignment(
-              attributes[key],
-            )
-            paragraphPropertiesFragment.import(horizontalAlignmentFragment)
+            if (attributes.textAlign) {
+              const horizontalAlignmentFragment = buildHorizontalAlignment(
+                attributes.textAlign,
+              )
+              paragraphPropertiesFragment.import(horizontalAlignmentFragment)
 
-            delete attributes.textAlign
+              delete attributes.textAlign
+            }
             break
           }
           case "backgroundColor":
             // Add shading to Paragraph Properties only if display is block
             // Essentially if background color needs to be across the row
-            if (attributes.display === "block") {
-              const shadingFragment = buildShading(attributes[key])
+            if (attributes.backgroundColor && attributes.display === "block") {
+              const shadingFragment = buildShading(attributes.backgroundColor)
               paragraphPropertiesFragment.import(shadingFragment)
               // FIXME: Inner padding in case of shaded paragraphs.
               const paragraphBorderFragment = buildParagraphBorder()
@@ -932,10 +1042,15 @@ function buildParagraphProperties(attributes) {
             break
           }
           case "indentation": {
-            const indentationFragment = buildIndentation(attributes[key])
-            paragraphPropertiesFragment.import(indentationFragment)
-
-            delete attributes.indentation
+            if (attributes.indentation) {
+              const indentationFragment = buildIndentation(
+                attributes.indentation,
+              )
+              if (indentationFragment) {
+                paragraphPropertiesFragment.import(indentationFragment)
+              }
+              delete attributes.indentation
+            }
             break
           }
           default:
@@ -950,24 +1065,24 @@ function buildParagraphProperties(attributes) {
     )
 
     delete attributes.lineHeight
-
     delete attributes.beforeSpacing
-
     delete attributes.afterSpacing
 
-    paragraphPropertiesFragment.import(spacingFragment)
+    if (spacingFragment) {
+      paragraphPropertiesFragment.import(spacingFragment)
+    }
   }
   paragraphPropertiesFragment.up()
 
   return paragraphPropertiesFragment
 }
 
-function computeImageDimensions(vNode, attributes) {
+function computeImageDimensions(vNode: VNode, attributes: Attributes) {
   const { maximumWidth, originalWidth, originalHeight } = attributes
-  const aspectRatio = originalWidth / originalHeight
-  const maximumWidthInEMU = TWIPToEMU(maximumWidth)
-  let originalWidthInEMU = pixelToEMU(originalWidth)
-  let originalHeightInEMU = pixelToEMU(originalHeight)
+  const aspectRatio = (originalWidth || 0) / (originalHeight || 1)
+  const maximumWidthInEMU = TWIPToEMU(maximumWidth || 0)
+  let originalWidthInEMU = pixelToEMU(originalWidth || 0)
+  let originalHeightInEMU = pixelToEMU(originalHeight || 0)
   if (originalWidthInEMU > maximumWidthInEMU) {
     originalWidthInEMU = maximumWidthInEMU
     originalHeightInEMU = Math.round(originalWidthInEMU / aspectRatio)
@@ -1046,11 +1161,14 @@ function computeImageDimensions(vNode, attributes) {
   }
 
   attributes.width = modifiedWidth
-
-  attributes.height = modifiedHeight
+  attributes.height = modifiedHeight || 0
 }
 
-async function buildParagraph(vNode, attributes, docxDocumentInstance) {
+async function buildParagraph(
+  vNode: VNode | null,
+  attributes: Attributes,
+  docxDocumentInstance: DocxDocument,
+) {
   const paragraphFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "p")
   const modifiedAttributes = modifiedStyleAttributesBuilder(
@@ -1065,7 +1183,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
     modifiedAttributes,
   )
   paragraphFragment.import(paragraphPropertiesFragment)
-  if (isVNode(vNode) && vNodeHasChildren(vNode)) {
+  if (vNode && isVNode(vNode) && vNodeHasChildren(vNode)) {
     if (
       [
         "span",
@@ -1124,16 +1242,18 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
     else {
       for (let index = 0; index < vNode.children.length; index++) {
         const childVNode = vNode.children[index]
-        if (childVNode.tagName === "img") {
-          if (isValidUrl(childVNode.properties.src)) {
-            childVNode.properties.src = await fetchImageToDataUrl(
-              childVNode.properties.src,
+        if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
+          if (isValidUrl((childVNode as VNode).properties.src)) {
+            ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
+              (childVNode as VNode).properties.src,
             )
           }
-          const base64String = extractBase64Data(childVNode.properties.src)
+          const base64String = extractBase64Data(
+            (childVNode as VNode).properties.src,
+          )
             ?.base64Content
           const imageBuffer = Buffer.from(
-            decodeURIComponent(base64String),
+            decodeURIComponent(base64String || ""),
             "base64",
           )
           const imageProperties = imageSize(imageBuffer)
@@ -1143,15 +1263,15 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
           modifiedAttributes.originalWidth = imageProperties.width
           modifiedAttributes.originalHeight = imageProperties.height
 
-          computeImageDimensions(childVNode, modifiedAttributes)
+          computeImageDimensions(childVNode as VNode, modifiedAttributes)
         }
         const runOrHyperlinkFragments = await buildRunOrHyperLink(
-          childVNode,
-          isVNode(childVNode) && childVNode.tagName === "img"
+          childVNode as VNode,
+          isVNode(childVNode) && (childVNode as VNode).tagName === "img"
             ? {
               ...modifiedAttributes,
               type: "picture",
-              description: childVNode.properties.alt,
+              description: (childVNode as VNode).properties.alt,
             }
             : modifiedAttributes,
           docxDocumentInstance,
@@ -1178,14 +1298,14 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
     // In case paragraphs has to be rendered
     // where vText is present. Eg. table-cell
     // Or in case the vNode is something like img
-    if (isVNode(vNode) && vNode.tagName === "img") {
+    if (vNode && isVNode(vNode) && vNode.tagName === "img") {
       const imageSource = vNode.properties.src
       if (isValidUrl(vNode.properties.src)) {
         vNode.properties.src = await fetchImageToDataUrl(vNode.properties.src)
       }
-      const base64String = extractBase64Data(imageSource).base64Content
+      const base64String = extractBase64Data(imageSource)?.base64Content
       const imageBuffer = Buffer.from(
-        decodeURIComponent(base64String),
+        decodeURIComponent(base64String || ""),
         "base64",
       )
       const imageProperties = imageSize(imageBuffer)
@@ -1218,10 +1338,10 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
   return paragraphFragment
 }
 
-function buildGridSpanFragment(spanValue) {
+function buildGridSpanFragment(spanValue: number) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "gridSpan")
-    .att("@w", "val", spanValue)
+    .att("@w", "val", String(spanValue))
     .up()
 }
 
@@ -1233,7 +1353,14 @@ function buildTableCellSpacing(cellSpacing = 0) {
     .up()
 }
 
-function buildTableCellBorders(tableCellBorder) {
+function buildTableCellBorders(tableCellBorder: {
+  top: number
+  bottom: number
+  left: number
+  right: number
+  color: string
+  stroke: string
+}) {
   const tableCellBordersFragment = fragment({
     namespaceAlias: { w: namespaces.w },
   })
@@ -1245,10 +1372,13 @@ function buildTableCellBorders(tableCellBorder) {
   const { color, stroke, ...borders } = tableCellBorder
   Object.keys(borders)
     .forEach((border) => {
-      if (tableCellBorder[border]) {
+      const borderVal =
+        tableCellBorder[border as "top" | "bottom" | "left" | "right"]
+
+      if (borderVal) {
         const borderFragment = buildBorder(
           border,
-          tableCellBorder[border],
+          borderVal,
           0,
           color,
           stroke,
@@ -1262,7 +1392,7 @@ function buildTableCellBorders(tableCellBorder) {
   return tableCellBordersFragment
 }
 
-function buildTableCellWidth(tableCellWidth) {
+function buildTableCellWidth(tableCellWidth: string | number) {
   const colWidth = fixupColumnWidth(tableCellWidth)
   const frag = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "tcW")
@@ -1275,65 +1405,73 @@ function buildTableCellWidth(tableCellWidth) {
       .up()
   }
   else {
-    return frag.att("@w", "w", colWidth)
+    return frag.att("@w", "w", String(colWidth))
       .att("@w", "type", "dxa")
       .up()
   }
 }
 
-function buildTableCellProperties(attributes) {
+function buildTableCellProperties(attributes: Attributes) {
   const tableCellPropertiesFragment = fragment({
     namespaceAlias: { w: namespaces.w },
   })
-    .ele(
-      "@w",
-      "tcPr",
-    )
+    .ele("@w", "tcPr")
+
   if (attributes && attributes.constructor === Object) {
     Object.keys(attributes)
       .forEach((key) => {
         switch (key) {
           case "backgroundColor": {
-            const shadingFragment = buildShading(attributes[key])
-            tableCellPropertiesFragment.import(shadingFragment)
+            if (attributes.backgroundColor) {
+              const shadingFragment = buildShading(attributes.backgroundColor)
+              tableCellPropertiesFragment.import(shadingFragment)
 
-            delete attributes.backgroundColor
+              delete attributes.backgroundColor
+            }
             break
           }
           case "verticalAlign": {
-            const verticalAlignmentFragment = buildVerticalAlignment(
-              attributes[key],
-            )
-            tableCellPropertiesFragment.import(verticalAlignmentFragment)
+            if (attributes.verticalAlign) {
+              const verticalAlignmentFragment = buildVerticalAlignment(
+                attributes.verticalAlign,
+              )
+              tableCellPropertiesFragment.import(verticalAlignmentFragment)
 
-            delete attributes.verticalAlign
+              delete attributes.verticalAlign
+            }
             break
           }
           case "colSpan": {
-            const gridSpanFragment = buildGridSpanFragment(attributes[key])
-            tableCellPropertiesFragment.import(gridSpanFragment)
+            if (attributes.colSpan) {
+              const gridSpanFragment = buildGridSpanFragment(attributes.colSpan)
+              tableCellPropertiesFragment.import(gridSpanFragment)
 
-            delete attributes.colSpan
+              delete attributes.colSpan
+            }
             break
           }
           case "tableCellBorder": {
-            const tableCellBorderFragment = buildTableCellBorders(
-              attributes[key],
-            )
-            tableCellPropertiesFragment.import(tableCellBorderFragment)
+            if (attributes.tableCellBorder) {
+              const tableCellBorderFragment = buildTableCellBorders(
+                attributes.tableCellBorder,
+              )
+              tableCellPropertiesFragment.import(tableCellBorderFragment)
 
-            delete attributes.tableCellBorder
+              delete attributes.tableCellBorder
+            }
             break
           }
           case "rowSpan": {
-            const verticalMergeFragment = buildVerticalMerge(attributes[key])
-            tableCellPropertiesFragment.import(verticalMergeFragment)
+            if (attributes.rowSpan) {
+              const verticalMergeFragment = buildVerticalMerge(attributes[key])
+              tableCellPropertiesFragment.import(verticalMergeFragment)
 
-            delete attributes.rowSpan
+              delete attributes.rowSpan
+            }
             break
           }
           case "width": {
-            const widthFragment = buildTableCellWidth(attributes[key])
+            const widthFragment = buildTableCellWidth(attributes.width || 0)
             tableCellPropertiesFragment.import(widthFragment)
             delete attributes.width
             break
@@ -1348,13 +1486,22 @@ function buildTableCellProperties(attributes) {
   return tableCellPropertiesFragment
 }
 
-function fixupTableCellBorder(vNode, attributes) {
+function fixupTableCellBorder(vNode: VNode, attributes: Attributes) {
+  const defaultTableCellBorder = {
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    color: "000000",
+    stroke: "single",
+  }
+
   if (Object.prototype.hasOwnProperty.call(vNode.properties.style, "border")) {
     if (
       vNode.properties.style.border === "none" ||
       vNode.properties.style.border === 0
     ) {
-      attributes.tableCellBorder = {}
+      attributes.tableCellBorder = defaultTableCellBorder
     }
     else {
       const [borderSize, borderStroke, borderColor] = cssBorderParser(
@@ -1376,7 +1523,7 @@ function fixupTableCellBorder(vNode, attributes) {
     vNode.properties.style["border-top"] === "0"
   ) {
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       top: 0,
     }
   }
@@ -1388,7 +1535,7 @@ function fixupTableCellBorder(vNode, attributes) {
       vNode.properties.style["border-top"],
     )
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       top: borderSize,
       color: borderColor,
       stroke: borderStroke,
@@ -1399,7 +1546,7 @@ function fixupTableCellBorder(vNode, attributes) {
     vNode.properties.style["border-left"] === "0"
   ) {
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       left: 0,
     }
   }
@@ -1411,7 +1558,7 @@ function fixupTableCellBorder(vNode, attributes) {
       vNode.properties.style["border-left"],
     )
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       left: borderSize,
       color: borderColor,
       stroke: borderStroke,
@@ -1422,7 +1569,7 @@ function fixupTableCellBorder(vNode, attributes) {
     vNode.properties.style["border-bottom"] === "0"
   ) {
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       bottom: 0,
     }
   }
@@ -1434,7 +1581,7 @@ function fixupTableCellBorder(vNode, attributes) {
       vNode.properties.style["border-bottom"],
     )
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       bottom: borderSize,
       color: borderColor,
       stroke: borderStroke,
@@ -1445,7 +1592,7 @@ function fixupTableCellBorder(vNode, attributes) {
     vNode.properties.style["border-right"] === "0"
   ) {
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       right: 0,
     }
   }
@@ -1457,7 +1604,7 @@ function fixupTableCellBorder(vNode, attributes) {
       vNode.properties.style["border-right"],
     )
     attributes.tableCellBorder = {
-      ...attributes.tableCellBorder,
+      ...attributes.tableCellBorder || defaultTableCellBorder,
       right: borderSize,
       color: borderColor,
       stroke: borderStroke,
@@ -1466,11 +1613,11 @@ function fixupTableCellBorder(vNode, attributes) {
 }
 
 async function buildTableCell(
-  vNode,
-  attributes,
-  rowSpanMap,
-  columnIndex,
-  docxDocumentInstance,
+  vNode: VNode,
+  attributes: Attributes,
+  rowSpanMap: Map<number, { rowSpan: number; colSpan: number }>,
+  columnIndex: { index: number },
+  docxDocumentInstance: DocxDocument,
 ) {
   const tableCellFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "tc")
@@ -1504,10 +1651,10 @@ async function buildTableCell(
       rowSpanMap.set(
         columnIndex.index,
         Object.assign({}, previousSpanObject, {
-          colSpan: parseInt(modifiedAttributes.colSpan) || 0,
+          colSpan: Number(modifiedAttributes.colSpan) || 0,
         }),
       )
-      columnIndex.index += parseInt(modifiedAttributes.colSpan) - 1
+      columnIndex.index += Number(modifiedAttributes.colSpan) - 1
     }
     if (vNode.properties.style) {
       modifiedAttributes = {
@@ -1529,29 +1676,37 @@ async function buildTableCell(
   if (vNodeHasChildren(vNode)) {
     for (let index = 0; index < vNode.children.length; index++) {
       const childVNode = vNode.children[index]
-      if (isVNode(childVNode) && childVNode.tagName === "img") {
-        const imageFragment = await buildImage(
-          docxDocumentInstance,
-          childVNode,
-          modifiedAttributes.maximumWidth,
-        )
-        if (imageFragment) {
-          tableCellFragment.import(imageFragment)
+      if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
+        if (modifiedAttributes.maximumWidth) {
+          const imageFragment = await buildImage(
+            docxDocumentInstance,
+            childVNode,
+            modifiedAttributes.maximumWidth,
+          )
+          if (imageFragment) {
+            tableCellFragment.import(imageFragment)
+          }
         }
       }
-      else if (isVNode(childVNode) && childVNode.tagName === "figure") {
-        if (vNodeHasChildren(childVNode)) {
+      else if (
+        isVNode(childVNode) && (childVNode as VNode).tagName === "figure"
+      ) {
+        if (vNodeHasChildren(childVNode as VNode)) {
           for (
             let iteratorIndex = 0;
-            iteratorIndex < childVNode.children.length;
+            iteratorIndex < (childVNode as VNode).children.length;
             iteratorIndex++
           ) {
-            const grandChildVNode = childVNode.children[iteratorIndex]
-            if (grandChildVNode.tagName === "img") {
+            const grandChildVNode =
+              (childVNode as VNode).children[iteratorIndex]
+            if (
+              isVNode(grandChildVNode) &&
+              (grandChildVNode as VNode).tagName === "img"
+            ) {
               const imageFragment = await buildImage(
                 docxDocumentInstance,
                 grandChildVNode,
-                modifiedAttributes.maximumWidth,
+                modifiedAttributes.maximumWidth || 0,
               )
               if (imageFragment) {
                 tableCellFragment.import(imageFragment)
@@ -1561,16 +1716,17 @@ async function buildTableCell(
         }
       }
       else if (
-        isVNode(childVNode) && ["ul", "ol"].includes(childVNode.tagName)
+        isVNode(childVNode) &&
+        ["ul", "ol"].includes((childVNode as VNode).tagName)
       ) {
         // render list in table
-        if (vNodeHasChildren(childVNode)) {
+        if (vNodeHasChildren(childVNode as VNode)) {
           await buildList(childVNode, docxDocumentInstance, tableCellFragment)
         }
       }
-      else {
+      else if (isVNode(childVNode)) {
         const paragraphFragment = await buildParagraph(
-          childVNode,
+          childVNode as VNode,
           modifiedAttributes,
           docxDocumentInstance,
         )
@@ -1591,7 +1747,11 @@ async function buildTableCell(
   return tableCellFragment
 }
 
-function buildRowSpanCell(rowSpanMap, columnIndex, attributes) {
+function buildRowSpanCell(
+  rowSpanMap: Map<number, { rowSpan: number; colSpan: number }>,
+  columnIndex: { index: number },
+  attributes: Attributes,
+) {
   const rowSpanCellFragments = []
   let spanObject = rowSpanMap.get(columnIndex.index)
   while (spanObject && spanObject.rowSpan) {
@@ -1631,7 +1791,7 @@ function buildRowSpanCell(rowSpanMap, columnIndex, attributes) {
   return rowSpanCellFragments
 }
 
-function buildTableRowProperties(attributes) {
+function buildTableRowProperties(attributes: Attributes) {
   const tableRowPropertiesFragment = fragment({
     namespaceAlias: { w: namespaces.w },
   })
@@ -1644,10 +1804,13 @@ function buildTableRowProperties(attributes) {
       .forEach((key) => {
         switch (key) {
           case "tableRowHeight": {
-            const tableRowHeightFragment = buildTableRowHeight(attributes[key])
-            tableRowPropertiesFragment.import(tableRowHeightFragment)
-
-            delete attributes.tableRowHeight
+            if (attributes.tableRowHeight) {
+              const tableRowHeightFragment = buildTableRowHeight(
+                attributes.tableRowHeight,
+              )
+              tableRowPropertiesFragment.import(tableRowHeightFragment)
+              delete attributes.tableRowHeight
+            }
             break
           }
           case "rowCantSplit":
@@ -1672,30 +1835,31 @@ function buildTableRowProperties(attributes) {
 }
 
 async function buildTableRow(
-  vNode,
-  attributes,
-  rowSpanMap,
-  docxDocumentInstance,
+  vNode: VNode,
+  attributes: Attributes,
+  rowSpanMap: Map<number, { rowSpan: number; colSpan: number }>,
+  docxDocumentInstance: DocxDocument,
 ) {
   const tableRowFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "tr")
   const modifiedAttributes = { ...attributes }
   if (isVNode(vNode) && vNode.properties) {
     // FIXME: find a better way to get row height from cell style
+    const firstChild = vNode.children[0]
     if (
       (vNode.properties.style && vNode.properties.style.height) ||
-      (vNode.children[0] &&
-        isVNode(vNode.children[0]) &&
-        vNode.children[0].properties.style &&
-        vNode.children[0].properties.style.height)
+      (firstChild &&
+        isVNode(firstChild) &&
+        (firstChild as VNode).properties.style &&
+        (firstChild as VNode).properties.style.height)
     ) {
       modifiedAttributes.tableRowHeight = fixupRowHeight(
         (vNode.properties.style && vNode.properties.style.height) ||
-          (vNode.children[0] &&
-              isVNode(vNode.children[0]) &&
-              vNode.children[0].properties.style &&
-              vNode.children[0].properties.style.height
-            ? vNode.children[0].properties.style.height
+          ((firstChild as VNode) &&
+              isVNode(firstChild as VNode) &&
+              (firstChild as VNode).properties.style &&
+              (firstChild as VNode).properties.style.height
+            ? (firstChild as VNode).properties.style.height
             : undefined),
       )
     }
@@ -1713,8 +1877,9 @@ async function buildTableRow(
 
   if (vNodeHasChildren(vNode)) {
     const tableColumns = vNode.children.filter((childVNode) =>
-      ["td", "th"].includes(childVNode.tagName),
-    )
+      isVNode(childVNode) &&
+      ["td", "th"].includes((childVNode as VNode).tagName),
+    ) as VNode[]
     const maximumColumnWidth = docxDocumentInstance.availableDocumentSpace /
       tableColumns.length
 
@@ -1772,20 +1937,20 @@ async function buildTableRow(
   return tableRowFragment
 }
 
-function buildTableGridCol(gridWidth) {
+function buildTableGridCol(gridWidth: number) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "gridCol")
     .att("@w", "w", String(Math.round(gridWidth)))
 }
 
-function buildTableGrid(vNode, attributes) {
+function buildTableGrid(vNode: VNode, attributes: Attributes) {
   const tableGridFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "tblGrid")
   if (vNodeHasChildren(vNode)) {
     const gridColumns = vNode.children.filter((childVNode) =>
-      childVNode.tagName === "col",
+      isVNode(childVNode) && (childVNode as VNode).tagName === "col",
     )
-    const gridWidth = attributes.maximumWidth / gridColumns.length
+    const gridWidth = (attributes.maximumWidth || 0) / gridColumns.length
 
     for (let index = 0; index < gridColumns.length; index++) {
       const tableGridColFragment = buildTableGridCol(gridWidth)
@@ -1797,21 +1962,23 @@ function buildTableGrid(vNode, attributes) {
   return tableGridFragment
 }
 
-function buildTableGridFromTableRow(vNode, attributes) {
+function buildTableGridFromTableRow(vNode: VNode, attributes: Attributes) {
   const tableGridFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "tblGrid")
   if (vNodeHasChildren(vNode)) {
     const numberOfGridColumns = vNode.children.reduce(
       (accumulator, childVNode) => {
-        const colSpan = childVNode.properties.colSpan ||
-          (childVNode.properties.style &&
-            childVNode.properties.style["column-span"])
-
+        let colSpan
+        if (isVNode(childVNode)) {
+          const props = (childVNode as VNode).properties
+          colSpan = props.colSpan ||
+            (props.style && props.style["column-span"])
+        }
         return accumulator + (colSpan ? parseInt(colSpan) : 1)
       },
       0,
     )
-    const gridWidth = attributes.maximumWidth / numberOfGridColumns
+    const gridWidth = (attributes.maximumWidth || 0) / numberOfGridColumns
 
     for (let index = 0; index < numberOfGridColumns; index++) {
       const tableGridColFragment = buildTableGridCol(gridWidth)
@@ -1823,7 +1990,18 @@ function buildTableGridFromTableRow(vNode, attributes) {
   return tableGridFragment
 }
 
-function buildTableBorders(tableBorder) {
+function buildTableBorders(
+  tableBorder: {
+    color: string
+    stroke: string
+    top: number
+    bottom: number
+    left: number
+    right: number
+    insideV: number
+    insideH: number
+  },
+) {
   const tableBordersFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele(
       "@w",
@@ -1834,10 +2012,13 @@ function buildTableBorders(tableBorder) {
 
   Object.keys(borders)
     .forEach((border) => {
-      if (borders[border]) {
+      const borderVal =
+        tableBorder[border as "top" | "left" | "bottom" | "right"]
+
+      if (borderVal) {
         const borderFragment = buildBorder(
           border,
-          borders[border],
+          borderVal,
           0,
           color,
           stroke,
@@ -1851,7 +2032,7 @@ function buildTableBorders(tableBorder) {
   return tableBordersFragment
 }
 
-function buildTableWidth(tableWidth) {
+function buildTableWidth(tableWidth: number) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "tblW")
     .att("@w", "type", "dxa")
@@ -1859,7 +2040,7 @@ function buildTableWidth(tableWidth) {
     .up()
 }
 
-function buildCellMargin(side, margin) {
+function buildCellMargin(side: string, margin: number) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", side)
     .att("@w", "type", "dxa")
@@ -1867,7 +2048,7 @@ function buildCellMargin(side, margin) {
     .up()
 }
 
-function buildTableCellMargins(margin) {
+function buildTableCellMargins(margin: number) {
   const tableCellMarFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele(
       "@w",
@@ -1885,24 +2066,25 @@ function buildTableCellMargins(margin) {
   return tableCellMarFragment
 }
 
-function buildTableProperties(attributes) {
+function buildTableProperties(attributes: Attributes) {
   const tablePropertiesFragment = fragment({
     namespaceAlias: { w: namespaces.w },
   })
-    .ele(
-      "@w",
-      "tblPr",
-    )
+    .ele("@w", "tblPr")
 
   if (attributes && attributes.constructor === Object) {
     Object.keys(attributes)
       .forEach((key) => {
         switch (key) {
           case "tableBorder": {
-            const tableBordersFragment = buildTableBorders(attributes[key])
-            tablePropertiesFragment.import(tableBordersFragment)
+            if (attributes.tableBorder) {
+              const tableBordersFragment = buildTableBorders(
+                attributes.tableBorder,
+              )
+              tablePropertiesFragment.import(tableBordersFragment)
 
-            delete attributes.tableBorder
+              delete attributes.tableBorder
+            }
             break
           }
           case "tableCellSpacing": {
@@ -1914,7 +2096,7 @@ function buildTableProperties(attributes) {
             delete attributes.tableCellSpacing
             break
           }
-          case "width":
+          case "width": {
             if (attributes[key]) {
               const tableWidthFragment = buildTableWidth(attributes[key])
               tablePropertiesFragment.import(tableWidthFragment)
@@ -1922,6 +2104,7 @@ function buildTableProperties(attributes) {
 
             delete attributes.width
             break
+          }
           default:
             break
         }
@@ -1939,30 +2122,36 @@ function buildTableProperties(attributes) {
   return tablePropertiesFragment
 }
 
-function cssBorderParser(borderString) {
-  let [size, stroke, color] = borderString.split(" ")
+function cssBorderParser(borderString: string): [number, string, string] {
+  const [size, stroke, color] = borderString.split(" ")
+  let sizeNum = parseInt(size)
 
   if (pointRegex.test(size)) {
     const matchedParts = size.match(pointRegex)
     // convert point to eighth of a point
-    size = pointToEIP(matchedParts[1])
+    sizeNum = pointToEIP(Number(matchedParts?.[1]))
   }
   else if (pixelRegex.test(size)) {
     const matchedParts = size.match(pixelRegex)
     // convert pixels to eighth of a point
-    size = pixelToEIP(matchedParts[1])
+    sizeNum = pixelToEIP(Number(matchedParts?.[1]))
   }
-  stroke = stroke && ["dashed", "dotted", "double"].includes(stroke)
-    ? stroke
-    : "single"
 
-  color = color && fixupColorCode(color)
-    .toUpperCase()
-
-  return [size, stroke, color]
+  return [
+    sizeNum,
+    stroke && ["dashed", "dotted", "double"].includes(stroke)
+      ? stroke
+      : "single",
+    color && fixupColorCode(color)
+      .toUpperCase(),
+  ]
 }
 
-async function buildTable(vNode, attributes, docxDocumentInstance) {
+async function buildTable(
+  vNode: VNode,
+  attributes: Attributes,
+  docxDocumentInstance: DocxDocument,
+) {
   const tableFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "tbl")
   const modifiedAttributes = { ...attributes }
@@ -1971,7 +2160,7 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
     const tableStyles = vNode.properties.style || {}
     let [borderSize, borderStrike, borderColor] = [2, "single", "000000"]
 
-    if (!isNaN(tableAttributes.border)) {
+    if (!isNaN(Number(tableAttributes.border))) {
       borderSize = parseInt(tableAttributes.border, 10)
     }
 
@@ -1980,9 +2169,9 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
       const [cssSize, cssStroke, cssColor] = cssBorderParser(
         tableStyles.border,
       )
-      borderSize = cssSize || borderSize
-      borderColor = cssColor || borderColor
-      borderStrike = cssStroke || borderStrike
+      borderSize = Number(cssSize) || borderSize
+      borderColor = String(cssColor) || borderColor
+      borderStrike = String(cssStroke) || borderStrike
     }
 
     const tableBorders = {
@@ -2006,6 +2195,8 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
         bottom: 1,
         left: 1,
         right: 1,
+        color: "000000",
+        stroke: "single",
       }
     }
 
@@ -2022,7 +2213,7 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
     else if (percentageRegex.test(tableStyles["min-width"])) {
       const percentageValue = tableStyles["min-width"].match(percentageRegex)[1]
       minimumWidth = Math.round(
-        (percentageValue / 100) * attributes.maximumWidth,
+        (percentageValue / 100) * (attributes.maximumWidth || 0),
       )
     }
 
@@ -2035,7 +2226,7 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
       percentageRegex.lastIndex = 0
       const percentageValue = tableStyles["max-width"].match(percentageRegex)[1]
       maximumWidth = Math.round(
-        (percentageValue / 100) * attributes.maximumWidth,
+        (percentageValue / 100) * (attributes.maximumWidth || 0),
       )
     }
 
@@ -2047,7 +2238,9 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
     else if (percentageRegex.test(tableStyles.width)) {
       percentageRegex.lastIndex = 0
       const percentageValue = tableStyles.width.match(percentageRegex)[1]
-      width = Math.round((percentageValue / 100) * attributes.maximumWidth)
+      width = Math.round(
+        (percentageValue / 100) * (attributes.maximumWidth || 0),
+      )
     }
 
     // If width isn't supplied, we should have min-width as the width.
@@ -2072,7 +2265,7 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
     if (modifiedAttributes.width) {
       modifiedAttributes.width = Math.min(
         modifiedAttributes.width,
-        attributes.maximumWidth,
+        attributes.maximumWidth || 0,
       )
     }
   }
@@ -2083,79 +2276,87 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
 
   if (vNodeHasChildren(vNode)) {
     for (let index = 0; index < vNode.children.length; index++) {
-      const childVNode = vNode.children[index]
-      if (childVNode.tagName === "colgroup") {
-        const tableGridFragment = buildTableGrid(
-          childVNode,
-          modifiedAttributes,
-        )
-        tableFragment.import(tableGridFragment)
-      }
-      else if (childVNode.tagName === "thead") {
-        for (
-          let iteratorIndex = 0;
-          iteratorIndex < childVNode.children.length;
-          iteratorIndex++
-        ) {
-          const grandChildVNode = childVNode.children[iteratorIndex]
-          if (grandChildVNode.tagName === "tr") {
-            if (iteratorIndex === 0) {
-              const tableGridFragment = buildTableGridFromTableRow(
-                grandChildVNode,
-                modifiedAttributes,
-              )
-              tableFragment.import(tableGridFragment)
-            }
-            const tableRowFragment = await buildTableRow(
-              grandChildVNode,
-              modifiedAttributes,
-              rowSpanMap,
-              docxDocumentInstance,
-            )
-            tableFragment.import(tableRowFragment)
-          }
-        }
-      }
-      else if (childVNode.tagName === "tbody") {
-        for (
-          let iteratorIndex = 0;
-          iteratorIndex < childVNode.children.length;
-          iteratorIndex++
-        ) {
-          const grandChildVNode = childVNode.children[iteratorIndex]
-          if (grandChildVNode.tagName === "tr") {
-            if (iteratorIndex === 0) {
-              const tableGridFragment = buildTableGridFromTableRow(
-                grandChildVNode,
-                modifiedAttributes,
-              )
-              tableFragment.import(tableGridFragment)
-            }
-            const tableRowFragment = await buildTableRow(
-              grandChildVNode,
-              modifiedAttributes,
-              rowSpanMap,
-              docxDocumentInstance,
-            )
-            tableFragment.import(tableRowFragment)
-          }
-        }
-      }
-      else if (childVNode.tagName === "tr") {
-        if (index === 0) {
-          const tableGridFragment = buildTableGridFromTableRow(
+      if (isVNode(vNode.children[index])) {
+        const childVNode = vNode.children[index] as VNode
+        if ((childVNode as VNode).tagName === "colgroup") {
+          const tableGridFragment = buildTableGrid(
             childVNode,
             modifiedAttributes,
           )
           tableFragment.import(tableGridFragment)
         }
-        const tableRowFragment = await buildTableRow(
-          childVNode,
-          modifiedAttributes,
-          rowSpanMap,
-          docxDocumentInstance,
-        )
-        tableFragment.import(tableRowFragment)
+        else if (childVNode.tagName === "thead") {
+          for (
+            let iteratorIndex = 0;
+            iteratorIndex < childVNode.children.length;
+            iteratorIndex++
+          ) {
+            if (isVNode(childVNode.children[iteratorIndex])) {
+              const grandChildVNode = childVNode
+                .children[iteratorIndex] as VNode
+              if (grandChildVNode.tagName === "tr") {
+                if (iteratorIndex === 0) {
+                  const tableGridFragment = buildTableGridFromTableRow(
+                    grandChildVNode,
+                    modifiedAttributes,
+                  )
+                  tableFragment.import(tableGridFragment)
+                }
+                const tableRowFragment = await buildTableRow(
+                  grandChildVNode,
+                  modifiedAttributes,
+                  rowSpanMap,
+                  docxDocumentInstance,
+                )
+                tableFragment.import(tableRowFragment)
+              }
+            }
+          }
+        }
+        else if (childVNode.tagName === "tbody") {
+          for (
+            let iteratorIndex = 0;
+            iteratorIndex < childVNode.children.length;
+            iteratorIndex++
+          ) {
+            if (isVNode(childVNode.children[iteratorIndex])) {
+              const grandChildVNode = childVNode
+                .children[iteratorIndex] as VNode
+              if (grandChildVNode.tagName === "tr") {
+                if (iteratorIndex === 0) {
+                  const tableGridFragment = buildTableGridFromTableRow(
+                    grandChildVNode,
+                    modifiedAttributes,
+                  )
+                  tableFragment.import(tableGridFragment)
+                }
+                const tableRowFragment = await buildTableRow(
+                  grandChildVNode,
+                  modifiedAttributes,
+                  rowSpanMap,
+                  docxDocumentInstance,
+                )
+                tableFragment.import(tableRowFragment)
+              }
+            }
+          }
+        }
+        else if (childVNode.tagName === "tr") {
+          if (index === 0) {
+            const tableGridFragment = buildTableGridFromTableRow(
+              childVNode,
+              modifiedAttributes,
+            )
+            tableFragment.import(tableGridFragment)
+          }
+          const tableRowFragment = await buildTableRow(
+            childVNode,
+            modifiedAttributes,
+            rowSpanMap,
+            docxDocumentInstance,
+          )
+          tableFragment.import(tableRowFragment)
+        }
       }
     }
   }
@@ -2187,7 +2388,9 @@ function buildOffset() {
     .up()
 }
 
-function buildGraphicFrameTransform(attributes) {
+function buildGraphicFrameTransform(
+  attributes: { width: number; height: number },
+) {
   const graphicFrameTransformFragment = fragment({
     namespaceAlias: { a: namespaces.a },
   })
@@ -2206,7 +2409,7 @@ function buildGraphicFrameTransform(attributes) {
   return graphicFrameTransformFragment
 }
 
-function buildShapeProperties(attributes) {
+function buildShapeProperties(attributes: { width: number; height: number }) {
   const shapeProperties = fragment({ namespaceAlias: { pic: namespaces.pic } })
     .ele("@pic", "spPr")
 
@@ -2248,7 +2451,7 @@ function buildSrcRectFragment() {
     .up()
 }
 
-function buildBinaryLargeImageOrPicture(relationshipId) {
+function buildBinaryLargeImageOrPicture(relationshipId: number) {
   return fragment({
     namespaceAlias: { a: namespaces.a, r: namespaces.r },
   })
@@ -2259,7 +2462,7 @@ function buildBinaryLargeImageOrPicture(relationshipId) {
     .up()
 }
 
-function buildBinaryLargeImageOrPictureFill(relationshipId) {
+function buildBinaryLargeImageOrPictureFill(relationshipId: number) {
   const binaryLargeImageOrPictureFillFragment = fragment({
     namespaceAlias: { pic: namespaces.pic },
   })
@@ -2287,22 +2490,22 @@ function buildNonVisualPictureDrawingProperties() {
 }
 
 function buildNonVisualDrawingProperties(
-  pictureId,
-  pictureNameWithExtension,
+  pictureId: number,
+  pictureNameWithExtension: string,
   pictureDescription = "",
 ) {
   return fragment({ namespaceAlias: { pic: namespaces.pic } })
     .ele("@pic", "cNvPr")
-    .att("id", pictureId)
+    .att("id", String(pictureId))
     .att("name", pictureNameWithExtension)
     .att("descr", pictureDescription)
     .up()
 }
 
 function buildNonVisualPictureProperties(
-  pictureId,
-  pictureNameWithExtension,
-  pictureDescription,
+  pictureId: number,
+  pictureNameWithExtension: string,
+  pictureDescription: string,
 ) {
   const nonVisualPicturePropertiesFragment = fragment({
     namespaceAlias: { pic: namespaces.pic },
@@ -2326,18 +2529,25 @@ function buildNonVisualPictureProperties(
 }
 
 function buildPicture(
-  { id, fileNameWithExtension, description, relationshipId, width, height },
+  {
+    id,
+    fileNameWithExtension,
+    description,
+    relationshipId,
+    width = 0,
+    height = 0,
+  }: Attributes,
 ) {
   const pictureFragment = fragment({ namespaceAlias: { pic: namespaces.pic } })
     .ele("@pic", "pic")
   const nonVisualPicturePropertiesFragment = buildNonVisualPictureProperties(
-    id,
-    fileNameWithExtension,
-    description,
+    id || 0,
+    fileNameWithExtension || "",
+    description || "",
   )
   pictureFragment.import(nonVisualPicturePropertiesFragment)
   const binaryLargeImageOrPictureFill = buildBinaryLargeImageOrPictureFill(
-    relationshipId,
+    relationshipId || 0,
   )
   pictureFragment.import(binaryLargeImageOrPictureFill)
   const shapeProperties = buildShapeProperties({ width, height })
@@ -2347,7 +2557,7 @@ function buildPicture(
   return pictureFragment
 }
 
-function buildGraphicData(graphicType: "picture", attributes) {
+function buildGraphicData(graphicType: "picture", attributes: Attributes) {
   const graphicDataFragment = fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "graphicData")
     .att("uri", "http://schemas.openxmlformats.org/drawingml/2006/picture")
@@ -2360,7 +2570,7 @@ function buildGraphicData(graphicType: "picture", attributes) {
   return graphicDataFragment
 }
 
-function buildGraphic(graphicType: "picture", attributes) {
+function buildGraphic(graphicType: "picture", attributes: Attributes) {
   const graphicFragment = fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "graphic")
   // TODO: Handle drawing type
@@ -2371,10 +2581,13 @@ function buildGraphic(graphicType: "picture", attributes) {
   return graphicFragment
 }
 
-function buildDrawingObjectNonVisualProperties(pictureId, pictureName) {
+function buildDrawingObjectNonVisualProperties(
+  pictureId: number,
+  pictureName: string,
+) {
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
     .ele("@wp", "docPr")
-    .att("id", pictureId)
+    .att("id", String(pictureId))
     .att("name", pictureName)
     .up()
 }
@@ -2441,7 +2654,7 @@ function buildSimplePos() {
     .up()
 }
 
-function buildAnchoredDrawing(graphicType: "picture", attributes) {
+function buildAnchoredDrawing(graphicType: "picture", attributes: Attributes) {
   const anchoredDrawingFragment = fragment({
     namespaceAlias: { wp: namespaces.wp },
   })
@@ -2474,8 +2687,8 @@ function buildAnchoredDrawing(graphicType: "picture", attributes) {
   anchoredDrawingFragment.import(wrapSquareFragment)
   const drawingObjectNonVisualPropertiesFragment =
     buildDrawingObjectNonVisualProperties(
-      attributes.id,
-      attributes.fileNameWithExtension,
+      attributes.id || 0,
+      attributes.fileNameWithExtension || "",
     )
   anchoredDrawingFragment.import(drawingObjectNonVisualPropertiesFragment)
   const graphicFragment = buildGraphic(graphicType, attributes)
@@ -2486,7 +2699,7 @@ function buildAnchoredDrawing(graphicType: "picture", attributes) {
   return anchoredDrawingFragment
 }
 
-function buildInlineDrawing(graphicType: "picture", attributes) {
+function buildInlineDrawing(graphicType: "picture", attributes: Attributes) {
   const inlineDrawingFragment = fragment({
     namespaceAlias: { wp: namespaces.wp },
   })
@@ -2505,8 +2718,8 @@ function buildInlineDrawing(graphicType: "picture", attributes) {
   inlineDrawingFragment.import(effectExtentFragment)
   const drawingObjectNonVisualPropertiesFragment =
     buildDrawingObjectNonVisualProperties(
-      attributes.id,
-      attributes.fileNameWithExtension,
+      attributes.id || 0,
+      attributes.fileNameWithExtension || "",
     )
   inlineDrawingFragment.import(drawingObjectNonVisualPropertiesFragment)
   const graphicFragment = buildGraphic(graphicType, attributes)
@@ -2518,15 +2731,10 @@ function buildInlineDrawing(graphicType: "picture", attributes) {
 }
 
 function buildDrawing(
-  inlineOrAnchored = false,
-  graphicType: "picture",
-  attributes: {
-    width: number
-    height: number
-    id: number
-    fileNameWithExtension: string
-  },
+  attributes: Attributes,
 ) {
+  const inlineOrAnchored = attributes.inlineOrAnchored || false
+  const graphicType = attributes.graphicType || "picture"
   const drawingFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "drawing")
   const inlineOrAnchoredDrawingFragment = inlineOrAnchored

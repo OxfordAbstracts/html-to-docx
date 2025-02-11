@@ -10,11 +10,16 @@ const createdAt = new Date("2025-01-01")
 
 test("replaces image with no extension with placeholder image", async () => {
   const largeHTML = await fs.readFile("tests/image-no-extension.html", "utf8")
-  const docxContent = await htmlToDocx(largeHTML, null, {
-    createdAt,
-    modifiedAt: createdAt,
-  })
-  writeFile(docxContent, "tests/_tmp_image-no-extension.docx")
+  const docxContent = await htmlToDocx(
+    largeHTML,
+    null,
+    {
+      createdAt,
+      modifiedAt: createdAt,
+    },
+    null,
+  )
+  await writeFile(docxContent, "tests/_tmp_image-no-extension.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
