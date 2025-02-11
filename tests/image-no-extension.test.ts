@@ -8,7 +8,7 @@ import writeFile from "./write-file.ts"
 
 const createdAt = new Date("2025-01-01")
 
-test("replaces image with no extension with placeholder image", async () => {
+test("gets mime type of image without extension from its content", async () => {
   const largeHTML = await fs.readFile("tests/image-no-extension.html", "utf8")
   const docxContent = await htmlToDocx(
     largeHTML,

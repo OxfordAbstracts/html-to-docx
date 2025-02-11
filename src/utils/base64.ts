@@ -10,30 +10,29 @@ export async function fetchImageToDataUrl(imageUrl: string) {
       )
       return emptyPngDataURL
     }
-
-    const base64String = Buffer.from(await imageResponse.arrayBuffer())
+    const imgArrayBuff = await imageResponse.arrayBuffer()
+    const base64String = Buffer.from(imgArrayBuff)
       .toString("base64")
     if (!base64String) {
       console.warn("WARNING: Image response could not be converted to base64")
       return emptyPngDataURL
     }
     else {
-      if (!mimeTypes.lookup(imageUrl)) {
-        console.warn(
-          `WARNING: Mime type could not be determined for "${imageUrl}"`,
-        )
-        return emptyPngDataURL
+      let mimeType = mimeTypes.lookup(imageUrl)
+      if (!mimeType) {
+        // TODO: Move import to top once it's converted to ESM
+        const { fileTypeFromBuffer } = await import("file-type")
+        const fileType = await fileTypeFromBuffer(imgArrayBuff)
+        mimeType = fileType?.mime || false
+        console.debug({ imageUrl, mimeType })
       }
-      else {
-        return `data:${mimeTypes.lookup(imageUrl)};base64,${base64String}`
-      }
+      return `data:${mimeType || "png"};base64,${base64String}`
     }
   }
   catch (error) {
     console.warn(
       `WARNING: Image download failed for "${imageUrl}" with following error:`,
-      // @ts-expect-error  Property does not exist on type
-      error?.cause?.message,
+      error,
     )
 
     return emptyPngDataURL
