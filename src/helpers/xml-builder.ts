@@ -337,105 +337,107 @@ function fixupMargin(marginString: string) {
 
 function modifiedStyleAttributesBuilder(
   docxDocumentInstance: DocxDocument,
-  vNode: VNode | null,
+  vNode: VTree | null,
   attributes: Attributes,
   options = { isParagraph: false },
 ) {
   const modifiedAttributes = { ...attributes }
 
   // styles
-  if (vNode && isVNode(vNode) && vNode.properties && vNode.properties.style) {
-    if (
-      vNode.properties.style.color &&
-      !colorlessColors.includes(vNode.properties.style.color)
-    ) {
-      modifiedAttributes.color = fixupColorCode(vNode.properties.style.color)
-    }
+  if (vNode && isVNode(vNode)) {
+    const properties = (vNode as VNode).properties
+    if (properties && properties.style) {
+      if (
+        properties.style.color &&
+        !colorlessColors.includes(properties.style.color)
+      ) {
+        modifiedAttributes.color = fixupColorCode(properties.style.color)
+      }
 
-    if (
-      vNode.properties.style["background-color"] &&
-      !colorlessColors.includes(vNode.properties.style["background-color"])
-    ) {
-      modifiedAttributes.backgroundColor = fixupColorCode(
-        vNode.properties.style["background-color"],
-      )
-    }
+      if (
+        properties.style["background-color"] &&
+        !colorlessColors.includes(properties.style["background-color"])
+      ) {
+        modifiedAttributes.backgroundColor = fixupColorCode(
+          properties.style["background-color"],
+        )
+      }
 
-    if (
-      vNode.properties.style["vertical-align"] &&
-      verticalAlignValues.includes(vNode.properties.style["vertical-align"])
-    ) {
-      modifiedAttributes.verticalAlign =
-        vNode.properties.style["vertical-align"]
-    }
+      if (
+        properties.style["vertical-align"] &&
+        verticalAlignValues.includes(properties.style["vertical-align"])
+      ) {
+        modifiedAttributes.verticalAlign = properties.style["vertical-align"]
+      }
 
-    if (
-      vNode.properties.style["text-align"] &&
-      ["left", "right", "center", "justify"].includes(
-        vNode.properties.style["text-align"],
-      )
-    ) {
-      modifiedAttributes.textAlign = vNode.properties.style["text-align"]
-    }
+      if (
+        properties.style["text-align"] &&
+        ["left", "right", "center", "justify"].includes(
+          properties.style["text-align"],
+        )
+      ) {
+        modifiedAttributes.textAlign = properties.style["text-align"]
+      }
 
-    // FIXME: remove bold check when other font weights are handled.
-    if (
-      vNode.properties.style["font-weight"] &&
-      vNode.properties.style["font-weight"] === "bold"
-    ) {
-      modifiedAttributes.strong = vNode.properties.style["font-weight"]
-    }
-    if (vNode.properties.style["font-family"]) {
-      modifiedAttributes.font = docxDocumentInstance.createFont(
-        vNode.properties.style["font-family"],
-      )
-    }
-    if (vNode.properties.style["font-size"]) {
-      modifiedAttributes.fontSize = fixupFontSize(
-        vNode.properties.style["font-size"],
-      )
-    }
-    if (vNode.properties.style["line-height"]) {
-      modifiedAttributes.lineHeight = fixupLineHeight(
-        vNode.properties.style["line-height"],
-        vNode.properties.style["font-size"]
-          ? fixupFontSize(vNode.properties.style["font-size"])
-          : undefined,
-      )
-    }
-    if (
-      vNode.properties.style["margin-left"] ||
-      vNode.properties.style["margin-right"]
-    ) {
-      const leftMargin = fixupMargin(vNode.properties.style["margin-left"])
-      const rightMargin = fixupMargin(vNode.properties.style["margin-right"])
+      // FIXME: remove bold check when other font weights are handled.
+      if (
+        properties.style["font-weight"] &&
+        properties.style["font-weight"] === "bold"
+      ) {
+        modifiedAttributes.strong = properties.style["font-weight"]
+      }
+      if (properties.style["font-family"]) {
+        modifiedAttributes.font = docxDocumentInstance.createFont(
+          properties.style["font-family"],
+        )
+      }
+      if (properties.style["font-size"]) {
+        modifiedAttributes.fontSize = fixupFontSize(
+          properties.style["font-size"],
+        )
+      }
+      if (properties.style["line-height"]) {
+        modifiedAttributes.lineHeight = fixupLineHeight(
+          properties.style["line-height"],
+          properties.style["font-size"]
+            ? fixupFontSize(properties.style["font-size"])
+            : undefined,
+        )
+      }
+      if (
+        properties.style["margin-left"] ||
+        properties.style["margin-right"]
+      ) {
+        const leftMargin = fixupMargin(properties.style["margin-left"])
+        const rightMargin = fixupMargin(properties.style["margin-right"])
 
-      if (leftMargin || rightMargin) {
-        modifiedAttributes.indentation = {
-          left: leftMargin,
-          right: rightMargin,
+        if (leftMargin || rightMargin) {
+          modifiedAttributes.indentation = {
+            left: leftMargin,
+            right: rightMargin,
+          }
         }
       }
-    }
-    if (vNode.properties.style.display) {
-      modifiedAttributes.display = vNode.properties.style.display
-    }
+      if (properties.style.display) {
+        modifiedAttributes.display = properties.style.display
+      }
 
-    if (vNode.properties.style.width) {
-      modifiedAttributes.width = vNode.properties.style.width
+      if (properties.style.width) {
+        modifiedAttributes.width = properties.style.width
+      }
     }
   }
 
   // paragraph only
   if (options?.isParagraph) {
-    if (vNode && isVNode(vNode) && vNode.tagName === "blockquote") {
+    if (vNode && isVNode(vNode) && (vNode as VNode).tagName === "blockquote") {
       modifiedAttributes.indentation = { left: 284, right: 0 }
       modifiedAttributes.textAlign = "justify"
     }
-    else if (vNode && isVNode(vNode) && vNode.tagName === "code") {
+    else if (vNode && isVNode(vNode) && (vNode as VNode).tagName === "code") {
       modifiedAttributes.highlightColor = "lightGray"
     }
-    else if (vNode && isVNode(vNode) && vNode.tagName === "pre") {
+    else if (vNode && isVNode(vNode) && (vNode as VNode).tagName === "pre") {
       modifiedAttributes.font = "Courier"
     }
   }
@@ -1165,7 +1167,7 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
 }
 
 async function buildParagraph(
-  vNode: VNode | null,
+  vNode: VTree | null,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
 ) {
@@ -1183,7 +1185,7 @@ async function buildParagraph(
     modifiedAttributes,
   )
   paragraphFragment.import(paragraphPropertiesFragment)
-  if (vNode && isVNode(vNode) && vNodeHasChildren(vNode)) {
+  if (vNode && isVNode(vNode) && vNodeHasChildren(vNode as VNode)) {
     if (
       [
         "span",
@@ -1202,10 +1204,10 @@ async function buildParagraph(
         "a",
         "code",
         "pre",
-      ].includes(vNode.tagName)
+      ].includes((vNode as VNode).tagName)
     ) {
       const runOrHyperlinkFragments = await buildRunOrHyperLink(
-        vNode,
+        vNode as VNode,
         modifiedAttributes,
         docxDocumentInstance,
       )
@@ -1224,7 +1226,7 @@ async function buildParagraph(
         paragraphFragment.import(runOrHyperlinkFragments)
       }
     }
-    else if (vNode.tagName === "blockquote") {
+    else if ((vNode as VNode).tagName === "blockquote") {
       const runFragmentOrFragments = await buildRun(
         vNode,
         attributes,
@@ -1240,8 +1242,8 @@ async function buildParagraph(
       }
     }
     else {
-      for (let index = 0; index < vNode.children.length; index++) {
-        const childVNode = vNode.children[index]
+      for (let index = 0; index < (vNode as VNode).children.length; index++) {
+        const childVNode = (vNode as VNode).children[index]
         if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
           if (isValidUrl((childVNode as VNode).properties.src)) {
             ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
@@ -1298,10 +1300,12 @@ async function buildParagraph(
     // In case paragraphs has to be rendered
     // where vText is present. Eg. table-cell
     // Or in case the vNode is something like img
-    if (vNode && isVNode(vNode) && vNode.tagName === "img") {
-      const imageSource = vNode.properties.src
-      if (isValidUrl(vNode.properties.src)) {
-        vNode.properties.src = await fetchImageToDataUrl(vNode.properties.src)
+    if (vNode && isVNode(vNode) && (vNode as VNode).tagName === "img") {
+      const imageSource = (vNode as VNode).properties.src
+      if (isValidUrl((vNode as VNode).properties.src)) {
+        ;(vNode as VNode).properties.src = await fetchImageToDataUrl(
+          (vNode as VNode).properties.src,
+        )
       }
       const base64String = extractBase64Data(imageSource)?.base64Content
       const imageBuffer = Buffer.from(
@@ -1315,10 +1319,10 @@ async function buildParagraph(
       modifiedAttributes.originalWidth = imageProperties.width
       modifiedAttributes.originalHeight = imageProperties.height
 
-      computeImageDimensions(vNode, modifiedAttributes)
+      computeImageDimensions(vNode as VNode, modifiedAttributes)
     }
     const runFragments = await buildRunOrRuns(
-      vNode,
+      vNode as VNode,
       modifiedAttributes,
       docxDocumentInstance,
     )
@@ -1724,9 +1728,9 @@ async function buildTableCell(
           await buildList(childVNode, docxDocumentInstance, tableCellFragment)
         }
       }
-      else if (isVNode(childVNode)) {
+      else {
         const paragraphFragment = await buildParagraph(
-          childVNode as VNode,
+          childVNode,
           modifiedAttributes,
           docxDocumentInstance,
         )
