@@ -58137,6 +58137,7 @@ function nanoid(size = 21) {
 
 // src/docx-document.ts
 var import_xmlbuilder23 = __toESM(require_lib12(), 1);
+import { createHash } from "node:crypto";
 
 // src/helpers/render-document-file.ts
 var import_html_to_vdom = __toESM(require_html_to_vdom2(), 1);
@@ -58461,12 +58462,20 @@ function hex3ToHex(red, green, blue) {
 
 // src/utils/unit-conversion.ts
 var pixelRegex = /([\d.]+)px/i;
+var emRegex = /([\d.]+)em/i;
+var remRegex = /([\d.]+)rem/i;
 var percentageRegex = /([\d.]+)%/i;
 var pointRegex = /([\d.]+)pt/i;
 var cmRegex = /([\d.]+)cm/i;
 var inchRegex = /([\d.]+)in/i;
 function pixelToEMU(pixelValue) {
   return Math.round(pixelValue * 9525);
+}
+function emToEmu(emValue) {
+  return pixelToEMU(emValue * 16);
+}
+function remToEmu(remValue) {
+  return pixelToEMU(remValue * 16);
 }
 function TWIPToEMU(TWIPValue) {
   return Math.round(TWIPValue * 635);
@@ -59102,27 +59111,40 @@ function computeImageDimensions(vNode, attributes) {
   let modifiedHeight;
   let modifiedWidth;
   if (vNode.properties && vNode.properties.style) {
-    if (vNode.properties.style.width) {
-      if (vNode.properties.style.width !== "auto") {
-        if (pixelRegex.test(vNode.properties.style.width)) {
-          modifiedWidth = pixelToEMU(vNode.properties.style.width.match(pixelRegex)[1]);
-        } else if (percentageRegex.test(vNode.properties.style.width)) {
-          const percentageValue = vNode.properties.style.width.match(percentageRegex)[1];
+    const styleWidth = vNode.properties.style.width;
+    const styleHeight = vNode.properties.style.height;
+    if (styleWidth) {
+      if (styleWidth !== "auto") {
+        if (pixelRegex.test(styleWidth)) {
+          modifiedWidth = pixelToEMU(styleWidth.match(pixelRegex)[1]);
+        } else if (emRegex.test(styleWidth)) {
+          modifiedWidth = emToEmu(styleWidth.match(emRegex)[1]);
+        } else if (remRegex.test(styleWidth)) {
+          modifiedWidth = remToEmu(styleWidth.match(remRegex)[1]);
+        } else if (percentageRegex.test(styleWidth)) {
+          const percentageValue = styleWidth.match(percentageRegex)[1];
           modifiedWidth = Math.round(percentageValue / 100 * originalWidthInEMU);
+        } else {
+          modifiedWidth = originalWidthInEMU;
+          modifiedHeight = originalHeightInEMU;
         }
       } else {
-        if (vNode.properties.style.height && vNode.properties.style.height === "auto") {
+        if (styleHeight && styleHeight === "auto") {
           modifiedWidth = originalWidthInEMU;
           modifiedHeight = originalHeightInEMU;
         }
       }
     }
-    if (vNode.properties.style.height) {
-      if (vNode.properties.style.height !== "auto") {
-        if (pixelRegex.test(vNode.properties.style.height)) {
-          modifiedHeight = pixelToEMU(vNode.properties.style.height.match(pixelRegex)[1]);
-        } else if (percentageRegex.test(vNode.properties.style.height)) {
-          const percentageValue = vNode.properties.style.width.match(percentageRegex)[1];
+    if (styleHeight) {
+      if (styleHeight !== "auto") {
+        if (pixelRegex.test(styleHeight)) {
+          modifiedHeight = pixelToEMU(styleHeight.match(pixelRegex)[1]);
+        } else if (emRegex.test(styleWidth)) {
+          modifiedWidth = emToEmu(styleWidth.match(emRegex)[1]);
+        } else if (remRegex.test(styleWidth)) {
+          modifiedWidth = emToEmu(styleWidth.match(remRegex)[1]);
+        } else if (percentageRegex.test(styleHeight)) {
+          const percentageValue = styleWidth.match(percentageRegex)[1];
           modifiedHeight = Math.round(percentageValue / 100 * originalHeightInEMU);
           if (!modifiedWidth) {
             modifiedWidth = Math.round(modifiedHeight * aspectRatio);
@@ -59143,13 +59165,16 @@ function computeImageDimensions(vNode, attributes) {
       modifiedHeight = Math.round(modifiedWidth / aspectRatio);
     } else if (modifiedHeight && !modifiedWidth) {
       modifiedWidth = Math.round(modifiedHeight * aspectRatio);
+    } else {
+      modifiedWidth = originalWidthInEMU;
+      modifiedHeight = originalHeightInEMU;
     }
   } else {
     modifiedWidth = originalWidthInEMU;
     modifiedHeight = originalHeightInEMU;
   }
   attributes.width = modifiedWidth;
-  attributes.height = modifiedHeight || 0;
+  attributes.height = modifiedHeight;
 }
 async function buildParagraph(vNode, attributes, docxDocumentInstance) {
   const paragraphFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "p");
@@ -59685,14 +59710,14 @@ function buildTableProperties(attributes) {
           break;
         }
         case "tableCellSpacing": {
-          const tableCellSpacingFragment = buildTableCellSpacing(attributes[key]);
+          const tableCellSpacingFragment = buildTableCellSpacing(attributes.tableCellSpacing);
           tablePropertiesFragment.import(tableCellSpacingFragment);
           delete attributes.tableCellSpacing;
           break;
         }
         case "width": {
-          if (attributes[key]) {
-            const tableWidthFragment = buildTableWidth(attributes[key]);
+          if (attributes.width) {
+            const tableWidthFragment = buildTableWidth(attributes.width);
             tablePropertiesFragment.import(tableWidthFragment);
           }
           delete attributes.width;
@@ -59862,8 +59887,11 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
 function buildPresetGeometry() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "prstGeom").att("prst", "rect").up();
 }
-function buildExtents({ width = 0, height = 0 }) {
-  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(width)).att("cy", String(height)).up();
+function buildExtents({ width, height }) {
+  if (!width && !height) {
+    return;
+  }
+  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(width || "")).att("cy", String(height || "")).up();
 }
 function buildOffset() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "off").att("x", "0").att("y", "0").up();
@@ -59875,7 +59903,9 @@ function buildGraphicFrameTransform(attributes) {
   const offsetFragment = buildOffset();
   graphicFrameTransformFragment.import(offsetFragment);
   const extentsFragment = buildExtents(attributes);
-  graphicFrameTransformFragment.import(extentsFragment);
+  if (extentsFragment) {
+    graphicFrameTransformFragment.import(extentsFragment);
+  }
   graphicFrameTransformFragment.up();
   return graphicFrameTransformFragment;
 }
@@ -59941,8 +59971,8 @@ function buildPicture({
   fileNameWithExtension,
   description,
   relationshipId,
-  width = 0,
-  height = 0
+  width,
+  height
 }) {
   const pictureFragment = import_xmlbuilder2.fragment({ namespaceAlias: { pic: namespaces_default.pic } }).ele("@pic", "pic");
   const nonVisualPicturePropertiesFragment = buildNonVisualPictureProperties(id || 0, fileNameWithExtension || "", description || "");
@@ -59979,8 +60009,11 @@ function buildWrapSquare() {
 function buildEffectExtentFragment() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "effectExtent").att("b", "0").att("l", "0").att("r", "0").att("t", "0").up();
 }
-function buildExtent({ width = 0, height = 0 }) {
-  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(width)).att("cy", String(height)).up();
+function buildExtent({ width, height }) {
+  if (!width && !height) {
+    return;
+  }
+  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(width || "")).att("cy", String(height || "")).up();
 }
 function buildPositionV() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "positionV").att("relativeFrom", "paragraph").ele("@wp", "posOffset").txt("19050").up();
@@ -60005,7 +60038,9 @@ function buildAnchoredDrawing(graphicType, attributes) {
     width: attributes.width,
     height: attributes.height
   });
-  anchoredDrawingFragment.import(extentFragment);
+  if (extentFragment) {
+    anchoredDrawingFragment.import(extentFragment);
+  }
   const effectExtentFragment = buildEffectExtentFragment();
   anchoredDrawingFragment.import(effectExtentFragment);
   const wrapSquareFragment = buildWrapSquare();
@@ -60025,7 +60060,9 @@ function buildInlineDrawing(graphicType, attributes) {
     width: attributes.width,
     height: attributes.height
   });
-  inlineDrawingFragment.import(extentFragment);
+  if (extentFragment) {
+    inlineDrawingFragment.import(extentFragment);
+  }
   const effectExtentFragment = buildEffectExtentFragment();
   inlineDrawingFragment.import(effectExtentFragment);
   const drawingObjectNonVisualPropertiesFragment = buildDrawingObjectNonVisualProperties(attributes.id || 0, attributes.fileNameWithExtension || "");
@@ -60936,6 +60973,9 @@ class ListStyleBuilder {
 }
 
 // src/docx-document.ts
+function sha1(content) {
+  return createHash("sha1").update(content).digest("hex");
+}
 function generateContentTypesFragments(contentTypesXML2, type, objects) {
   if (objects && Array.isArray(objects)) {
     objects.forEach((object) => {
@@ -61252,7 +61292,9 @@ class DocxDocument {
       throw new Error("Invalid data URL");
     }
     const fileExtension = fileData.extension === "octet-stream" ? "png" : fileData.extension;
-    const fileNameWithExtension = `image-${nanoid()}.${fileExtension}`;
+    const randId = nanoid(8);
+    const contentHash = sha1(fileData.base64Content);
+    const fileNameWithExtension = `image-${randId}-${contentHash}.${fileExtension}`;
     this.lastMediaId += 1;
     return {
       id: this.lastMediaId,
