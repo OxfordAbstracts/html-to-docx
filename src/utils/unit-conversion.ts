@@ -1,4 +1,6 @@
 export const pixelRegex = /([\d.]+)px/i
+export const emRegex = /([\d.]+)em/i
+export const remRegex = /([\d.]+)rem/i
 export const percentageRegex = /([\d.]+)%/i
 export const pointRegex = /([\d.]+)pt/i
 export const cmRegex = /([\d.]+)cm/i
@@ -8,6 +10,14 @@ export const inchRegex = /([\d.]+)in/i
 
 export function pixelToEMU(pixelValue: number) {
   return Math.round(pixelValue * 9525)
+}
+
+export function emToEmu(emValue: number) {
+  return pixelToEMU(emValue * 16)
+}
+
+export function remToEmu(remValue: number) {
+  return pixelToEMU(remValue * 16)
 }
 
 export function EMUToPixel(EMUValue: number) {

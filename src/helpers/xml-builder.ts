@@ -36,6 +36,8 @@ import {
 import {
   cmRegex,
   cmToTWIP,
+  emRegex,
+  emToEmu,
   HIPToTWIP,
   inchRegex,
   inchToTWIP,
@@ -49,6 +51,8 @@ import {
   pointToEIP,
   pointToHIP,
   pointToTWIP,
+  remRegex,
+  remToEmu,
   TWIPToEMU,
 } from "../utils/unit-conversion.ts"
 import { isValidUrl } from "../utils/url.ts"
@@ -1093,42 +1097,52 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
   let modifiedWidth
 
   if (vNode.properties && vNode.properties.style) {
-    if (vNode.properties.style.width) {
-      if (vNode.properties.style.width !== "auto") {
-        if (pixelRegex.test(vNode.properties.style.width)) {
-          modifiedWidth = pixelToEMU(
-            vNode.properties.style.width.match(pixelRegex)[1],
-          )
+    const styleWidth = vNode.properties.style.width
+    const styleHeight = vNode.properties.style.height
+
+    if (styleWidth) {
+      if (styleWidth !== "auto") {
+        if (pixelRegex.test(styleWidth)) {
+          modifiedWidth = pixelToEMU(styleWidth.match(pixelRegex)[1])
         }
-        else if (percentageRegex.test(vNode.properties.style.width)) {
-          const percentageValue =
-            vNode.properties.style.width.match(percentageRegex)[1]
+        else if (emRegex.test(styleWidth)) {
+          modifiedWidth = emToEmu(styleWidth.match(emRegex)[1])
+        }
+        else if (remRegex.test(styleWidth)) {
+          modifiedWidth = remToEmu(styleWidth.match(remRegex)[1])
+        }
+        else if (percentageRegex.test(styleWidth)) {
+          const percentageValue = styleWidth.match(percentageRegex)[1]
 
           modifiedWidth = Math.round(
             (percentageValue / 100) * originalWidthInEMU,
           )
         }
+        else {
+          modifiedWidth = originalWidthInEMU
+          modifiedHeight = originalHeightInEMU
+        }
       }
       else {
-        if (
-          vNode.properties.style.height &&
-          vNode.properties.style.height === "auto"
-        ) {
+        if (styleHeight && styleHeight === "auto") {
           modifiedWidth = originalWidthInEMU
           modifiedHeight = originalHeightInEMU
         }
       }
     }
-    if (vNode.properties.style.height) {
-      if (vNode.properties.style.height !== "auto") {
-        if (pixelRegex.test(vNode.properties.style.height)) {
-          modifiedHeight = pixelToEMU(
-            vNode.properties.style.height.match(pixelRegex)[1],
-          )
+    if (styleHeight) {
+      if (styleHeight !== "auto") {
+        if (pixelRegex.test(styleHeight)) {
+          modifiedHeight = pixelToEMU(styleHeight.match(pixelRegex)[1])
         }
-        else if (percentageRegex.test(vNode.properties.style.height)) {
-          const percentageValue =
-            vNode.properties.style.width.match(percentageRegex)[1]
+        else if (emRegex.test(styleWidth)) {
+          modifiedWidth = emToEmu(styleWidth.match(emRegex)[1])
+        }
+        else if (remRegex.test(styleWidth)) {
+          modifiedWidth = emToEmu(styleWidth.match(remRegex)[1])
+        }
+        else if (percentageRegex.test(styleHeight)) {
+          const percentageValue = styleWidth.match(percentageRegex)[1]
 
           modifiedHeight = Math.round(
             (percentageValue / 100) * originalHeightInEMU,
@@ -1156,6 +1170,10 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
     else if (modifiedHeight && !modifiedWidth) {
       modifiedWidth = Math.round(modifiedHeight * aspectRatio)
     }
+    else {
+      modifiedWidth = originalWidthInEMU
+      modifiedHeight = originalHeightInEMU
+    }
   }
   else {
     modifiedWidth = originalWidthInEMU
@@ -1163,7 +1181,7 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
   }
 
   attributes.width = modifiedWidth
-  attributes.height = modifiedHeight || 0
+  attributes.height = modifiedHeight
 }
 
 async function buildParagraph(
@@ -2093,7 +2111,7 @@ function buildTableProperties(attributes: Attributes) {
           }
           case "tableCellSpacing": {
             const tableCellSpacingFragment = buildTableCellSpacing(
-              attributes[key],
+              attributes.tableCellSpacing,
             )
             tablePropertiesFragment.import(tableCellSpacingFragment)
 
@@ -2101,8 +2119,8 @@ function buildTableProperties(attributes: Attributes) {
             break
           }
           case "width": {
-            if (attributes[key]) {
-              const tableWidthFragment = buildTableWidth(attributes[key])
+            if (attributes.width) {
+              const tableWidthFragment = buildTableWidth(attributes.width)
               tablePropertiesFragment.import(tableWidthFragment)
             }
 
@@ -2376,11 +2394,14 @@ function buildPresetGeometry() {
     .up()
 }
 
-function buildExtents({ width = 0, height = 0 }) {
+function buildExtents({ width, height }: { width?: number; height?: number }) {
+  if (!width && !height) {
+    return
+  }
   return fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "ext")
-    .att("cx", String(width))
-    .att("cy", String(height))
+    .att("cx", String(width || ""))
+    .att("cy", String(height || ""))
     .up()
 }
 
@@ -2393,27 +2414,26 @@ function buildOffset() {
 }
 
 function buildGraphicFrameTransform(
-  attributes: { width: number; height: number },
+  attributes: { width?: number; height?: number },
 ) {
   const graphicFrameTransformFragment = fragment({
     namespaceAlias: { a: namespaces.a },
   })
-    .ele(
-      "@a",
-      "xfrm",
-    )
+    .ele("@a", "xfrm")
 
   const offsetFragment = buildOffset()
   graphicFrameTransformFragment.import(offsetFragment)
   const extentsFragment = buildExtents(attributes)
-  graphicFrameTransformFragment.import(extentsFragment)
+  if (extentsFragment) {
+    graphicFrameTransformFragment.import(extentsFragment)
+  }
 
   graphicFrameTransformFragment.up()
 
   return graphicFrameTransformFragment
 }
 
-function buildShapeProperties(attributes: { width: number; height: number }) {
+function buildShapeProperties(attributes: { width?: number; height?: number }) {
   const shapeProperties = fragment({ namespaceAlias: { pic: namespaces.pic } })
     .ele("@pic", "spPr")
 
@@ -2538,8 +2558,8 @@ function buildPicture(
     fileNameWithExtension,
     description,
     relationshipId,
-    width = 0,
-    height = 0,
+    width,
+    height,
   }: Attributes,
 ) {
   const pictureFragment = fragment({ namespaceAlias: { pic: namespaces.pic } })
@@ -2624,11 +2644,14 @@ function buildEffectExtentFragment() {
     .up()
 }
 
-function buildExtent({ width = 0, height = 0 }) {
+function buildExtent({ width, height }: { width?: number; height?: number }) {
+  if (!width && !height) {
+    return
+  }
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
     .ele("@wp", "extent")
-    .att("cx", String(width))
-    .att("cy", String(height))
+    .att("cx", String(width || ""))
+    .att("cy", String(height || ""))
     .up()
 }
 
@@ -2684,7 +2707,9 @@ function buildAnchoredDrawing(graphicType: "picture", attributes: Attributes) {
     width: attributes.width,
     height: attributes.height,
   })
-  anchoredDrawingFragment.import(extentFragment)
+  if (extentFragment) {
+    anchoredDrawingFragment.import(extentFragment)
+  }
   const effectExtentFragment = buildEffectExtentFragment()
   anchoredDrawingFragment.import(effectExtentFragment)
   const wrapSquareFragment = buildWrapSquare()
@@ -2717,7 +2742,9 @@ function buildInlineDrawing(graphicType: "picture", attributes: Attributes) {
     width: attributes.width,
     height: attributes.height,
   })
-  inlineDrawingFragment.import(extentFragment)
+  if (extentFragment) {
+    inlineDrawingFragment.import(extentFragment)
+  }
   const effectExtentFragment = buildEffectExtentFragment()
   inlineDrawingFragment.import(effectExtentFragment)
   const drawingObjectNonVisualPropertiesFragment =
