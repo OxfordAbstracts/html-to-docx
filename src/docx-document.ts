@@ -1,5 +1,6 @@
 // @ts-expect-error  ECMAScript module cannot be imported
 import { nanoid } from "nanoid"
+import { createHash } from "node:crypto"
 import { create, fragment } from "xmlbuilder2"
 
 import JSZip from "jszip"
@@ -42,6 +43,12 @@ import type { ListType, Margins } from "./types.ts"
 import { extractBase64Data } from "./utils/base64.ts"
 import { fontFamilyToTableObject } from "./utils/font-family-conversion.ts"
 import ListStyleBuilder from "./utils/list.ts"
+
+function sha1(content: string) {
+  return createHash("sha1")
+    .update(content)
+    .digest("hex")
+}
 
 function generateContentTypesFragments(
   contentTypesXML: XMLBuilder,
@@ -764,7 +771,10 @@ export default class DocxDocument {
       ? "png"
       : fileData.extension
 
-    const fileNameWithExtension = `image-${nanoid()}.${fileExtension}`
+    const randId = nanoid(8)
+    const contentHash = sha1(fileData.base64Content)
+    const fileNameWithExtension =
+      `image-${randId}-${contentHash}.${fileExtension}`
 
     this.lastMediaId += 1
 
