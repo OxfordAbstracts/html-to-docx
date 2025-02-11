@@ -1,7 +1,8 @@
 import mimeTypes from "mime-types"
 
-export async function fetchImageToDataUrl(imageUrl: string) {
+export async function fetchImageToDataUrl(imageUrlStr: string) {
   try {
+    const imageUrl = new URL(imageUrlStr)
     const imageResponse = await fetch(imageUrl)
     if (!imageResponse.ok) {
       console.warn(
@@ -18,20 +19,20 @@ export async function fetchImageToDataUrl(imageUrl: string) {
       return emptyPngDataURL
     }
     else {
-      let mimeType = mimeTypes.lookup(imageUrl)
+      let mimeType = mimeTypes.lookup(imageUrl.pathname)
       if (!mimeType) {
         // TODO: Move import to top once it's converted to ESM
         const { fileTypeFromBuffer } = await import("file-type")
         const fileType = await fileTypeFromBuffer(imgArrayBuff)
         mimeType = fileType?.mime || false
-        console.debug({ imageUrl, mimeType })
       }
       return `data:${mimeType || "png"};base64,${base64String}`
     }
   }
   catch (error) {
     console.warn(
-      `WARNING: Image download failed for "${imageUrl}" with following error:`,
+      "WARNING: " +
+        `Image download failed for "${imageUrlStr}" with following error:`,
       error,
     )
 
