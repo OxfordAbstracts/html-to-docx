@@ -568,31 +568,40 @@ type Attributes = {
 }
 
 function buildRunProperties(attributes: Attributes) {
-  const runPropertiesFragment = fragment({
-    namespaceAlias: { w: namespaces.w },
-  })
-    .ele("@w", "rPr")
-  if (attributes && attributes.constructor === Object) {
-    Object.keys(attributes)
-      .forEach((key) => {
-        const options = {
-          color: key === "color" || key === "backgroundColor" ||
-              key === "highlightColor"
-            ? attributes[key] || undefined
-            : undefined,
-          fontSize: key === "fontSize" ? attributes.fontSize : undefined,
-          font: key === "font" ? attributes.font : undefined,
-        }
+  const keys = Object.keys(attributes)
 
-        const formattingFragment = buildFormatting(key, options)
-        if (formattingFragment) {
-          runPropertiesFragment.import(formattingFragment)
-        }
-      })
+  if (keys.length && (keys[0] !== "textAlign" || keys.length > 1)) {
+    const runPropertiesFragment = fragment({
+      namespaceAlias: { w: namespaces.w },
+    })
+      .ele("@w", "rPr")
+
+    keys.forEach((key) => {
+      const options = {
+        color: key === "color" ||
+            key === "backgroundColor" ||
+            key === "highlightColor"
+          ? attributes[key] || undefined
+          : undefined,
+        fontSize: key === "fontSize" ? attributes.fontSize : undefined,
+        font: key === "font" ? attributes.font : undefined,
+      }
+
+      const formattingFragment = buildFormatting(key, options)
+      if (formattingFragment) {
+        runPropertiesFragment.import(formattingFragment)
+      }
+    })
+
+    runPropertiesFragment.up()
+
+    // @ts-expect-error Property 'rPr' does not exist
+    const attrs = Object.keys(runPropertiesFragment.toObject()?.rPr)
+
+    if (attrs?.[0] === "@xmlns" && attrs.length === 1) {
+      return runPropertiesFragment
+    }
   }
-  runPropertiesFragment.up()
-
-  return runPropertiesFragment
 }
 
 async function buildRun(
@@ -647,7 +656,9 @@ async function buildRun(
           ...attributes,
           ...tempAttributes,
         })
-        tempRunFragment.import(tempRunPropertiesFragment)
+        if (tempRunPropertiesFragment) {
+          tempRunFragment.import(tempRunPropertiesFragment)
+        }
         tempRunFragment.import(textFragment)
         runFragmentsArray.push(tempRunFragment)
 
@@ -700,7 +711,7 @@ async function buildRun(
             {},
           )
 
-          if (formattingFragment) {
+          if (runPropertiesFragment && formattingFragment) {
             runPropertiesFragment.import(formattingFragment)
           }
           // go a layer deeper if there is a span somewhere in the children
@@ -746,7 +757,9 @@ async function buildRun(
     }
   }
 
-  runFragment.import(runPropertiesFragment)
+  if (runPropertiesFragment) {
+    runFragment.import(runPropertiesFragment)
+  }
   if (isVText(vNode)) {
     const textFragment = buildTextElement((vNode as VText).text)
     runFragment.import(textFragment)
@@ -906,20 +919,29 @@ function buildSpacing(
   beforeSpacing?: number,
   afterSpacing?: number,
 ) {
+  if (
+    !Number.isFinite(lineSpacing) &&
+    !Number.isFinite(beforeSpacing) &&
+    !Number.isFinite(afterSpacing)
+  ) {
+    return
+  }
+
   const spacingFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "spacing")
 
-  if (lineSpacing) {
+  if (Number.isFinite(lineSpacing)) {
     spacingFragment.att("@w", "line", String(lineSpacing))
   }
-  if (beforeSpacing) {
+  if (Number.isFinite(beforeSpacing)) {
     spacingFragment.att("@w", "before", String(beforeSpacing))
   }
-  if (afterSpacing) {
+  if (Number.isFinite(afterSpacing)) {
     spacingFragment.att("@w", "after", String(afterSpacing))
   }
 
-  spacingFragment.att("@w", "lineRule", "auto")
+  spacingFragment
+    .att("@w", "lineRule", "auto")
     .up()
 
   return spacingFragment
@@ -993,76 +1015,79 @@ function buildParagraphBorder() {
 }
 
 function buildParagraphProperties(attributes: Attributes) {
-  const paragraphPropertiesFragment = fragment({
-    namespaceAlias: { w: namespaces.w },
-  })
-    .ele("@w", "pPr")
+  const keys = Object.keys(attributes)
 
-  if (attributes && attributes.constructor === Object) {
-    Object.keys(attributes)
-      .forEach((key) => {
-        switch (key) {
-          case "numbering": {
-            if (
-              attributes.numbering?.levelId &&
-              attributes.numbering?.numberingId
-            ) {
-              const numberingPropertiesFragment = buildNumberingProperties(
-                attributes.numbering.levelId,
-                attributes.numbering.numberingId,
-              )
-              paragraphPropertiesFragment.import(numberingPropertiesFragment)
+  if (keys.length) {
+    const paragraphPropertiesFragment = fragment({
+      namespaceAlias: { w: namespaces.w },
+    })
+      .ele("@w", "pPr")
 
-              delete attributes.numbering
-            }
-            break
-          }
-          case "textAlign": {
-            if (attributes.textAlign) {
-              const horizontalAlignmentFragment = buildHorizontalAlignment(
-                attributes.textAlign,
-              )
-              paragraphPropertiesFragment.import(horizontalAlignmentFragment)
+    keys.forEach((key) => {
+      switch (key) {
+        case "numbering": {
+          if (
+            attributes.numbering?.levelId &&
+            attributes.numbering?.numberingId
+          ) {
+            const numberingPropertiesFragment = buildNumberingProperties(
+              attributes.numbering.levelId,
+              attributes.numbering.numberingId,
+            )
+            paragraphPropertiesFragment.import(numberingPropertiesFragment)
 
-              delete attributes.textAlign
-            }
-            break
+            delete attributes.numbering
           }
-          case "backgroundColor":
-            // Add shading to Paragraph Properties only if display is block
-            // Essentially if background color needs to be across the row
-            if (attributes.backgroundColor && attributes.display === "block") {
-              const shadingFragment = buildShading(attributes.backgroundColor)
-              paragraphPropertiesFragment.import(shadingFragment)
-              // FIXME: Inner padding in case of shaded paragraphs.
-              const paragraphBorderFragment = buildParagraphBorder()
-              paragraphPropertiesFragment.import(paragraphBorderFragment)
-
-              delete attributes.backgroundColor
-            }
-            break
-          case "paragraphStyle": {
-            const pStyleFragment = buildPStyle(attributes.paragraphStyle)
-            paragraphPropertiesFragment.import(pStyleFragment)
-            delete attributes.paragraphStyle
-            break
-          }
-          case "indentation": {
-            if (attributes.indentation) {
-              const indentationFragment = buildIndentation(
-                attributes.indentation,
-              )
-              if (indentationFragment) {
-                paragraphPropertiesFragment.import(indentationFragment)
-              }
-              delete attributes.indentation
-            }
-            break
-          }
-          default:
-            break
+          break
         }
-      })
+        case "textAlign": {
+          if (attributes.textAlign) {
+            const horizontalAlignmentFragment = buildHorizontalAlignment(
+              attributes.textAlign,
+            )
+            paragraphPropertiesFragment.import(horizontalAlignmentFragment)
+
+            delete attributes.textAlign
+          }
+          break
+        }
+        case "backgroundColor":
+          // Add shading to Paragraph Properties only if display is block
+          // Essentially if background color needs to be across the row
+          if (
+            attributes.backgroundColor && attributes.display === "block"
+          ) {
+            const shadingFragment = buildShading(attributes.backgroundColor)
+            paragraphPropertiesFragment.import(shadingFragment)
+            // FIXME: Inner padding in case of shaded paragraphs.
+            const paragraphBorderFragment = buildParagraphBorder()
+            paragraphPropertiesFragment.import(paragraphBorderFragment)
+
+            delete attributes.backgroundColor
+          }
+          break
+        case "paragraphStyle": {
+          const pStyleFragment = buildPStyle(attributes.paragraphStyle)
+          paragraphPropertiesFragment.import(pStyleFragment)
+          delete attributes.paragraphStyle
+          break
+        }
+        case "indentation": {
+          if (attributes.indentation) {
+            const indentationFragment = buildIndentation(
+              attributes.indentation,
+            )
+            if (indentationFragment) {
+              paragraphPropertiesFragment.import(indentationFragment)
+            }
+            delete attributes.indentation
+          }
+          break
+        }
+        default:
+          break
+      }
+    })
 
     const spacingFragment = buildSpacing(
       attributes.lineHeight,
@@ -1077,10 +1102,10 @@ function buildParagraphProperties(attributes: Attributes) {
     if (spacingFragment) {
       paragraphPropertiesFragment.import(spacingFragment)
     }
-  }
-  paragraphPropertiesFragment.up()
 
-  return paragraphPropertiesFragment
+    paragraphPropertiesFragment.up()
+    return paragraphPropertiesFragment
+  }
 }
 
 function computeImageDimensions(vNode: VNode, attributes: Attributes) {
@@ -1188,7 +1213,7 @@ async function buildParagraph(
   vNode: VTree | null,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
-) {
+): Promise<XMLBuilder> {
   const paragraphFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "p")
   const modifiedAttributes = modifiedStyleAttributesBuilder(
@@ -1202,7 +1227,9 @@ async function buildParagraph(
   const paragraphPropertiesFragment = buildParagraphProperties(
     modifiedAttributes,
   )
-  paragraphFragment.import(paragraphPropertiesFragment)
+  if (paragraphPropertiesFragment) {
+    paragraphFragment.import(paragraphPropertiesFragment)
+  }
   if (vNode && isVNode(vNode) && vNodeHasChildren(vNode as VNode)) {
     if (
       [
@@ -2785,6 +2812,7 @@ export {
   buildLineBreak,
   buildNumberingInstances,
   buildParagraph,
+  buildRun,
   buildTable,
   buildTextElement,
   buildUnderline,

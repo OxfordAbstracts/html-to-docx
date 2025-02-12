@@ -13,11 +13,7 @@
   xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">
   <w:body>
     <w:p>
-      <w:pPr>
-        <w:spacing w:lineRule="auto" />
-      </w:pPr>
       <w:r>
-        <w:rPr />
         <w:t xml:space="preserve">     </w:t>
       </w:r>
     </w:p>
@@ -54,11 +50,9 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr>
-              <w:spacing w:lineRule="auto" />
-            </w:pPr>
+            <w:pPr/>
             <w:r>
-              <w:rPr />
+              <w:rPr/>
               <w:t xml:space="preserve">one</w:t>
             </w:r>
           </w:p>
@@ -73,11 +67,9 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr>
-              <w:spacing w:lineRule="auto" />
-            </w:pPr>
+            <w:pPr/>
             <w:r>
-              <w:rPr />
+              <w:rPr/>
               <w:t xml:space="preserve">two</w:t>
             </w:r>
           </w:p>
@@ -85,12 +77,7 @@
       </w:tr>
     </w:tbl>
     <w:p>
-      <w:pPr>
-        <w:spacing w:lineRule="auto" />
-      </w:pPr>
-      <w:r>
-        <w:rPr />
-      </w:r>
+      <w:r/>
     </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait" />

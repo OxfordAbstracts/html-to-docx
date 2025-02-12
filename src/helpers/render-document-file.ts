@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import { default as HTMLToVDOM } from "html-to-vdom"
 import { imageSize } from "image-size"
 // @ts-expect-error  Could not find a declaration file
@@ -13,7 +12,12 @@ import { fragment } from "xmlbuilder2"
 
 import type { VTree } from "virtual-dom"
 import type { XMLBuilder } from "xmlbuilder2/lib/interfaces.d.ts"
-import { imageType, internalRelationship } from "../constants.ts"
+import {
+  htmlHeadings,
+  htmlInlineElements,
+  imageType,
+  internalRelationship,
+} from "../constants.ts"
 import DocxDocument from "../docx-document.ts"
 import namespaces from "../namespaces.ts"
 import { fetchImageToDataUrl } from "../utils/base64.ts"
@@ -236,132 +240,162 @@ async function findXMLEquivalent(
     return
   }
 
-  switch (vNode.tagName) {
-    case "h1":
-    case "h2":
-    case "h3":
-    case "h4":
-    case "h5":
-    case "h6":
-      const headingFragment = await xmlBuilder.buildParagraph(
-        vNode,
-        {
-          paragraphStyle: `Heading${vNode.tagName[1]}`,
-        },
-        docxDocumentInstance,
-      )
-      xmlFragment.import(headingFragment)
-      return
-    case "span":
-    case "strong":
-    case "b":
-    case "em":
-    case "i":
-    case "u":
-    case "ins":
-    case "strike":
-    case "del":
-    case "s":
-    case "sub":
-    case "sup":
-    case "mark":
-    case "p":
-    case "a":
-    case "blockquote":
-    case "code":
-    case "pre":
-      const paragraphFragment = await xmlBuilder.buildParagraph(
-        vNode,
-        {},
-        docxDocumentInstance,
-      )
-      xmlFragment.import(paragraphFragment)
-      return
-    case "figure":
-      if (vNodeHasChildren(vNode)) {
-        for (let index = 0; index < vNode.children.length; index++) {
-          const childVNode = vNode.children[index]
-          if (childVNode.tagName === "table") {
-            const tableFragment = await xmlBuilder.buildTable(
-              childVNode,
-              {
-                maximumWidth: docxDocumentInstance.availableDocumentSpace,
-                rowCantSplit: docxDocumentInstance.tableRowCantSplit,
-              },
-              docxDocumentInstance,
-            )
-            xmlFragment.import(tableFragment)
-            // Adding empty paragraph for space after table
-            const emptyParagraphFragment = await xmlBuilder.buildParagraph(
-              null,
-              {},
-              docxDocumentInstance,
-            )
-            xmlFragment.import(emptyParagraphFragment)
-          }
-          else if (childVNode.tagName === "img") {
-            const imageFragment = await buildImage(
-              docxDocumentInstance,
-              childVNode,
-              docxDocumentInstance.availableDocumentSpace,
-            )
-            if (imageFragment) {
-              xmlFragment.import(imageFragment)
-            }
+  if (vNode.tagName === "br") {
+    xmlFragment.import(
+      await xmlBuilder.buildParagraph(vNode, {}, docxDocumentInstance),
+    )
+    return
+  }
+  else if (htmlHeadings.includes(vNode.tagName)) {
+    const headingFragment = await xmlBuilder.buildParagraph(
+      vNode,
+      { paragraphStyle: `Heading${vNode.tagName[1]}` },
+      docxDocumentInstance,
+    )
+    xmlFragment.import(headingFragment)
+    return
+  }
+  else if (vNode.tagName === "figure") {
+    if (vNodeHasChildren(vNode)) {
+      for (let index = 0; index < vNode.children.length; index++) {
+        const childVNode = vNode.children[index]
+        if (childVNode.tagName === "table") {
+          const tableFragment = await xmlBuilder.buildTable(
+            childVNode,
+            {
+              maximumWidth: docxDocumentInstance.availableDocumentSpace,
+              rowCantSplit: docxDocumentInstance.tableRowCantSplit,
+            },
+            docxDocumentInstance,
+          )
+          xmlFragment.import(tableFragment)
+          // Adding empty paragraph for space after table
+          const emptyParagraphFragment = await xmlBuilder.buildParagraph(
+            null,
+            {},
+            docxDocumentInstance,
+          )
+          xmlFragment.import(emptyParagraphFragment)
+        }
+        else if (childVNode.tagName === "img") {
+          const imageFragment = await buildImage(
+            docxDocumentInstance,
+            childVNode,
+            docxDocumentInstance.availableDocumentSpace,
+          )
+          if (imageFragment) {
+            xmlFragment.import(imageFragment)
           }
         }
       }
-      return
-    case "table":
-      const tableFragment = await xmlBuilder.buildTable(
-        vNode,
-        {
-          maximumWidth: docxDocumentInstance.availableDocumentSpace,
-          rowCantSplit: docxDocumentInstance.tableRowCantSplit,
-        },
-        docxDocumentInstance,
-      )
-      xmlFragment.import(tableFragment)
-      // Adding empty paragraph for space after table
-      const emptyParagraphFragment = await xmlBuilder.buildParagraph(
-        null,
-        {},
-        docxDocumentInstance,
-      )
-      xmlFragment.import(emptyParagraphFragment)
-      return
-    case "ol":
-    case "ul":
-      await buildList(vNode, docxDocumentInstance, xmlFragment)
-      return
-    case "img":
-      const imageFragment = await buildImage(
-        docxDocumentInstance,
-        vNode,
-        docxDocumentInstance.availableDocumentSpace,
-      )
-      if (imageFragment) {
-        xmlFragment.import(imageFragment)
-      }
-      return
-    case "br":
-      const linebreakFragment = await xmlBuilder.buildParagraph(
-        null,
-        {},
-        docxDocumentInstance,
-      )
-      xmlFragment.import(linebreakFragment)
-      return
-    case "head":
-      return
-    default:
-      break
+    }
+    return
   }
-  if (vNodeHasChildren(vNode)) {
-    for (let index = 0; index < vNode.children.length; index++) {
-      const childVNode = vNode.children[index]
+  else if (vNode.tagName === "table") {
+    const tableFragment = await xmlBuilder.buildTable(
+      vNode,
+      {
+        maximumWidth: docxDocumentInstance.availableDocumentSpace,
+        rowCantSplit: docxDocumentInstance.tableRowCantSplit,
+      },
+      docxDocumentInstance,
+    )
+    xmlFragment.import(tableFragment)
+    // Adding empty paragraph for space after table
+    const emptyParagraphFragment = await xmlBuilder.buildParagraph(
+      null,
+      {},
+      docxDocumentInstance,
+    )
+    xmlFragment.import(emptyParagraphFragment)
+    return
+  }
+  else if (["ol", "ul"].includes(vNode.tagName)) {
+    await buildList(vNode, docxDocumentInstance, xmlFragment)
+    return
+  }
+  else if (vNode.tagName === "img") {
+    const imageFragment = await buildImage(
+      docxDocumentInstance,
+      vNode,
+      docxDocumentInstance.availableDocumentSpace,
+    )
+    if (imageFragment) {
+      xmlFragment.import(imageFragment)
+    }
+    return
+  }
+  else if (
+    [
+      "a",
+      "blockquote",
+      "p",
+      "pre",
+    ].includes(vNode.tagName)
+  ) {
+    xmlFragment.import(
+      await xmlBuilder.buildParagraph(vNode, {}, docxDocumentInstance),
+    )
+    return
+  }
+  else if (htmlInlineElements.includes(vNode.tagName)) {
+    const textFragment = await xmlBuilder.buildRun(
+      vNode,
+      {},
+      docxDocumentInstance,
+    )
+    if (Array.isArray(textFragment)) {
+      textFragment.forEach(frag => xmlFragment.import(frag))
+    }
+    else {
+      xmlFragment.import(textFragment)
+    }
+    return
+  }
+  else if (vNode.tagName === "head") {
+    return
+  }
 
-      await convertVTreeToXML(docxDocumentInstance, childVNode, xmlFragment)
+  if (vNodeHasChildren(vNode)) {
+    let isInParagraph = false
+    let paragraphFrag = fragment()
+    const inlineTags = [
+      "b",
+      "code",
+      "del",
+      "em",
+      "i",
+      "ins",
+      "mark",
+      "s",
+      "span",
+      "strike",
+      "strong",
+      "sub",
+      "sup",
+      "u",
+    ]
+
+    for (const childVNode of vNode.children) {
+      if (inlineTags.includes(childVNode.tagName)) {
+        if (!isInParagraph) {
+          paragraphFrag = xmlFragment.ele("@w", "p")
+          isInParagraph = true
+        }
+        await convertVTreeToXML(
+          docxDocumentInstance,
+          childVNode,
+          paragraphFrag,
+        )
+      }
+      else {
+        await convertVTreeToXML(
+          docxDocumentInstance,
+          childVNode,
+          xmlFragment,
+        )
+        isInParagraph = false
+      }
     }
   }
 }
@@ -372,9 +406,9 @@ export async function convertVTreeToXML(
   xmlFragment: XMLBuilder,
 ) {
   if (!vTree) {
-    return xmlFragment
+    // Do nothing
   }
-  if (Array.isArray(vTree) && vTree.length) {
+  else if (Array.isArray(vTree) && vTree.length) {
     for (let index = 0; index < vTree.length; index++) {
       const vNode = vTree[index]
       await convertVTreeToXML(docxDocumentInstance, vNode, xmlFragment)
@@ -391,8 +425,6 @@ export async function convertVTreeToXML(
     )
     xmlFragment.import(paragraphFragment)
   }
-
-  return xmlFragment
 }
 
 export default async function renderDocumentFile(
@@ -406,11 +438,11 @@ export default async function renderDocumentFile(
 
   const xmlFragment = fragment({ namespaceAlias: { w: namespaces.w } })
 
-  const populatedXmlFragment = await convertVTreeToXML(
+  await convertVTreeToXML(
     docxDocumentInstance,
     vTree,
     xmlFragment,
   )
 
-  return populatedXmlFragment
+  return xmlFragment
 }

@@ -1,11 +1,11 @@
 import lodash from "lodash"
 import { type DocumentOptions } from "./types.ts"
 
-const applicationName = "html-to-docx"
-const defaultOrientation = "portrait"
-const landscapeWidth = 15840
-const landscapeHeight = 12240
-const landscapeMargins = {
+export const applicationName = "html-to-docx"
+export const defaultOrientation = "portrait"
+export const landscapeWidth = 15840
+export const landscapeHeight = 12240
+export const landscapeMargins = {
   top: 1800,
   right: 1440,
   bottom: 1800,
@@ -14,7 +14,7 @@ const landscapeMargins = {
   footer: 720,
   gutter: 0,
 }
-const portraitMargins = {
+export const portraitMargins = {
   top: 1440,
   right: 1800,
   bottom: 1440,
@@ -23,10 +23,10 @@ const portraitMargins = {
   footer: 720,
   gutter: 0,
 }
-const defaultFont = "Times New Roman"
-const defaultFontSize = 22
-const defaultLang = "en-US"
-const defaultDocumentOptions: DocumentOptions = {
+export const defaultFont = "Times New Roman"
+export const defaultFontSize = 22
+export const defaultLang = "en-US"
+export const defaultDocumentOptions: DocumentOptions = {
   orientation: defaultOrientation,
   margins: lodash.cloneDeep(portraitMargins),
   creator: applicationName,
@@ -41,21 +41,21 @@ const defaultDocumentOptions: DocumentOptions = {
   },
   defaultLang,
 }
-const defaultHTMLString = "<p></p>"
-const relsFolderName = "_rels"
-const headerFileName = "header1"
-const footerFileName = "footer1"
-const themeFileName = "theme1"
-const documentFileName = "document"
-const headerType = "header"
-const footerType = "footer"
-const themeType = "theme"
-const hyperlinkType = "hyperlink"
-const imageType = "image"
-const internalRelationship = "Internal"
-const wordFolder = "word"
-const themeFolder = "theme"
-const paragraphBordersObject = {
+export const defaultHTMLString = "<p></p>"
+export const relsFolderName = "_rels"
+export const headerFileName = "header1"
+export const footerFileName = "footer1"
+export const themeFileName = "theme1"
+export const documentFileName = "document"
+export const headerType = "header"
+export const footerType = "footer"
+export const themeType = "theme"
+export const hyperlinkType = "hyperlink"
+export const imageType = "image"
+export const internalRelationship = "Internal"
+export const wordFolder = "word"
+export const themeFolder = "theme"
+export const paragraphBordersObject = {
   top: {
     size: 0,
     spacing: 3,
@@ -77,35 +77,75 @@ const paragraphBordersObject = {
     color: "FFFFFF",
   },
 }
-const colorlessColors = ["transparent", "auto"]
-const verticalAlignValues = ["top", "middle", "bottom"]
+export const colorlessColors = ["transparent", "auto"]
+export const verticalAlignValues = ["top", "middle", "bottom"]
 
-export {
-  applicationName,
-  colorlessColors,
-  defaultDocumentOptions,
-  defaultFont,
-  defaultFontSize,
-  defaultHTMLString,
-  defaultLang,
-  defaultOrientation,
-  documentFileName,
-  footerFileName,
-  footerType,
-  headerFileName,
-  headerType,
-  hyperlinkType,
-  imageType,
-  internalRelationship,
-  landscapeHeight,
-  landscapeMargins,
-  landscapeWidth,
-  paragraphBordersObject,
-  portraitMargins,
-  relsFolderName,
-  themeFileName,
-  themeFolder,
-  themeType,
-  verticalAlignValues,
-  wordFolder,
-}
+export const htmlInlineElements = [
+  "a",
+  "abbr",
+  "acronym",
+  "b",
+  "bdo",
+  "big",
+  "br",
+  "button",
+  "cite",
+  "code",
+  "dfn",
+  "em",
+  "i",
+  "img",
+  "input",
+  "kbd",
+  "label",
+  "map",
+  "object",
+  "output",
+  "q",
+  "samp",
+  "script",
+  "select",
+  "small",
+  "span",
+  "strong",
+  "sub",
+  "sup",
+  "textarea",
+  "time",
+  "tt",
+  "var",
+]
+
+export const htmlHeadings = ["h1", "h2", "h3", "h4", "h5", "h6"]
+
+// export const htmlBlockElements = [
+//   "address",
+//   "article",
+//   "aside",
+//   "blockquote",
+//   "canvas",
+//   "dd",
+//   "div",
+//   "dl",
+//   "dt",
+//   "fieldset",
+//   "figcaption",
+//   "figure",
+//   "footer",
+//   "form",
+//   "header",
+//   ...htmlHeadings,
+//   "hr",
+//   "li",
+//   "main",
+//   "nav",
+//   "noscript",
+//   "ol",
+//   "p",
+//   "pre",
+//   "section",
+//   "table",
+//   "tfoot",
+//   "ul",
+//   "video",
+// ]
