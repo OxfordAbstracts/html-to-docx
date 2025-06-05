@@ -19,20 +19,24 @@ fmt: node_modules
 
 
 # Lint the code using ESLint
+# Dprint doesn't support all the rules that eslint does,
+# so we need to run eslint with the --fix flag to fix the rest.
+# - https://github.com/dprint/dprint-plugin-typescript/issues/696
+# - https://github.com/dprint/dprint-plugin-typescript/issues/432
 lint: node_modules
-  # Dprint doesn't support all the rules that eslint does,
-  # so we need to run eslint with the --fix flag to fix the rest.
-  # - https://github.com/dprint/dprint-plugin-typescript/issues/696
-  # - https://github.com/dprint/dprint-plugin-typescript/issues/432
   npx eslint --ignore-pattern=.gitignore --fix .
 
 
-# Run the unit tests
+# Run the unit tests and hide unhelpful warnings
 test-unit: node_modules
-  grep -q 'xmlbuilder2": "2.1.2' package.json || \
+  @grep -q 'xmlbuilder2": "2.1.2' package.json || \
     (echo "xmlbuilder2 must be version 2.1.2 due to " \
     "https://github.com/oozcitak/xmlbuilder2/issues/178" && exit 1)
-  node --test --disable-warning=ExperimentalWarning
+  node --test --disable-warning=ExperimentalWarning \
+    | grep --invert-match 'MODULE_TYPELESS_PACKAGE_JSON' \
+    | grep --invert-match 'Reparsing' \
+    | grep --invert-match '"type": "module"' \
+    | grep --invert-match 'Use `node --trace-warnings'
 
 
 # Run C#'s OpenXmlValidator on the test Docx files

@@ -44,6 +44,7 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.direnv
 
 # Storybook build outputs
 .out
