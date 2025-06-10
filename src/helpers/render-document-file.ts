@@ -1,3 +1,5 @@
+/* eslint-disable new-cap */
+
 import { default as HTMLToVDOM } from "html-to-vdom"
 import { imageSize } from "image-size"
 // @ts-expect-error  Could not find a declaration file
@@ -21,11 +23,16 @@ import {
 import DocxDocument from "../docx-document.ts"
 import namespaces from "../namespaces.ts"
 import { fetchImageToDataUrl } from "../utils/base64.ts"
+import {
+  emToEmu,
+  pixelToEMU,
+  remToEmu,
+  TWIPToEMU,
+} from "../utils/unit-conversion.ts"
 import { isValidUrl } from "../utils/url.ts"
 import { vNodeHasChildren } from "../utils/vnode.ts"
 import * as xmlBuilder from "./xml-builder.ts"
 
-// eslint-disable-next-line new-cap
 const convertHTML = HTMLToVDOM({
   VNode,
   VText,
@@ -71,7 +78,95 @@ export async function buildImage(
     const imageBuffer = Buffer.from(response.fileContent, "base64")
     const imageProperties = imageSize(imageBuffer)
 
-    const imageFragment = await xmlBuilder.buildParagraph(
+    // Compute image dimensions similar to computeImageDimensions function
+    const maxWidth = maximumWidth || docxDocumentInstance.availableDocumentSpace
+    const originalWidthInEMU = pixelToEMU(imageProperties.width || 0)
+    const originalHeightInEMU = pixelToEMU(imageProperties.height || 0)
+    const maximumWidthInEMU = TWIPToEMU(maxWidth || 0)
+    const aspectRatio = (imageProperties.width || 0) /
+      (imageProperties.height || 1)
+
+    let finalWidthInEMU = originalWidthInEMU
+    let finalHeightInEMU = originalHeightInEMU
+
+    // Respect maximum width constraint
+    if (originalWidthInEMU > maximumWidthInEMU) {
+      finalWidthInEMU = maximumWidthInEMU
+      finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio)
+    }
+
+    // Handle CSS styling if present
+    if (vNode.properties && vNode.properties.style) {
+      const style = vNode.properties.style
+      if (style.width && style.width !== "auto") {
+        if (/(\d+)px/.test(style.width)) {
+          finalWidthInEMU = pixelToEMU(
+            parseInt(style.width.match(/(\d+)px/)[1]),
+          )
+        }
+        else if (/(\d+)em/.test(style.width)) {
+          finalWidthInEMU = emToEmu(
+            parseFloat(style.width.match(/(\d+(?:\.\d+)?)em/)[1]),
+          )
+        }
+        else if (/(\d+)rem/.test(style.width)) {
+          finalWidthInEMU = remToEmu(
+            parseFloat(style.width.match(/(\d+(?:\.\d+)?)rem/)[1]),
+          )
+        }
+        else if (/(\d+)%/.test(style.width)) {
+          const percentage = parseFloat(
+            style.width.match(/(\d+(?:\.\d+)?)%/)[1],
+          )
+          finalWidthInEMU = Math.round((percentage / 100) * originalWidthInEMU)
+        }
+      }
+
+      if (style.height && style.height !== "auto") {
+        if (/(\d+)px/.test(style.height)) {
+          finalHeightInEMU = pixelToEMU(
+            parseInt(style.height.match(/(\d+)px/)[1]),
+          )
+        }
+        else if (/(\d+)em/.test(style.height)) {
+          finalHeightInEMU = emToEmu(
+            parseFloat(style.height.match(/(\d+(?:\.\d+)?)em/)[1]),
+          )
+        }
+        else if (/(\d+)rem/.test(style.height)) {
+          finalHeightInEMU = remToEmu(
+            parseFloat(style.height.match(/(\d+(?:\.\d+)?)rem/)[1]),
+          )
+        }
+        else if (/(\d+)%/.test(style.height)) {
+          const percentage = parseFloat(
+            style.height.match(/(\d+(?:\.\d+)?)%/)[1],
+          )
+          finalHeightInEMU = Math.round(
+            (percentage / 100) * originalHeightInEMU,
+          )
+          if (!style.width || style.width === "auto") {
+            finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio)
+          }
+        }
+      }
+
+      // Maintain aspect ratio if only one dimension is specified
+      if (
+        style.width && style.width !== "auto" &&
+        (!style.height || style.height === "auto")
+      ) {
+        finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio)
+      }
+      else if (
+        style.height && style.height !== "auto" &&
+        (!style.width || style.width === "auto")
+      ) {
+        finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio)
+      }
+    }
+
+    const imageFragment = await xmlBuilder.buildRun(
       vNode,
       {
         type: "picture",
@@ -79,10 +174,11 @@ export async function buildImage(
         relationshipId: documentRelsId,
         ...response,
         description: vNode.properties.alt,
-        maximumWidth: maximumWidth ||
-          docxDocumentInstance.availableDocumentSpace,
+        maximumWidth: maxWidth,
         originalWidth: imageProperties.width,
         originalHeight: imageProperties.height,
+        width: finalWidthInEMU,
+        height: finalHeightInEMU,
       },
       docxDocumentInstance,
     )
@@ -284,7 +380,12 @@ async function findXMLEquivalent(
             docxDocumentInstance.availableDocumentSpace,
           )
           if (imageFragment) {
-            xmlFragment.import(imageFragment)
+            if (Array.isArray(imageFragment)) {
+              imageFragment.forEach(frag => xmlFragment.import(frag))
+            }
+            else {
+              xmlFragment.import(imageFragment)
+            }
           }
         }
       }
@@ -315,13 +416,24 @@ async function findXMLEquivalent(
     return
   }
   else if (vNode.tagName === "img") {
-    const imageFragment = await buildImage(
+    const imageRunFragment = await buildImage(
       docxDocumentInstance,
       vNode,
       docxDocumentInstance.availableDocumentSpace,
     )
-    if (imageFragment) {
-      xmlFragment.import(imageFragment)
+    if (imageRunFragment) {
+      const imageParagraphFragment = await xmlBuilder.buildParagraph(
+        vNode,
+        {},
+        docxDocumentInstance,
+      )
+      if (Array.isArray(imageRunFragment)) {
+        imageRunFragment.forEach(frag => imageParagraphFragment.import(frag))
+      }
+      else {
+        imageParagraphFragment.import(imageRunFragment)
+      }
+      xmlFragment.import(imageParagraphFragment)
     }
     return
   }
@@ -336,6 +448,32 @@ async function findXMLEquivalent(
     xmlFragment.import(
       await xmlBuilder.buildParagraph(vNode, {}, docxDocumentInstance),
     )
+    return
+  }
+  else if (
+    vNode.tagName === "span" &&
+    vNodeHasChildren(vNode) &&
+    vNode.children.some((child: VNode | VText) =>
+      isVNode(child) && child.tagName === "img",
+    )
+  ) {
+    // Special case: span containing img is treated like a direct img element
+    const imageChild = vNode.children.find((child: VNode | VText) =>
+      isVNode(child) && child.tagName === "img",
+    ) as VNode
+    const imageFragment = await buildImage(
+      docxDocumentInstance,
+      imageChild,
+      docxDocumentInstance.availableDocumentSpace,
+    )
+    if (imageFragment) {
+      if (Array.isArray(imageFragment)) {
+        imageFragment.forEach(frag => xmlFragment.import(frag))
+      }
+      else {
+        xmlFragment.import(imageFragment)
+      }
+    }
     return
   }
   else if (htmlInlineElements.includes(vNode.tagName)) {
@@ -377,7 +515,32 @@ async function findXMLEquivalent(
     ]
 
     for (const childVNode of vNode.children) {
-      if (inlineTags.includes(childVNode.tagName)) {
+      if (childVNode.tagName === "img") {
+        // Wrap standalone images in paragraph
+        const imageRunFragment = await buildImage(
+          docxDocumentInstance,
+          childVNode,
+          docxDocumentInstance.availableDocumentSpace,
+        )
+        if (imageRunFragment) {
+          const imageParagraphFragment = await xmlBuilder.buildParagraph(
+            childVNode,
+            {},
+            docxDocumentInstance,
+          )
+          if (Array.isArray(imageRunFragment)) {
+            imageRunFragment.forEach(frag =>
+              imageParagraphFragment.import(frag),
+            )
+          }
+          else {
+            imageParagraphFragment.import(imageRunFragment)
+          }
+          xmlFragment.import(imageParagraphFragment)
+        }
+        isInParagraph = false
+      }
+      else if (inlineTags.includes(childVNode.tagName)) {
         if (!isInParagraph) {
           paragraphFrag = xmlFragment.ele("@w", "p")
           isInParagraph = true

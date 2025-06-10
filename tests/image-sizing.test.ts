@@ -26,11 +26,15 @@ test("embeds an image with the correct size", async () => {
 
   assert.ok("word/document.xml" in zipContent.files)
 
+  const imgRegex = /"image-[^.]+\./g
+
   const docXml = (await zipContent.file("word/document.xml")
     ?.async("string") || "")
+    .replaceAll(imgRegex, '"image.')
     .trim()
   const expectedDocXml = (await fs
     .readFile("tests/image-sizing.xml", "utf8"))
+    .replaceAll(imgRegex, '"image.')
     .trim()
 
   assert.strictEqual(docXml, expectedDocXml)

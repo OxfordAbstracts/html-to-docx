@@ -10,9 +10,12 @@
       <w:pPr/>
       <w:r>
         <w:rPr/>
+      </w:r>
+      <w:r>
+        <w:rPr/>
         <w:drawing>
           <wp:inline distB="0" distL="0" distR="0" distT="0">
-            <wp:extent cx="609600" cy="609600"/>
+            <wp:extent cx="2438400" cy="2438400"/>
             <wp:effectExtent b="0" l="0" r="0" t="0"/>
             <wp:docPr id="2" name="image-Cdtm5x7SnB0WE0EADv3KO.png"/>
             <a:graphic>
@@ -32,7 +35,7 @@
                   <pic:spPr>
                     <a:xfrm>
                       <a:off x="0" y="0"/>
-                      <a:ext cx="609600" cy="609600"/>
+                      <a:ext cx="2438400" cy="2438400"/>
                     </a:xfrm>
                     <a:prstGeom prst="rect"/>
                   </pic:spPr>
@@ -52,9 +55,12 @@
       <w:pPr/>
       <w:r>
         <w:rPr/>
+      </w:r>
+      <w:r>
+        <w:rPr/>
         <w:drawing>
           <wp:inline distB="0" distL="0" distR="0" distT="0">
-            <wp:extent cx="609600" cy="609600"/>
+            <wp:extent cx="2438400" cy="2438400"/>
             <wp:effectExtent b="0" l="0" r="0" t="0"/>
             <wp:docPr id="4" name="image.png"/>
             <a:graphic>
@@ -74,7 +80,7 @@
                   <pic:spPr>
                     <a:xfrm>
                       <a:off x="0" y="0"/>
-                      <a:ext cx="609600" cy="609600"/>
+                      <a:ext cx="2438400" cy="2438400"/>
                     </a:xfrm>
                     <a:prstGeom prst="rect"/>
                   </pic:spPr>

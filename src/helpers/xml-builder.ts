@@ -767,6 +767,13 @@ async function buildRun(
   else if (attributes && attributes.type === "picture") {
     let response = null
 
+    // Convert URL to data URL if needed
+    if (isValidUrl((vNode as VNode).properties.src)) {
+      ;(vNode as VNode).properties.src = await fetchImageToDataUrl(
+        (vNode as VNode).properties.src,
+      )
+    }
+
     const base64Uri = decodeURIComponent((vNode as VNode).properties.src)
     if (base64Uri) {
       response = docxDocumentInstance.createMediaFile(base64Uri)
@@ -825,6 +832,31 @@ async function buildRunOrRuns(
         vNode,
         attributes,
       )
+
+      // Handle image dimension computation for images within spans
+      if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
+        if (isValidUrl((childVNode as VNode).properties.src)) {
+          ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
+            (childVNode as VNode).properties.src,
+          )
+        }
+        const base64String = extractBase64Data(
+          (childVNode as VNode).properties.src,
+        )?.base64Content
+        const imageBuffer = Buffer.from(
+          decodeURIComponent(base64String || ""),
+          "base64",
+        )
+        const imageProperties = imageSize(imageBuffer)
+
+        modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
+          docxDocumentInstance.availableDocumentSpace
+        modifiedAttributes.originalWidth = imageProperties.width
+        modifiedAttributes.originalHeight = imageProperties.height
+
+        computeImageDimensions(childVNode as VNode, modifiedAttributes)
+      }
+
       const tempRunFragments = await buildRun(
         childVNode,
         modifiedAttributes,
@@ -1733,7 +1765,12 @@ async function buildTableCell(
             modifiedAttributes.maximumWidth,
           )
           if (imageFragment) {
-            tableCellFragment.import(imageFragment)
+            if (Array.isArray(imageFragment)) {
+              imageFragment.forEach(frag => tableCellFragment.import(frag))
+            }
+            else {
+              tableCellFragment.import(imageFragment)
+            }
           }
         }
       }
@@ -1758,7 +1795,12 @@ async function buildTableCell(
                 modifiedAttributes.maximumWidth || 0,
               )
               if (imageFragment) {
-                tableCellFragment.import(imageFragment)
+                if (Array.isArray(imageFragment)) {
+                  imageFragment.forEach(frag => tableCellFragment.import(frag))
+                }
+                else {
+                  tableCellFragment.import(imageFragment)
+                }
               }
             }
           }
