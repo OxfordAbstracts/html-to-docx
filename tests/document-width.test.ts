@@ -29,7 +29,7 @@ test("correctly set margin if pageSize is set", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_document-width.docx")
+  await writeFile(docxContent, "tests/document-width_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

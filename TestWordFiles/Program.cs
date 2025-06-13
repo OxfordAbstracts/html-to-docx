@@ -32,7 +32,7 @@ class Program {
   }
 
   static void Main()  {
-    string[] files = System.IO.Directory.GetFiles("../tests", "_tmp_*.docx");
+    string[] files = System.IO.Directory.GetFiles("../tests", "*_tmp_.docx");
     foreach (string file in files) {
       Console.WriteLine("🆕 ===========================================");
       Console.WriteLine("Validating file: " + file);

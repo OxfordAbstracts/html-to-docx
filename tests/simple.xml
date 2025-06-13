@@ -22,21 +22,18 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">Item 1</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">Item 3</w:t>
       </w:r>
     </w:p>
@@ -75,7 +72,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Header 1</w:t>
             </w:r>
           </w:p>
@@ -92,7 +88,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Header 2</w:t>
             </w:r>
           </w:p>
@@ -112,7 +107,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Cell 1</w:t>
             </w:r>
           </w:p>
@@ -129,7 +123,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Cell 2</w:t>
             </w:r>
           </w:p>

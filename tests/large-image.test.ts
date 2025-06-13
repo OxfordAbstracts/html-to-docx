@@ -57,7 +57,7 @@ test("handles HTML file with an image", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_html-with-image.docx")
+  await writeFile(docxContent, "tests/html-with-image_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -87,7 +87,7 @@ test("handles large images in HTML file", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_html-with-images.docx")
+  await writeFile(docxContent, "tests/html-with-images_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

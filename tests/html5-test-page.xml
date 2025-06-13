@@ -28,6 +28,9 @@
       <w:pPr/>
       <w:hyperlink r:id="rId6">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Text</w:t>
         </w:r>
       </w:hyperlink>
@@ -41,6 +44,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId7">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Headings</w:t>
         </w:r>
       </w:hyperlink>
@@ -54,6 +60,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId8">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Paragraphs</w:t>
         </w:r>
       </w:hyperlink>
@@ -67,6 +76,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId9">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Lists</w:t>
         </w:r>
       </w:hyperlink>
@@ -80,6 +92,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId10">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Blockquotes</w:t>
         </w:r>
       </w:hyperlink>
@@ -93,6 +108,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId11">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Details / Summary</w:t>
         </w:r>
       </w:hyperlink>
@@ -106,6 +124,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId12">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Address</w:t>
         </w:r>
       </w:hyperlink>
@@ -119,6 +140,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId13">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Horizontal rules</w:t>
         </w:r>
       </w:hyperlink>
@@ -132,6 +156,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId14">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Tabular data</w:t>
         </w:r>
       </w:hyperlink>
@@ -145,6 +172,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId15">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Code</w:t>
         </w:r>
       </w:hyperlink>
@@ -158,6 +188,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId16">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Inline elements</w:t>
         </w:r>
       </w:hyperlink>
@@ -171,6 +204,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId17">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">HTML Comments</w:t>
         </w:r>
       </w:hyperlink>
@@ -179,6 +215,9 @@
       <w:pPr/>
       <w:hyperlink r:id="rId18">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Embedded content</w:t>
         </w:r>
       </w:hyperlink>
@@ -192,6 +231,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId19">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Images</w:t>
         </w:r>
       </w:hyperlink>
@@ -205,6 +247,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId20">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Background images</w:t>
         </w:r>
       </w:hyperlink>
@@ -218,6 +263,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId21">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Audio</w:t>
         </w:r>
       </w:hyperlink>
@@ -231,6 +279,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId22">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Video</w:t>
         </w:r>
       </w:hyperlink>
@@ -244,6 +295,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId23">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Canvas</w:t>
         </w:r>
       </w:hyperlink>
@@ -257,6 +311,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId24">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Meter</w:t>
         </w:r>
       </w:hyperlink>
@@ -270,6 +327,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId25">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Progress</w:t>
         </w:r>
       </w:hyperlink>
@@ -283,6 +343,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId26">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Inline SVG</w:t>
         </w:r>
       </w:hyperlink>
@@ -296,6 +359,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId27">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">IFrames</w:t>
         </w:r>
       </w:hyperlink>
@@ -309,6 +375,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId28">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Embed</w:t>
         </w:r>
       </w:hyperlink>
@@ -322,6 +391,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId29">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Object</w:t>
         </w:r>
       </w:hyperlink>
@@ -330,6 +402,9 @@
       <w:pPr/>
       <w:hyperlink r:id="rId30">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Form elements</w:t>
         </w:r>
       </w:hyperlink>
@@ -343,6 +418,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId31">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Input fields</w:t>
         </w:r>
       </w:hyperlink>
@@ -356,6 +434,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId32">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Select menus</w:t>
         </w:r>
       </w:hyperlink>
@@ -369,6 +450,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId33">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Checkboxes</w:t>
         </w:r>
       </w:hyperlink>
@@ -382,6 +466,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId34">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Radio buttons</w:t>
         </w:r>
       </w:hyperlink>
@@ -395,6 +482,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId35">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Textareas</w:t>
         </w:r>
       </w:hyperlink>
@@ -408,6 +498,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId36">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">HTML5 inputs</w:t>
         </w:r>
       </w:hyperlink>
@@ -421,6 +514,9 @@
       </w:pPr>
       <w:hyperlink r:id="rId37">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Action buttons</w:t>
         </w:r>
       </w:hyperlink>
@@ -492,6 +588,9 @@
     <w:p>
       <w:hyperlink r:id="rId38">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -512,6 +611,9 @@
     <w:p>
       <w:hyperlink r:id="rId39">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -542,6 +644,9 @@
     <w:p>
       <w:hyperlink r:id="rId40">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -583,14 +688,12 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">List Item 1</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">                 List Item 2                 </w:t>
       </w:r>
     </w:p>
@@ -729,7 +832,6 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">List Item 3</w:t>
       </w:r>
     </w:p>
@@ -744,14 +846,12 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">List Item 1</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">                 List Item 2                 </w:t>
       </w:r>
     </w:p>
@@ -890,13 +990,15 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:rPr/>
         <w:t xml:space="preserve">List Item 3</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId41">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -922,6 +1024,9 @@
     <w:p>
       <w:hyperlink r:id="rId42">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -942,6 +1047,9 @@
     <w:p>
       <w:hyperlink r:id="rId43">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">Jon Doe</w:t>
         </w:r>
       </w:hyperlink>
@@ -994,6 +1102,9 @@
     <w:p>
       <w:hyperlink r:id="rId44">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1009,6 +1120,9 @@
     <w:p>
       <w:hyperlink r:id="rId45">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1059,7 +1173,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Heading 1</w:t>
             </w:r>
           </w:p>
@@ -1076,7 +1189,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Heading 2</w:t>
             </w:r>
           </w:p>
@@ -1093,7 +1205,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Heading 3</w:t>
             </w:r>
           </w:p>
@@ -1110,7 +1221,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Heading 4</w:t>
             </w:r>
           </w:p>
@@ -1127,7 +1237,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Heading 5</w:t>
             </w:r>
           </w:p>
@@ -1154,7 +1263,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
           </w:p>
@@ -1171,7 +1279,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
           </w:p>
@@ -1188,7 +1295,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
           </w:p>
@@ -1205,7 +1311,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
           </w:p>
@@ -1222,7 +1327,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
           </w:p>
@@ -1242,7 +1346,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
           </w:p>
@@ -1259,7 +1362,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
           </w:p>
@@ -1276,7 +1378,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
           </w:p>
@@ -1293,7 +1394,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
           </w:p>
@@ -1310,7 +1410,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
           </w:p>
@@ -1330,7 +1429,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
           </w:p>
@@ -1347,7 +1445,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
           </w:p>
@@ -1364,7 +1461,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
           </w:p>
@@ -1381,7 +1477,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
           </w:p>
@@ -1398,7 +1493,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
           </w:p>
@@ -1418,7 +1512,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
           </w:p>
@@ -1435,7 +1528,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
           </w:p>
@@ -1452,7 +1544,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
           </w:p>
@@ -1469,7 +1560,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
           </w:p>
@@ -1486,7 +1576,6 @@
           <w:p>
             <w:pPr/>
             <w:r>
-              <w:rPr/>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
           </w:p>
@@ -1499,6 +1588,9 @@
     <w:p>
       <w:hyperlink r:id="rId46">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1513,12 +1605,18 @@
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">Keyboard input:</w:t>
       </w:r>
       <w:r/>
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">Inline code:</w:t>
       </w:r>
       <w:r>
@@ -1527,6 +1625,9 @@
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">Sample output:</w:t>
       </w:r>
       <w:r/>
@@ -1542,12 +1643,18 @@
     <w:p>
       <w:pPr/>
       <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Courier" w:hAnsi="Courier"/>
+        </w:rPr>
         <w:t xml:space="preserve">P R E F O R M A T T E D T E X T   ! " # $ % &amp; ' ( ) * + , - . /   0 1 2 3 4 5 6 7 8 9 : ; &lt; = &gt; ?   @ A B C D E F G H I J K L M N O   P Q R S T U V W X Y Z [ \ ] ^ _   ` a b c d e f g h i j k l m n o   p q r s t u v w x y z { | } ~ </w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId47">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1563,6 +1670,9 @@
     <w:p>
       <w:hyperlink r:id="rId48">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">This is a text link</w:t>
         </w:r>
       </w:hyperlink>
@@ -1572,6 +1682,9 @@
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">Strong is used to indicate strong importance.</w:t>
       </w:r>
     </w:p>
@@ -1585,6 +1698,9 @@
         <w:t xml:space="preserve">The </w:t>
       </w:r>
       <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">b element</w:t>
       </w:r>
       <w:r>
@@ -1596,6 +1712,9 @@
         <w:t xml:space="preserve">The </w:t>
       </w:r>
       <w:r>
+        <w:rPr>
+          <w:i/>
+        </w:rPr>
         <w:t xml:space="preserve">i element</w:t>
       </w:r>
       <w:r>
@@ -1607,6 +1726,9 @@
         <w:t xml:space="preserve">The </w:t>
       </w:r>
       <w:r>
+        <w:rPr>
+          <w:u w:val="single"/>
+        </w:rPr>
         <w:t xml:space="preserve">u element</w:t>
       </w:r>
       <w:r>
@@ -1640,6 +1762,9 @@
         <w:t xml:space="preserve">Superscript</w:t>
       </w:r>
       <w:r>
+        <w:rPr>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
         <w:t xml:space="preserve">®</w:t>
       </w:r>
       <w:r>
@@ -1651,6 +1776,9 @@
         <w:t xml:space="preserve">Subscript for things like H</w:t>
       </w:r>
       <w:r>
+        <w:rPr>
+          <w:vertAlign w:val="subscript"/>
+        </w:rPr>
         <w:t xml:space="preserve">2</w:t>
       </w:r>
       <w:r>
@@ -1718,6 +1846,9 @@
     <w:p>
       <w:hyperlink r:id="rId49">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1756,6 +1887,9 @@
     <w:p>
       <w:hyperlink r:id="rId50">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1808,6 +1942,9 @@
     <w:p>
       <w:hyperlink r:id="rId51">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1828,6 +1965,9 @@
     <w:p>
       <w:hyperlink r:id="rId52">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1839,25 +1979,22 @@
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r>
-        <w:rPr/>
-      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r>
-        <w:rPr/>
-      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r>
-        <w:rPr/>
-      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId53">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1869,25 +2006,22 @@
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r>
-        <w:rPr/>
-      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r>
-        <w:rPr/>
-      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r>
-        <w:rPr/>
-      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId54">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1904,6 +2038,9 @@
     <w:p>
       <w:hyperlink r:id="rId55">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1953,6 +2090,9 @@
     <w:p>
       <w:hyperlink r:id="rId56">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1977,6 +2117,9 @@
     <w:p>
       <w:hyperlink r:id="rId57">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">[Top]</w:t>
         </w:r>
       </w:hyperlink>
@@ -1987,6 +2130,9 @@
       </w:r>
       <w:hyperlink r:id="rId58">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">@cbracco</w:t>
         </w:r>
       </w:hyperlink>
@@ -1995,6 +2141,9 @@
       </w:r>
       <w:hyperlink r:id="rId59">
         <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
           <w:t xml:space="preserve">GitHub</w:t>
         </w:r>
       </w:hyperlink>

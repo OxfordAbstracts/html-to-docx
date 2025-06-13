@@ -19,7 +19,7 @@ test("simple HTML", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_simple.docx")
+  await writeFile(docxContent, "tests/simple_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

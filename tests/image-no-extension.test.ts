@@ -19,7 +19,7 @@ test("gets mime type of image without extension from its content", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_image-no-extension.docx")
+  await writeFile(docxContent, "tests/image-no-extension_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

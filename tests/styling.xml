@@ -3,19 +3,32 @@
   <w:body>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">First </w:t>
+        <w:t xml:space="preserve">This is normal text.</w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve">Second </w:t>
-      </w:r>
-      <w:r>
-        <w:t xml:space="preserve">Third </w:t>
-      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr/>
       <w:r>
         <w:rPr>
           <w:b/>
         </w:rPr>
-        <w:t xml:space="preserve">Fourth </w:t>
+        <w:t xml:space="preserve">This text should be bold</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">This text should be underlined</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">This text has</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t xml:space="preserve">superscript</w:t>
       </w:r>
     </w:p>
     <w:sectPr>

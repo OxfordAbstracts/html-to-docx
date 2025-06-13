@@ -2,21 +2,18 @@
 <w:document xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:cdr="http://schemas.openxmlformats.org/drawingml/2006/chartDrawing" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">
   <w:body>
     <w:p>
+      <w:r/>
       <w:r>
-        <w:rPr/>
-      </w:r>
-      <w:r>
-        <w:rPr/>
         <w:drawing>
           <wp:inline distB="0" distL="0" distR="0" distT="0">
             <wp:extent cx="2181225" cy="2181225"/>
             <wp:effectExtent b="0" l="0" r="0" t="0"/>
-            <wp:docPr id="2" name="image-yoCQhQwyVeZS-jL3eiTR8.png"/>
+            <wp:docPr id="2" name="image.png"/>
             <a:graphic>
               <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
                 <pic:pic>
                   <pic:nvPicPr>
-                    <pic:cNvPr id="2" name="image-yoCQhQwyVeZS-jL3eiTR8.png" descr=""/>
+                    <pic:cNvPr id="2" name="image.png" descr=""/>
                     <pic:cNvPicPr/>
                   </pic:nvPicPr>
                   <pic:blipFill>

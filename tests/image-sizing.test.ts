@@ -19,7 +19,7 @@ test("embeds an image with the correct size", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_image-sizing.docx")
+  await writeFile(docxContent, "tests/image-sizing_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)

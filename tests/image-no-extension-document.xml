@@ -8,21 +8,18 @@
     </w:p>
     <w:p>
       <w:pPr/>
+      <w:r/>
       <w:r>
-        <w:rPr/>
-      </w:r>
-      <w:r>
-        <w:rPr/>
         <w:drawing>
           <wp:inline distB="0" distL="0" distR="0" distT="0">
             <wp:extent cx="2438400" cy="2438400"/>
             <wp:effectExtent b="0" l="0" r="0" t="0"/>
-            <wp:docPr id="2" name="image-Cdtm5x7SnB0WE0EADv3KO.png"/>
+            <wp:docPr id="2" name="image.png"/>
             <a:graphic>
               <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
                 <pic:pic>
                   <pic:nvPicPr>
-                    <pic:cNvPr id="2" name="image-Cdtm5x7SnB0WE0EADv3KO.png" descr=""/>
+                    <pic:cNvPr id="2" name="image.png" descr=""/>
                     <pic:cNvPicPr/>
                   </pic:nvPicPr>
                   <pic:blipFill>
@@ -53,11 +50,8 @@
     </w:p>
     <w:p>
       <w:pPr/>
+      <w:r/>
       <w:r>
-        <w:rPr/>
-      </w:r>
-      <w:r>
-        <w:rPr/>
         <w:drawing>
           <wp:inline distB="0" distL="0" distR="0" distT="0">
             <wp:extent cx="2438400" cy="2438400"/>

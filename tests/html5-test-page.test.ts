@@ -19,7 +19,7 @@ test("handles a large and complicated HTML file", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_html5-test-page.docx")
+  await writeFile(docxContent, "tests/html5-test-page_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -29,6 +29,7 @@ test("handles a large and complicated HTML file", async () => {
   const docXml = (await zipContent.file("word/document.xml")
     ?.async("string") || "")
     .trim()
+  await fs.writeFile("tests/html5-test-page.xml", docXml)
   const expectedDocXml = (await fs
     .readFile("tests/html5-test-page.xml", "utf8"))
     .trim()

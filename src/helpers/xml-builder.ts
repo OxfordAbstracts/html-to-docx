@@ -388,7 +388,7 @@ function modifiedStyleAttributesBuilder(
         properties.style["font-weight"] &&
         properties.style["font-weight"] === "bold"
       ) {
-        modifiedAttributes.strong = properties.style["font-weight"]
+        modifiedAttributes.strong = true
       }
       if (properties.style["font-family"]) {
         modifiedAttributes.font = docxDocumentInstance.createFont(
@@ -599,8 +599,10 @@ function buildRunProperties(attributes: Attributes) {
     const attrs = Object.keys(runPropertiesFragment.toObject()?.rPr)
 
     if (attrs?.[0] === "@xmlns" && attrs.length === 1) {
-      return runPropertiesFragment
+      return null // No actual formatting properties, just namespace
     }
+
+    return runPropertiesFragment
   }
 }
 

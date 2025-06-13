@@ -65,7 +65,7 @@ test("handles a large HTML file", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_large-html.docx")
+  await writeFile(docxContent, "tests/large-html_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
@@ -92,7 +92,7 @@ test.skip("handles an HTML file that embeds other content", async () => {
     },
     null,
   )
-  await writeFile(docxContent, "tests/_tmp_html5-embed.docx")
+  await writeFile(docxContent, "tests/html5-embed_tmp_.docx")
 
   const zip = new JSZip()
   const zipContent = await zip.loadAsync(docxContent)
