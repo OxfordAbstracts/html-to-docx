@@ -25,7 +25,11 @@
       </w:r>
     </w:p>
     <w:p>
+      <w:pPr/>
       <w:r>
+        <w:rPr>
+          <w:u w:val="single"/>
+        </w:rPr>
         <w:t xml:space="preserve">This text should be underlined</w:t>
       </w:r>
     </w:p>

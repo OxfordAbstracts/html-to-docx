@@ -357,6 +357,12 @@ function modifiedStyleAttributesBuilder(
       ) {
         modifiedAttributes.color = fixupColorCode(properties.style.color)
       }
+      if (
+        properties.style["text-decoration"] &&
+        properties.style["text-decoration"].includes("underline")
+      ) {
+        modifiedAttributes.u = true
+      }
 
       if (
         properties.style["background-color"] &&
