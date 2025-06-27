@@ -16,13 +16,34 @@
       </w:r>
     </w:p>
     <w:p>
+      <w:pPr/>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">This text should be italic</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">This text should be underlined</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">This text has</w:t>
+        <w:t xml:space="preserve">     Formatting tags:     </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">Emphasized text</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
+        <w:t xml:space="preserve">Strong text</w:t>
       </w:r>
       <w:r>
         <w:rPr>

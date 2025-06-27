@@ -390,6 +390,12 @@ function modifiedStyleAttributesBuilder(
       ) {
         modifiedAttributes.strong = true
       }
+      if (
+        properties.style["font-style"] &&
+        properties.style["font-style"] === "italic"
+      ) {
+        modifiedAttributes.i = true
+      }
       if (properties.style["font-family"]) {
         modifiedAttributes.font = docxDocumentInstance.createFont(
           properties.style["font-family"],
@@ -694,6 +700,7 @@ async function buildRun(
               tempAttributes.strong = true
               break
             case "i":
+            case "em":
               tempAttributes.i = true
               break
             case "u":

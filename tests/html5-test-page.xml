@@ -1690,6 +1690,9 @@
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:i/>
+        </w:rPr>
         <w:t xml:space="preserve">This text has added emphasis.</w:t>
       </w:r>
     </w:p>
