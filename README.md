@@ -209,3 +209,6 @@ You can also add `data-start="n"` to start the numbering from the n-th.
 Pull requests are welcome.
 For major changes, please open an issue first
 to discuss what you would like to change.
+
+Don't forget to run `just build` after any changes to build
+the final release targets in [`dist`](./dist).

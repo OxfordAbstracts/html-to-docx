@@ -58510,9 +58510,6 @@ function buildVerticalMerge(verticalMerge = "continue") {
 function buildColor(colorCode) {
   return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "color").att("@w", "val", colorCode).up();
 }
-function buildFontSize(fontSize) {
-  return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "sz").att("@w", "val", String(fontSize)).up();
-}
 function buildShading(colorCode) {
   return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "shd").att("@w", "val", "clear").att("@w", "fill", colorCode).up();
 }
@@ -58618,6 +58615,9 @@ function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes,
       if (properties.style.color && !colorlessColors.includes(properties.style.color)) {
         modifiedAttributes.color = fixupColorCode(properties.style.color);
       }
+      if (properties.style["text-decoration"] && properties.style["text-decoration"].includes("underline")) {
+        modifiedAttributes.u = true;
+      }
       if (properties.style["background-color"] && !colorlessColors.includes(properties.style["background-color"])) {
         modifiedAttributes.backgroundColor = fixupColorCode(properties.style["background-color"]);
       }
@@ -58628,13 +58628,17 @@ function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes,
         modifiedAttributes.textAlign = properties.style["text-align"];
       }
       if (properties.style["font-weight"] && properties.style["font-weight"] === "bold") {
-        modifiedAttributes.strong = properties.style["font-weight"];
+        modifiedAttributes.strong = true;
       }
-      if (properties.style["font-family"]) {
-        modifiedAttributes.font = docxDocumentInstance.createFont(properties.style["font-family"]);
+      if (properties.style["font-style"] && properties.style["font-style"] === "italic") {
+        modifiedAttributes.i = true;
       }
-      if (properties.style["font-size"]) {
-        modifiedAttributes.fontSize = fixupFontSize(properties.style["font-size"]);
+      if (properties.style["font-family"] || properties.style.fontFamily) {
+        modifiedAttributes.font = docxDocumentInstance.createFont(properties.style.fontFamily || properties.style["font-family"]);
+      }
+      const fontSizeValue = properties.style.fontSize || properties.style["font-size"];
+      if (fontSizeValue) {
+        modifiedAttributes.fontSize = fixupFontSize(String(fontSizeValue));
       }
       if (properties.style["line-height"]) {
         modifiedAttributes.lineHeight = fixupLineHeight(properties.style["line-height"], properties.style["font-size"] ? fixupFontSize(properties.style["font-size"]) : undefined);
@@ -58655,6 +58659,18 @@ function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes,
       if (properties.style.width) {
         modifiedAttributes.width = properties.style.width;
       }
+    }
+    const props = vNode.properties || {};
+    const classAttr = props.className || props.class || props.attributes && props.attributes.class || "";
+    if (classAttr && docxDocumentInstance.cssClassStyles) {
+      classAttr.toString().split(/\s+/).filter(Boolean).forEach((cls) => {
+        const clsStyles = docxDocumentInstance.cssClassStyles[cls];
+        if (clsStyles) {
+          if (clsStyles["font-size"] && !modifiedAttributes.fontSize) {
+            modifiedAttributes.fontSize = fixupFontSize(clsStyles["font-size"]);
+          }
+        }
+      });
     }
   }
   if (options?.isParagraph) {
@@ -58714,8 +58730,15 @@ function buildFormatting(htmlTag, options) {
         return buildShading(options.color);
       }
       break;
-    case "fontSize":
-      return buildFontSize(options.fontSize ? options.fontSize : 10);
+    case "fontSize": {
+      if (typeof options.fontSize === "undefined") {
+        return null;
+      }
+      const fsValue = options.fontSize;
+      const szFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("w:sz", { "w:val": String(fsValue) }).up();
+      const szCsFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("w:szCs", { "w:val": String(fsValue) }).up();
+      return import_xmlbuilder2.fragment().import(szFragment).import(szCsFragment);
+    }
     case "hyperlink":
       return buildRunStyleFragment("Hyperlink");
     default:
@@ -58740,14 +58763,15 @@ function buildRunProperties(attributes) {
         runPropertiesFragment.import(formattingFragment);
       }
     });
-    runPropertiesFragment.up();
     const attrs = Object.keys(runPropertiesFragment.toObject()?.rPr);
     if (attrs?.[0] === "@xmlns" && attrs.length === 1) {
-      return runPropertiesFragment;
+      return null;
     }
+    return runPropertiesFragment;
   }
 }
 async function buildRun(vNode, attributes, docxDocumentInstance) {
+  attributes = modifiedStyleAttributesBuilder(docxDocumentInstance, import_is_vnode.default(vNode) ? vNode : null, { ...attributes });
   const runFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
   const runPropertiesFragment = buildRunProperties(import_lodash2.default.cloneDeep(attributes));
   if (import_is_vnode.default(vNode) && vNode.tagName === "span") {
@@ -58812,6 +58836,7 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
               tempAttributes.strong = true;
               break;
             case "i":
+            case "em":
               tempAttributes.i = true;
               break;
             case "u":
@@ -59859,11 +59884,24 @@ async function buildTable(vNode, attributes, docxDocumentInstance) {
 function buildPresetGeometry() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "prstGeom").att("prst", "rect").up();
 }
+function toEMU(v) {
+  if (v === undefined || v === null)
+    return;
+  if (typeof v === "number")
+    return v;
+  if (pixelRegex.test(v)) {
+    const [, num] = v.match(pixelRegex);
+    return pixelToEMU(Number(num));
+  }
+  return Number(v);
+}
 function buildExtents({ width, height }) {
   if (!width && !height) {
     return;
   }
-  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(width || "")).att("cy", String(height || "")).up();
+  const cx = toEMU(width);
+  const cy = toEMU(height);
+  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(cx ?? "")).att("cy", String(cy ?? "")).up();
 }
 function buildOffset() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "off").att("x", "0").att("y", "0").up();
@@ -59985,7 +60023,9 @@ function buildExtent({ width, height }) {
   if (!width && !height) {
     return;
   }
-  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(width || "")).att("cy", String(height || "")).up();
+  const cx = toEMU(width);
+  const cy = toEMU(height);
+  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(cx ?? "")).att("cy", String(cy ?? "")).up();
 }
 function buildPositionV() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "positionV").att("relativeFrom", "paragraph").ele("@wp", "posOffset").txt("19050").up();
@@ -61031,6 +61071,29 @@ class ListStyleBuilder {
 }
 
 // src/docx-document.ts
+function extractCssClassStyles(html) {
+  const styleTagRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+  let css = "";
+  let m;
+  while ((m = styleTagRegex.exec(html)) !== null) {
+    css += m[1];
+  }
+  const classStyles = {};
+  const ruleRegex = /\.([\w-]+)\s*\{([^}]*)\}/g;
+  let r;
+  while ((r = ruleRegex.exec(css)) !== null) {
+    const className = r[1].trim();
+    const decls = r[2].split(";");
+    const kv = {};
+    for (const d of decls) {
+      const [k, v] = d.split(":").map((s) => s?.trim());
+      if (k && v)
+        kv[k.toLowerCase()] = v;
+    }
+    classStyles[className] = kv;
+  }
+  return classStyles;
+}
 function sha1(content) {
   return createHash("sha1").update(content).digest("hex");
 }
@@ -61099,6 +61162,7 @@ async function generateSectionXML(vTree, type) {
 class DocxDocument {
   zip;
   htmlString;
+  cssClassStyles;
   orientation;
   pageSize;
   width;
@@ -61144,6 +61208,7 @@ class DocxDocument {
   constructor(properties) {
     this.zip = properties.zip;
     this.htmlString = properties.htmlString;
+    this.cssClassStyles = extractCssClassStyles(this.htmlString);
     this.orientation = properties.orientation;
     this.pageSize = properties.pageSize || defaultDocumentOptions.pageSize;
     const isPortraitOrientation = this.orientation === defaultOrientation;
