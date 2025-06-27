@@ -11,6 +11,9 @@
     "word"
   ],
   "main": "dist/index-cjs.js",
+  "bin": {
+    "html-to-docx": "./bin/html-to-docx.mjs"
+  },
   "scripts": {
     "start": "# ⚠️ Run `just start` instead",
     "test": "# ⚠️ Run `just test` instead"
