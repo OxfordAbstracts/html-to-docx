@@ -102,6 +102,42 @@
         <w:t xml:space="preserve">This text should be large and italic</w:t>
       </w:r>
     </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Classes + Inline Styles:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:u w:val="single"/>
+          <w:sz w:val="40"/>
+          <w:szCs w:val="40"/>
+        </w:rPr>
+        <w:t xml:space="preserve">       This text should be large and underlined     </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:u w:val="single"/>
+          <w:sz w:val="40"/>
+          <w:szCs w:val="40"/>
+          <w:b/>
+        </w:rPr>
+        <w:t xml:space="preserve">       This text should be large, bold, and underlined     </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:u w:val="single"/>
+          <w:sz w:val="40"/>
+          <w:szCs w:val="40"/>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">       This text should be large, italic, and underlined     </w:t>
+      </w:r>
+    </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
       <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720" w:footer="720" w:gutter="0"/>

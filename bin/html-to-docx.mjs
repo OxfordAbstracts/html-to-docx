@@ -10,19 +10,20 @@ async function main () {
   const [src, dst] = process.argv.slice(2)
 
   if (!src) {
-    console.error("Usage: html-to-docx <input.html> [output.docx]");
-    process.exit(1);
+    console.error("Usage: html-to-docx <input.html> [output.docx]")
+    process.exit(1)
   }
 
-  const inPath = path.resolve(src);
+  const inPath = path.resolve(src)
 
-  let outPath;
+  let outPath
   if (dst) {
-    outPath = path.resolve(dst);
-  } else {
-    // derive <input>.docx from the input path
-    const { dir, name } = path.parse(inPath);
-    outPath = path.join(dir, `${name}.docx`);
+    outPath = path.resolve(dst)
+  }
+  else {
+    // Derive <input>.docx from the input path
+    const { dir, name } = path.parse(inPath)
+    outPath = path.join(dir, `${name}.docx`)
   }
 
   const html = await fs.readFile(inPath, "utf8")
