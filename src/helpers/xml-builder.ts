@@ -158,13 +158,6 @@ function buildColor(colorCode: string) {
     .up()
 }
 
-function buildFontSize(fontSize: number) {
-  return fragment({ namespaceAlias: { w: namespaces.w } })
-    .ele("@w", "sz")
-    .att("@w", "val", String(fontSize))
-    .up()
-}
-
 function buildShading(colorCode: string) {
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "shd")
@@ -402,15 +395,15 @@ function modifiedStyleAttributesBuilder(
       ) {
         modifiedAttributes.i = true
       }
-      if (properties.style["font-family"]) {
+      if (properties.style["font-family"] || properties.style.fontFamily) {
         modifiedAttributes.font = docxDocumentInstance.createFont(
-          properties.style["font-family"],
+          properties.style.fontFamily || properties.style["font-family"],
         )
       }
-      if (properties.style["font-size"]) {
-        modifiedAttributes.fontSize = fixupFontSize(
-          properties.style["font-size"],
-        )
+      const fontSizeValue = properties.style.fontSize ||
+        properties.style["font-size"]
+      if (fontSizeValue) {
+        modifiedAttributes.fontSize = fixupFontSize(String(fontSizeValue))
       }
       if (properties.style["line-height"]) {
         modifiedAttributes.lineHeight = fixupLineHeight(
@@ -441,6 +434,28 @@ function modifiedStyleAttributesBuilder(
       if (properties.style.width) {
         modifiedAttributes.width = properties.style.width
       }
+    }
+
+    // Styles coming from CSS classes
+    const props = (vNode as VNode).properties || {}
+    const classAttr = props.className || props.class ||
+      (props.attributes && props.attributes.class) || ""
+    if (classAttr && docxDocumentInstance.cssClassStyles) {
+      classAttr
+        .toString()
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach((cls: string) => {
+          const clsStyles = docxDocumentInstance.cssClassStyles[cls]
+          if (clsStyles) {
+            // font-size
+            if (clsStyles["font-size"] && !modifiedAttributes.fontSize) {
+              modifiedAttributes.fontSize = fixupFontSize(
+                clsStyles["font-size"],
+              )
+            }
+          }
+        })
     }
   }
 
@@ -509,9 +524,22 @@ function buildFormatting(
         return buildShading(options.color)
       }
       break
-    case "fontSize":
-      // does this need a unit of measure?
-      return buildFontSize(options.fontSize ? options.fontSize : 10)
+    case "fontSize": {
+      // Only add font size formatting if a value was explicitly provided.
+      if (typeof options.fontSize === "undefined") {
+        return null
+      }
+      const fsValue = options.fontSize
+      const szFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+        .ele("w:sz", { "w:val": String(fsValue) })
+        .up()
+      const szCsFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+        .ele("w:szCs", { "w:val": String(fsValue) })
+        .up()
+      return fragment()
+        .import(szFragment)
+        .import(szCsFragment)
+    }
     case "hyperlink":
       return buildRunStyleFragment("Hyperlink")
     default:
@@ -605,8 +633,6 @@ function buildRunProperties(attributes: Attributes) {
       }
     })
 
-    runPropertiesFragment.up()
-
     // @ts-expect-error Property 'rPr' does not exist
     const attrs = Object.keys(runPropertiesFragment.toObject()?.rPr)
 
@@ -623,6 +649,15 @@ async function buildRun(
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
 ): Promise<XMLBuilder | XMLBuilder[]> {
+  // Apply additional style changes (e.g. those coming from CSS
+  // classes on the current node) before we start building the
+  // run properties. This guarantees attributes such as font-size
+  // are present even when the node itself is <strong>, <em>, …
+  attributes = modifiedStyleAttributesBuilder(
+    docxDocumentInstance,
+    isVNode(vNode) ? (vNode as VNode) : null,
+    { ...attributes },
+  )
   const runFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "r")
   const runPropertiesFragment = buildRunProperties(
@@ -2478,14 +2513,28 @@ function buildPresetGeometry() {
     .up()
 }
 
-function buildExtents({ width, height }: { width?: number; height?: number }) {
+function toEMU(v?: number | string) {
+  if (v === undefined || v === null) return undefined
+  if (typeof v === "number") return v // already EMU
+  if (pixelRegex.test(v)) { // like "256px"
+    const [, num] = v.match(pixelRegex) as RegExpMatchArray
+    return pixelToEMU(Number(num))
+  }
+  return Number(v) // fallback – numeric string
+}
+
+function buildExtents(
+  { width, height }: { width?: number | string; height?: number | string },
+) {
   if (!width && !height) {
     return
   }
+  const cx = toEMU(width)
+  const cy = toEMU(height)
   return fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "ext")
-    .att("cx", String(width || ""))
-    .att("cy", String(height || ""))
+    .att("cx", String(cx ?? ""))
+    .att("cy", String(cy ?? ""))
     .up()
 }
 
@@ -2728,14 +2777,18 @@ function buildEffectExtentFragment() {
     .up()
 }
 
-function buildExtent({ width, height }: { width?: number; height?: number }) {
+function buildExtent(
+  { width, height }: { width?: number | string; height?: number | string },
+) {
   if (!width && !height) {
     return
   }
+  const cx = toEMU(width)
+  const cy = toEMU(height)
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
     .ele("@wp", "extent")
-    .att("cx", String(width || ""))
-    .att("cy", String(height || ""))
+    .att("cx", String(cx ?? ""))
+    .att("cy", String(cy ?? ""))
     .up()
 }
 

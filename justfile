@@ -17,14 +17,15 @@ check-types: node_modules
 fmt: node_modules
   npx dprint fmt
 
-
-# Lint the code using ESLint
-# Dprint doesn't support all the rules that eslint does,
-# so we need to run eslint with the --fix flag to fix the rest.
-# - https://github.com/dprint/dprint-plugin-typescript/issues/696
-# - https://github.com/dprint/dprint-plugin-typescript/issues/432
-lint: node_modules
+  # Lint and format the code using ESLint
+  # Dprint doesn't support all the rules that eslint does,
+  # so we need to run eslint with the --fix flag to fix the rest.
+  # - https://github.com/dprint/dprint-plugin-typescript/issues/696
+  # - https://github.com/dprint/dprint-plugin-typescript/issues/432
   npx eslint --ignore-pattern=.gitignore --fix .
+
+
+lint: fmt
 
 
 # Run the unit tests and hide unhelpful warnings

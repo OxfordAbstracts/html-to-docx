@@ -3,18 +3,32 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Styling HTML</title>
+  <style>
+    .large {
+      font-size: 20pt;
+    }
+  </style>
 </head>
 
 <body>
   <p>This is normal text.</p>
+  <h2>Inline Styles:</h2>
   <p style="font-weight: bold;">This text should be bold</p>
   <p style="font-style: italic;">This text should be italic</p>
   <p style="text-decoration: underline;">This text should be underlined</p>
+
+  <h2>Formatting tags:</h2>
   <p>
-    Formatting tags:
     <em>Emphasized text</em>
     <strong>Strong text</strong>
     <sup>superscript</sup>
+  </p>
+
+  <h2>Classes:</h2>
+  <p>
+    <span class="large">This text should be large</span>
+    <strong class="large">This text should be large and bold</strong>
+    <em class="large">This text should be large and italic</em>
   </p>
 </body>
 

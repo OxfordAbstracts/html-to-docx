@@ -44,6 +44,33 @@ import { extractBase64Data } from "./utils/base64.ts"
 import { fontFamilyToTableObject } from "./utils/font-family-conversion.ts"
 import ListStyleBuilder from "./utils/list.ts"
 
+function extractCssClassStyles(html: string) {
+  // Grab the raw CSS sitting in every <style>…</style> tag
+  const styleTagRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi
+  let css = ""
+  let m: RegExpExecArray | null
+  while ((m = styleTagRegex.exec(html)) !== null) {
+    css += m[1]
+  }
+
+  // Parse only very-simple “.class { prop: value; … }” rules
+  const classStyles: Record<string, Record<string, string>> = {}
+  const ruleRegex = /\.([\w-]+)\s*\{([^}]*)\}/g
+  let r: RegExpExecArray | null
+  while ((r = ruleRegex.exec(css)) !== null) {
+    const className = r[1].trim()
+    const decls = r[2].split(";")
+    const kv: Record<string, string> = {}
+    for (const d of decls) {
+      const [k, v] = d.split(":")
+        .map(s => s?.trim())
+      if (k && v) kv[k.toLowerCase()] = v
+    }
+    classStyles[className] = kv
+  }
+  return classStyles
+}
+
 function sha1(content: string) {
   return createHash("sha1")
     .update(content)
@@ -177,6 +204,7 @@ async function generateSectionXML(
 export default class DocxDocument {
   zip: JSZip
   htmlString: string
+  cssClassStyles: Record<string, Record<string, string>>
   orientation: "portrait" | "landscape"
   pageSize?: { height: number; width: number }
   width: number
@@ -303,6 +331,7 @@ export default class DocxDocument {
   }) {
     this.zip = properties.zip
     this.htmlString = properties.htmlString
+    this.cssClassStyles = extractCssClassStyles(this.htmlString)
     this.orientation = properties.orientation
     this.pageSize = properties.pageSize || defaultDocumentOptions.pageSize
 

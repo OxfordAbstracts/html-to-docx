@@ -29,6 +29,7 @@ test("styling HTML", async () => {
   const docXml = (await zipContent.file("word/document.xml")
     ?.async("string") || "")
     .trim()
+
   const expectedDocXml = (await fs
     .readFile("tests/styling.xml", "utf8"))
     .trim()
