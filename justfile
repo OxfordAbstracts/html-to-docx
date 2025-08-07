@@ -12,9 +12,8 @@ node_modules:
 check-types: node_modules
   npx tsc --noEmit
 
-
 # Format the code using dprint
-fmt: node_modules
+format: node_modules
   npx dprint fmt
 
   # Lint and format the code using ESLint
@@ -24,8 +23,10 @@ fmt: node_modules
   # - https://github.com/dprint/dprint-plugin-typescript/issues/432
   npx eslint --ignore-pattern=.gitignore --fix .
 
+alias fmt := format
 
-lint: fmt
+
+lint: format
 
 
 # Run the unit tests and hide unhelpful warnings
@@ -46,7 +47,7 @@ test-docx-files:
 
 
 # Run all the tests
-test: fmt lint check-types test-unit
+test: format lint check-types test-unit
 
 
 build-esm:

@@ -58593,7 +58593,7 @@ function fixupColorCode(colorCodeString) {
   }
 }
 function buildRunFontFragment(fontName = defaultFont) {
-  return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "rFonts").att("@w", "ascii", fontName).att("@w", "hAnsi", fontName).up();
+  return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "rFonts").att("@w", "ascii", fontName).att("@w", "hAnsi", fontName).att("@w", "eastAsia", fontName).att("@w", "cs", fontName).up();
 }
 function buildRunStyleFragment(type = "Hyperlink") {
   return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "rStyle").att("@w", "val", type).up();
@@ -58769,6 +58769,15 @@ function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes,
         if (clsStyles) {
           if (clsStyles["font-size"] && !modifiedAttributes.fontSize) {
             modifiedAttributes.fontSize = fixupFontSize(clsStyles["font-size"]);
+          }
+          if (clsStyles["font-weight"] && clsStyles["font-weight"] === "bold" && !modifiedAttributes.strong) {
+            modifiedAttributes.strong = true;
+          }
+          if (clsStyles["font-style"] && clsStyles["font-style"] === "italic" && !modifiedAttributes.i) {
+            modifiedAttributes.i = true;
+          }
+          if (clsStyles["font-family"] && !modifiedAttributes.font) {
+            modifiedAttributes.font = docxDocumentInstance.createFont(clsStyles["font-family"]);
           }
         }
       });

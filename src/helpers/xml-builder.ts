@@ -115,6 +115,8 @@ function buildRunFontFragment(fontName = defaultFont) {
     .ele("@w", "rFonts")
     .att("@w", "ascii", fontName)
     .att("@w", "hAnsi", fontName)
+    .att("@w", "eastAsia", fontName)
+    .att("@w", "cs", fontName)
     .up()
 }
 
@@ -452,6 +454,28 @@ function modifiedStyleAttributesBuilder(
             if (clsStyles["font-size"] && !modifiedAttributes.fontSize) {
               modifiedAttributes.fontSize = fixupFontSize(
                 clsStyles["font-size"],
+              )
+            }
+            // font-weight
+            if (
+              clsStyles["font-weight"] &&
+              clsStyles["font-weight"] === "bold" &&
+              !modifiedAttributes.strong
+            ) {
+              modifiedAttributes.strong = true
+            }
+            // font-style
+            if (
+              clsStyles["font-style"] &&
+              clsStyles["font-style"] === "italic" &&
+              !modifiedAttributes.i
+            ) {
+              modifiedAttributes.i = true
+            }
+            // font-family
+            if (clsStyles["font-family"] && !modifiedAttributes.font) {
+              modifiedAttributes.font = docxDocumentInstance.createFont(
+                clsStyles["font-family"],
               )
             }
           }

@@ -11,7 +11,7 @@ class Program {
       var validator = new OpenXmlValidator();
       var count = 0;
       foreach (var error in validator.Validate(wordDoc)) {
-        if (error.Description.StartsWith("The element has unexpectedx child")) {
+        if (error.Description.StartsWith("The element has unexpected child")) {
           continue;
         }
         count++;
