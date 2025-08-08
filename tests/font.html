@@ -11,12 +11,27 @@
     .monospace {
       font-family: Courier;
     }
+
+    .combined {
+      font-family: Helvetica;
+      font-style: italic;
+      font-weight: bold;
+      font-size: 20px;
+    }
   </style>
 </head>
 
 <body>
+  <span>This sentence</span> must be on a single line.<br>
+
   <p class="bold">Just a simple bold sentence</p>
+  <div class="bold">
+    <p>Just a simple bold sentence inside a div</p>
+  </div>
+
   <p class="monospace">Just a simple monospace sentence</p>
+
+  <p class="combined">Just a simple sentence with combined styles</p>
 </body>
 
 </html>

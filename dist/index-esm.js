@@ -60241,7 +60241,49 @@ async function buildList(vNode, docxDocumentInstance, xmlFragment) {
   }
   return listElements;
 }
-async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
+function collectParentAttributes(docxDocumentInstance, vNode, existingAttributes = {}) {
+  const parentAttributes = { ...existingAttributes };
+  if (vNode && vNode.properties) {
+    const properties = vNode.properties;
+    if (properties.style) {
+      if (properties.style["font-weight"] === "bold") {
+        parentAttributes.strong = true;
+      }
+      if (properties.style["font-style"] === "italic") {
+        parentAttributes.i = true;
+      }
+      if (properties.style["font-family"] || properties.style.fontFamily) {
+        parentAttributes.font = docxDocumentInstance.createFont(properties.style.fontFamily || properties.style["font-family"]);
+      }
+      if (properties.style.fontSize || properties.style["font-size"]) {
+        const fontSize = properties.style.fontSize || properties.style["font-size"];
+        parentAttributes.fontSize = Number(fontSize);
+      }
+    }
+    const classAttr = properties.className || properties.class || properties.attributes && properties.attributes.class || "";
+    if (classAttr && docxDocumentInstance.cssClassStyles) {
+      classAttr.toString().split(/\s+/).filter(Boolean).forEach((cls) => {
+        const clsStyles = docxDocumentInstance.cssClassStyles[cls];
+        if (clsStyles) {
+          if (clsStyles["font-weight"] === "bold") {
+            parentAttributes.strong = true;
+          }
+          if (clsStyles["font-style"] === "italic") {
+            parentAttributes.i = true;
+          }
+          if (clsStyles["font-family"]) {
+            parentAttributes.font = docxDocumentInstance.createFont(clsStyles["font-family"]);
+          }
+          if (clsStyles["font-size"]) {
+            parentAttributes.fontSize = Number(clsStyles["font-size"]);
+          }
+        }
+      });
+    }
+  }
+  return parentAttributes;
+}
+async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, parentAttributes = {}) {
   if (vNode.tagName === "div" && (vNode.properties.attributes.class === "page-break" || vNode.properties.style && vNode.properties.style["page-break-after"])) {
     const paragraphFragment = import_xmlbuilder22.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "p").ele("@w", "r").ele("@w", "br").att("@w", "type", "page").up().up().up();
     xmlFragment.import(paragraphFragment);
@@ -60309,7 +60351,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
     "p",
     "pre"
   ].includes(vNode.tagName)) {
-    xmlFragment.import(await buildParagraph(vNode, {}, docxDocumentInstance));
+    xmlFragment.import(await buildParagraph(vNode, parentAttributes, docxDocumentInstance));
     return;
   } else if (vNode.tagName === "span" && vNodeHasChildren(vNode) && vNode.children.some((child) => import_is_vnode2.default(child) && child.tagName === "img")) {
     const imageChild = vNode.children.find((child) => import_is_vnode2.default(child) && child.tagName === "img");
@@ -60334,10 +60376,12 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
     return;
   }
   if (vNodeHasChildren(vNode)) {
+    const childParentAttributes = collectParentAttributes(docxDocumentInstance, vNode, parentAttributes);
     let isInParagraph = false;
     let paragraphFrag = import_xmlbuilder22.fragment();
     const inlineTags = [
       "b",
+      "br",
       "code",
       "del",
       "em",
@@ -60356,7 +60400,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
       if (childVNode.tagName === "img") {
         const imageRunFragment = await buildImage(docxDocumentInstance, childVNode, docxDocumentInstance.availableDocumentSpace);
         if (imageRunFragment) {
-          const imageParagraphFragment = await buildParagraph(childVNode, {}, docxDocumentInstance);
+          const imageParagraphFragment = await buildParagraph(childVNode, childParentAttributes, docxDocumentInstance);
           if (Array.isArray(imageRunFragment)) {
             imageRunFragment.forEach((frag) => imageParagraphFragment.import(frag));
           } else {
@@ -60365,29 +60409,49 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment) {
           xmlFragment.import(imageParagraphFragment);
         }
         isInParagraph = false;
-      } else if (inlineTags.includes(childVNode.tagName)) {
+      } else if (import_is_vtext2.default(childVNode) || inlineTags.includes(childVNode.tagName)) {
         if (!isInParagraph) {
           paragraphFrag = xmlFragment.ele("@w", "p");
           isInParagraph = true;
         }
-        await convertVTreeToXML(docxDocumentInstance, childVNode, paragraphFrag);
+        if (import_is_vtext2.default(childVNode)) {
+          const runFragment = await buildRun(childVNode, childParentAttributes, docxDocumentInstance);
+          if (Array.isArray(runFragment)) {
+            for (const frag of runFragment) {
+              paragraphFrag.import(frag);
+            }
+          } else {
+            paragraphFrag.import(runFragment);
+          }
+        } else if (import_is_vnode2.default(childVNode) && childVNode.tagName === "br") {
+          const runFragment = await buildRun(childVNode, childParentAttributes, docxDocumentInstance);
+          if (Array.isArray(runFragment)) {
+            for (const frag of runFragment) {
+              paragraphFrag.import(frag);
+            }
+          } else {
+            paragraphFrag.import(runFragment);
+          }
+        } else {
+          await convertVTreeToXML(docxDocumentInstance, childVNode, paragraphFrag, childParentAttributes);
+        }
       } else {
-        await convertVTreeToXML(docxDocumentInstance, childVNode, xmlFragment);
+        await convertVTreeToXML(docxDocumentInstance, childVNode, xmlFragment, childParentAttributes);
         isInParagraph = false;
       }
     }
   }
 }
-async function convertVTreeToXML(docxDocumentInstance, vTree, xmlFragment) {
+async function convertVTreeToXML(docxDocumentInstance, vTree, xmlFragment, parentAttributes = {}) {
   if (!vTree) {} else if (Array.isArray(vTree) && vTree.length) {
     for (let index = 0;index < vTree.length; index++) {
       const vNode = vTree[index];
-      await convertVTreeToXML(docxDocumentInstance, vNode, xmlFragment);
+      await convertVTreeToXML(docxDocumentInstance, vNode, xmlFragment, parentAttributes);
     }
   } else if (import_is_vnode2.default(vTree)) {
-    await findXMLEquivalent(docxDocumentInstance, vTree, xmlFragment);
+    await findXMLEquivalent(docxDocumentInstance, vTree, xmlFragment, parentAttributes);
   } else if (import_is_vtext2.default(vTree)) {
-    const paragraphFragment = await buildParagraph(vTree, {}, docxDocumentInstance);
+    const paragraphFragment = await buildParagraph(vTree, parentAttributes, docxDocumentInstance);
     xmlFragment.import(paragraphFragment);
   }
 }

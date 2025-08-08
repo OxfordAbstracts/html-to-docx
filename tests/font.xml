@@ -2,6 +2,17 @@
 <w:document xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:cdr="http://schemas.openxmlformats.org/drawingml/2006/chartDrawing" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">
   <w:body>
     <w:p>
+      <w:r>
+        <w:t xml:space="preserve">This sentence</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> must be on a single line.</w:t>
+      </w:r>
+      <w:r>
+        <w:br w:type="textWrapping"/>
+      </w:r>
+    </w:p>
+    <w:p>
       <w:pPr/>
       <w:r>
         <w:rPr>
@@ -14,9 +25,31 @@
       <w:pPr/>
       <w:r>
         <w:rPr>
+          <w:b/>
+        </w:rPr>
+        <w:t xml:space="preserve">Just a simple bold sentence inside a div</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr/>
+      <w:r>
+        <w:rPr>
           <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
         </w:rPr>
         <w:t xml:space="preserve">Just a simple monospace sentence</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr/>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="30"/>
+          <w:szCs w:val="30"/>
+          <w:b/>
+          <w:i/>
+          <w:rFonts w:ascii="Helvetica" w:hAnsi="Helvetica" w:eastAsia="Helvetica" w:cs="Helvetica"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Just a simple sentence with combined styles</w:t>
       </w:r>
     </w:p>
     <w:sectPr>

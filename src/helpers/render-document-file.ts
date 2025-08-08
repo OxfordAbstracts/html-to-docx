@@ -32,6 +32,7 @@ import {
 import { isValidUrl } from "../utils/url.ts"
 import { vNodeHasChildren } from "../utils/vnode.ts"
 import * as xmlBuilder from "./xml-builder.ts"
+import type { Attributes } from "./xml-builder.ts"
 
 const convertHTML = HTMLToVDOM({
   VNode,
@@ -313,10 +314,75 @@ export async function buildList(
   return listElements
 }
 
+function collectParentAttributes(
+  docxDocumentInstance: DocxDocument,
+  vNode: VNode,
+  existingAttributes: Attributes = {},
+): Attributes {
+  const parentAttributes = { ...existingAttributes }
+
+  // Collect styling from current node that should be inherited by children
+  if (vNode && vNode.properties) {
+    const properties = vNode.properties
+
+    // Handle inline styles
+    if (properties.style) {
+      if (properties.style["font-weight"] === "bold") {
+        parentAttributes.strong = true
+      }
+      if (properties.style["font-style"] === "italic") {
+        parentAttributes.i = true
+      }
+      if (properties.style["font-family"] || properties.style.fontFamily) {
+        parentAttributes.font = docxDocumentInstance.createFont(
+          properties.style.fontFamily || properties.style["font-family"],
+        )
+      }
+      if (properties.style.fontSize || properties.style["font-size"]) {
+        const fontSize = properties.style.fontSize ||
+          properties.style["font-size"]
+        parentAttributes.fontSize = Number(fontSize)
+      }
+    }
+
+    // Handle CSS classes
+    const classAttr = properties.className || properties.class ||
+      (properties.attributes && properties.attributes.class) || ""
+    if (classAttr && docxDocumentInstance.cssClassStyles) {
+      classAttr
+        .toString()
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach((cls: string) => {
+          const clsStyles = docxDocumentInstance.cssClassStyles[cls]
+          if (clsStyles) {
+            if (clsStyles["font-weight"] === "bold") {
+              parentAttributes.strong = true
+            }
+            if (clsStyles["font-style"] === "italic") {
+              parentAttributes.i = true
+            }
+            if (clsStyles["font-family"]) {
+              parentAttributes.font = docxDocumentInstance.createFont(
+                clsStyles["font-family"],
+              )
+            }
+            if (clsStyles["font-size"]) {
+              parentAttributes.fontSize = Number(clsStyles["font-size"])
+            }
+          }
+        })
+    }
+  }
+
+  return parentAttributes
+}
+
 async function findXMLEquivalent(
   docxDocumentInstance: DocxDocument,
   vNode: VNode,
   xmlFragment: XMLBuilder,
+  parentAttributes: Attributes = {},
 ) {
   if (
     vNode.tagName === "div" &&
@@ -446,7 +512,11 @@ async function findXMLEquivalent(
     ].includes(vNode.tagName)
   ) {
     xmlFragment.import(
-      await xmlBuilder.buildParagraph(vNode, {}, docxDocumentInstance),
+      await xmlBuilder.buildParagraph(
+        vNode,
+        parentAttributes,
+        docxDocumentInstance,
+      ),
     )
     return
   }
@@ -495,10 +565,18 @@ async function findXMLEquivalent(
   }
 
   if (vNodeHasChildren(vNode)) {
+    // Collect parent attributes to pass down to children
+    const childParentAttributes = collectParentAttributes(
+      docxDocumentInstance,
+      vNode,
+      parentAttributes,
+    )
+
     let isInParagraph = false
     let paragraphFrag = fragment()
     const inlineTags = [
       "b",
+      "br",
       "code",
       "del",
       "em",
@@ -525,7 +603,7 @@ async function findXMLEquivalent(
         if (imageRunFragment) {
           const imageParagraphFragment = await xmlBuilder.buildParagraph(
             childVNode,
-            {},
+            childParentAttributes,
             docxDocumentInstance,
           )
           if (Array.isArray(imageRunFragment)) {
@@ -540,22 +618,60 @@ async function findXMLEquivalent(
         }
         isInParagraph = false
       }
-      else if (inlineTags.includes(childVNode.tagName)) {
+      else if (isVText(childVNode) || inlineTags.includes(childVNode.tagName)) {
         if (!isInParagraph) {
           paragraphFrag = xmlFragment.ele("@w", "p")
           isInParagraph = true
         }
-        await convertVTreeToXML(
-          docxDocumentInstance,
-          childVNode,
-          paragraphFrag,
-        )
+
+        if (isVText(childVNode)) {
+          // Handle text node by creating a run directly
+          const runFragment = await xmlBuilder.buildRun(
+            childVNode,
+            childParentAttributes,
+            docxDocumentInstance,
+          )
+          if (Array.isArray(runFragment)) {
+            for (const frag of runFragment) {
+              paragraphFrag.import(frag)
+            }
+          }
+          else {
+            paragraphFrag.import(runFragment)
+          }
+        }
+        else if (isVNode(childVNode) && childVNode.tagName === "br") {
+          // Handle br elements specially - just add the line break run
+          const runFragment = await xmlBuilder.buildRun(
+            childVNode,
+            childParentAttributes,
+            docxDocumentInstance,
+          )
+          if (Array.isArray(runFragment)) {
+            for (const frag of runFragment) {
+              paragraphFrag.import(frag)
+            }
+          }
+          else {
+            paragraphFrag.import(runFragment)
+          }
+        }
+        else {
+          // Handle other inline elements
+          await convertVTreeToXML(
+            docxDocumentInstance,
+            childVNode,
+            paragraphFrag,
+            childParentAttributes,
+          )
+        }
       }
       else {
         await convertVTreeToXML(
           docxDocumentInstance,
           childVNode,
           xmlFragment,
+          childParentAttributes,
         )
         isInParagraph = false
       }
@@ -567,6 +683,7 @@ export async function convertVTreeToXML(
   docxDocumentInstance: DocxDocument,
   vTree: VTree,
   xmlFragment: XMLBuilder,
+  parentAttributes: Attributes = {},
 ) {
   if (!vTree) {
     // Do nothing
@@ -574,16 +691,26 @@ export async function convertVTreeToXML(
   else if (Array.isArray(vTree) && vTree.length) {
     for (let index = 0; index < vTree.length; index++) {
       const vNode = vTree[index]
-      await convertVTreeToXML(docxDocumentInstance, vNode, xmlFragment)
+      await convertVTreeToXML(
+        docxDocumentInstance,
+        vNode,
+        xmlFragment,
+        parentAttributes,
+      )
     }
   }
   else if (isVNode(vTree)) {
-    await findXMLEquivalent(docxDocumentInstance, vTree, xmlFragment)
+    await findXMLEquivalent(
+      docxDocumentInstance,
+      vTree,
+      xmlFragment,
+      parentAttributes,
+    )
   }
   else if (isVText(vTree)) {
     const paragraphFragment = await xmlBuilder.buildParagraph(
       vTree as VText,
-      {},
+      parentAttributes,
       docxDocumentInstance,
     )
     xmlFragment.import(paragraphFragment)

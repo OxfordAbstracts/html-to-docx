@@ -572,7 +572,7 @@ function buildFormatting(
 
   return null
 }
-type Attributes = {
+export type Attributes = {
   color?: string
   fontSize?: number
   font?: string
