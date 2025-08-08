@@ -551,7 +551,7 @@ async function findXMLEquivalent(
   else if (htmlInlineElements.includes(vNode.tagName)) {
     const textFragment = await xmlBuilder.buildRun(
       vNode,
-      {},
+      parentAttributes,
       docxDocumentInstance,
     )
     if (Array.isArray(textFragment)) {

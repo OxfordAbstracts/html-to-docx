@@ -72,6 +72,24 @@
         <w:t xml:space="preserve">Child overwrites parent CSS and leads to a small font</w:t>
       </w:r>
     </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
+        </w:rPr>
+        <w:t xml:space="preserve">This should be monospace</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr/>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
+          <w:u w:val="single"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Underlined monospace text</w:t>
+      </w:r>
+    </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
       <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720" w:footer="720" w:gutter="0"/>
