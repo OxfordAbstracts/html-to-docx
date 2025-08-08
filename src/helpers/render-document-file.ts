@@ -513,11 +513,13 @@ async function findXMLEquivalent(
       "pre",
     ].includes(vNode.tagName)
   ) {
+    const preserveWhitespace = vNode.tagName === "pre"
     xmlFragment.import(
       await xmlBuilder.buildParagraph(
         vNode,
         parentAttributes,
         docxDocumentInstance,
+        preserveWhitespace,
       ),
     )
     return

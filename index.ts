@@ -3,7 +3,21 @@ import addFilesToContainer from "./src/html-to-docx.ts"
 import { type DocumentOptions } from "./src/types.ts"
 
 function minifyHTMLString(htmlString: string) {
-  let minifiedHTMLString = htmlString
+  // First, protect content inside <pre> tags from minification
+  const preContentMap = new Map<string, string>()
+  let preIndex = 0
+
+  // Find all <pre> tag content and replace with placeholders
+  const protectedHTMLString = htmlString.replace(
+    /<pre(\s[^>]*)?>([^]*?)<\/pre>/gi,
+    (match, attributes, content) => {
+      const placeholder = `__PRE_PLACEHOLDER_${preIndex++}__`
+      preContentMap.set(placeholder, content)
+      return `<pre${attributes || ""}>${placeholder}</pre>`
+    },
+  )
+
+  let minifiedHTMLString = protectedHTMLString
     .replace(/\n/g, " ")
     .replace(/\r/g, " ")
     .replace(/\r\n/g, " ")
@@ -62,6 +76,14 @@ function minifyHTMLString(htmlString: string) {
 
   // Remove remaining placeholder spaces
   minifiedHTMLString = minifiedHTMLString.replace(/__SPACE__/g, "")
+
+  // Restore original pre content
+  preContentMap.forEach((originalContent, placeholder) => {
+    minifiedHTMLString = minifiedHTMLString.replace(
+      placeholder,
+      originalContent,
+    )
+  })
 
   return minifiedHTMLString
 }

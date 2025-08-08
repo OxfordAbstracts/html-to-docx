@@ -58537,8 +58537,9 @@ function buildLineBreak(type = "textWrapping") {
 function buildBorder(borderSide = "top", borderSize = 0, borderSpacing = 0, borderColor = fixupColorCode("black"), borderStroke = "single") {
   return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", borderSide).att("@w", "val", borderStroke).att("@w", "sz", String(borderSize)).att("@w", "space", String(borderSpacing)).att("@w", "color", borderColor).up();
 }
-function buildTextElement(text) {
-  return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "t").att("@xml", "space", "preserve").txt(text).up();
+function buildTextElement(text, preserveWhitespace = false) {
+  const normalizedText = preserveWhitespace ? text : text.replace(/[\t\r\n]+/g, " ").replace(/\s{2,}/g, " ");
+  return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "t").att("@xml", "space", "preserve").txt(normalizedText).up();
 }
 function fixupLineHeight(lineHeight, fontSize) {
   if (Number.isFinite(lineHeight)) {
@@ -58779,12 +58780,12 @@ function buildRunProperties(attributes) {
     return runPropertiesFragment;
   }
 }
-async function buildRun(vNode, attributes, docxDocumentInstance) {
+async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
   attributes = modifiedStyleAttributesBuilder(docxDocumentInstance, import_is_vnode.default(vNode) ? vNode : null, { ...attributes });
   const runFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
   const runPropertiesFragment = buildRunProperties(import_lodash2.default.cloneDeep(attributes));
   if (import_is_vnode.default(vNode) && vNode.tagName === "span") {
-    return buildRunOrRuns(vNode, attributes, docxDocumentInstance);
+    return buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveWhitespace);
   }
   if (vNode && import_is_vnode.default(vNode) && [
     "strong",
@@ -58810,7 +58811,7 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
     while (vNodes.length) {
       const tempVNode = vNodes.shift();
       if (import_is_vtext.default(tempVNode)) {
-        const textFragment = buildTextElement(tempVNode.text);
+        const textFragment = buildTextElement(tempVNode.text, preserveWhitespace);
         const tempRunPropertiesFragment = buildRunProperties({
           ...attributes,
           ...tempAttributes
@@ -58865,7 +58866,7 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
             runPropertiesFragment.import(formattingFragment);
           }
         } else if (tempVNode.tagName === "span") {
-          const spanFragment = await buildRunOrRuns(tempVNode, { ...attributes, ...tempAttributes }, docxDocumentInstance);
+          const spanFragment = await buildRunOrRuns(tempVNode, { ...attributes, ...tempAttributes }, docxDocumentInstance, preserveWhitespace);
           if (Array.isArray(spanFragment)) {
             spanFragment.flat(Infinity);
             runFragmentsArray.push(...spanFragment);
@@ -58890,7 +58891,7 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
     runFragment.import(runPropertiesFragment);
   }
   if (import_is_vtext.default(vNode)) {
-    const textFragment = buildTextElement(vNode.text);
+    const textFragment = buildTextElement(vNode.text, preserveWhitespace);
     runFragment.import(textFragment);
   } else if (attributes && attributes.type === "picture") {
     let response = null;
@@ -58921,7 +58922,7 @@ async function buildRun(vNode, attributes, docxDocumentInstance) {
   runFragment.up();
   return runFragment;
 }
-async function buildRunOrRuns(vNode, attributes, docxDocumentInstance) {
+async function buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
   if (vNode && import_is_vnode.default(vNode) && vNode.tagName === "span") {
     let runFragments = [];
     for (let index = 0;index < vNode.children.length; index++) {
@@ -58939,16 +58940,16 @@ async function buildRunOrRuns(vNode, attributes, docxDocumentInstance) {
         modifiedAttributes.originalHeight = imageProperties.height;
         computeImageDimensions(childVNode, modifiedAttributes);
       }
-      const tempRunFragments = await buildRun(childVNode, modifiedAttributes, docxDocumentInstance);
+      const tempRunFragments = await buildRun(childVNode, modifiedAttributes, docxDocumentInstance, preserveWhitespace);
       runFragments = runFragments.concat(Array.isArray(tempRunFragments) ? tempRunFragments : [tempRunFragments]);
     }
     return runFragments;
   } else {
-    const tempRunFragments = await buildRun(vNode, attributes, docxDocumentInstance);
+    const tempRunFragments = await buildRun(vNode, attributes, docxDocumentInstance, preserveWhitespace);
     return tempRunFragments;
   }
 }
-async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance) {
+async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
   if (import_is_vnode.default(vNode) && vNode.tagName === "a") {
     const relationshipId = docxDocumentInstance.createDocumentRelationships(docxDocumentInstance.relationshipFilename, hyperlinkType, vNode.properties && vNode.properties.href ? vNode.properties.href : "");
     const hyperlinkFragment = import_xmlbuilder2.fragment({
@@ -58956,7 +58957,7 @@ async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance) {
     }).ele("@w", "hyperlink").att("@r", "id", `rId${relationshipId}`);
     const modifiedAttributes = { ...attributes };
     modifiedAttributes.hyperlink = true;
-    const runFragments2 = await buildRunOrRuns(vNode.children[0], modifiedAttributes, docxDocumentInstance);
+    const runFragments2 = await buildRunOrRuns(vNode.children[0], modifiedAttributes, docxDocumentInstance, preserveWhitespace);
     if (Array.isArray(runFragments2)) {
       for (let index = 0;index < runFragments2.length; index++) {
         const runFragment = runFragments2[index];
@@ -58968,7 +58969,7 @@ async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance) {
     hyperlinkFragment.up();
     return hyperlinkFragment;
   }
-  const runFragments = await buildRunOrRuns(vNode, attributes, docxDocumentInstance);
+  const runFragments = await buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveWhitespace);
   return runFragments;
 }
 function buildNumberingProperties(levelId, numberingId) {
@@ -59172,7 +59173,7 @@ function computeImageDimensions(vNode, attributes) {
   attributes.width = modifiedWidth;
   attributes.height = modifiedHeight;
 }
-async function buildParagraph(vNode, attributes, docxDocumentInstance) {
+async function buildParagraph(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
   const paragraphFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "p");
   const modifiedAttributes = modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes, {
     isParagraph: true
@@ -59200,7 +59201,8 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
       "code",
       "pre"
     ].includes(vNode.tagName)) {
-      const runOrHyperlinkFragments = await buildRunOrHyperLink(vNode, modifiedAttributes, docxDocumentInstance);
+      const isPreTag = vNode.tagName === "pre";
+      const runOrHyperlinkFragments = await buildRunOrHyperLink(vNode, modifiedAttributes, docxDocumentInstance, isPreTag);
       if (Array.isArray(runOrHyperlinkFragments)) {
         for (let iteratorIndex = 0;iteratorIndex < runOrHyperlinkFragments.length; iteratorIndex++) {
           const runOrHyperlinkFragment = runOrHyperlinkFragments[iteratorIndex];
@@ -59210,7 +59212,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
         paragraphFragment.import(runOrHyperlinkFragments);
       }
     } else if (vNode.tagName === "blockquote") {
-      const runFragmentOrFragments = await buildRun(vNode, attributes, docxDocumentInstance);
+      const runFragmentOrFragments = await buildRun(vNode, attributes, docxDocumentInstance, preserveWhitespace);
       if (Array.isArray(runFragmentOrFragments)) {
         for (let index = 0;index < runFragmentOrFragments.length; index++) {
           paragraphFragment.import(runFragmentOrFragments[index]);
@@ -59237,7 +59239,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
           ...modifiedAttributes,
           type: "picture",
           description: childVNode.properties.alt
-        } : modifiedAttributes, docxDocumentInstance);
+        } : modifiedAttributes, docxDocumentInstance, preserveWhitespace);
         if (Array.isArray(runOrHyperlinkFragments)) {
           for (let iteratorIndex = 0;iteratorIndex < runOrHyperlinkFragments.length; iteratorIndex++) {
             const runOrHyperlinkFragment = runOrHyperlinkFragments[iteratorIndex];
@@ -59262,7 +59264,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance) {
       modifiedAttributes.originalHeight = imageProperties.height;
       computeImageDimensions(vNode, modifiedAttributes);
     }
-    const runFragments = await buildRunOrRuns(vNode, modifiedAttributes, docxDocumentInstance);
+    const runFragments = await buildRunOrRuns(vNode, modifiedAttributes, docxDocumentInstance, preserveWhitespace);
     if (Array.isArray(runFragments)) {
       for (let index = 0;index < runFragments.length; index++) {
         const runFragment = runFragments[index];
@@ -60351,7 +60353,8 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
     "p",
     "pre"
   ].includes(vNode.tagName)) {
-    xmlFragment.import(await buildParagraph(vNode, parentAttributes, docxDocumentInstance));
+    const preserveWhitespace = vNode.tagName === "pre";
+    xmlFragment.import(await buildParagraph(vNode, parentAttributes, docxDocumentInstance, preserveWhitespace));
     return;
   } else if (vNode.tagName === "span" && vNodeHasChildren(vNode) && vNode.children.some((child) => import_is_vnode2.default(child) && child.tagName === "img")) {
     const imageChild = vNode.children.find((child) => import_is_vnode2.default(child) && child.tagName === "img");
@@ -60365,7 +60368,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
     }
     return;
   } else if (htmlInlineElements.includes(vNode.tagName)) {
-    const textFragment = await buildRun(vNode, {}, docxDocumentInstance);
+    const textFragment = await buildRun(vNode, parentAttributes, docxDocumentInstance);
     if (Array.isArray(textFragment)) {
       textFragment.forEach((frag) => xmlFragment.import(frag));
     } else {
@@ -61701,7 +61704,60 @@ async function addFilesToContainer(zip, htmlString, suppliedDocumentOptions, hea
 
 // index.ts
 function minifyHTMLString(htmlString) {
-  const minifiedHTMLString = htmlString.replace(/\n/g, " ").replace(/\r/g, " ").replace(/\r\n/g, " ").replace(/[\t]+</g, "<").replace(/>[\t ]+</g, "><").replace(/>[\t ]+$/g, ">");
+  const preContentMap = new Map;
+  let preIndex = 0;
+  const protectedHTMLString = htmlString.replace(/<pre(\s[^>]*)?>([^]*?)<\/pre>/gi, (match, attributes, content) => {
+    const placeholder = `__PRE_PLACEHOLDER_${preIndex++}__`;
+    preContentMap.set(placeholder, content);
+    return `<pre${attributes || ""}>${placeholder}</pre>`;
+  });
+  let minifiedHTMLString = protectedHTMLString.replace(/\n/g, " ").replace(/\r/g, " ").replace(/\r\n/g, " ").replace(/[\t]+</g, "<").replace(/>[\t ]+$/g, ">");
+  minifiedHTMLString = minifiedHTMLString.replace(/>\s+</g, ">__SPACE__<");
+  const inlineElements = [
+    "a",
+    "abbr",
+    "acronym",
+    "b",
+    "bdo",
+    "big",
+    "br",
+    "button",
+    "cite",
+    "code",
+    "dfn",
+    "em",
+    "i",
+    "img",
+    "input",
+    "kbd",
+    "label",
+    "map",
+    "object",
+    "q",
+    "samp",
+    "script",
+    "select",
+    "small",
+    "span",
+    "strong",
+    "sub",
+    "sup",
+    "textarea",
+    "tt",
+    "var",
+    "u",
+    "ins",
+    "del",
+    "s",
+    "strike",
+    "mark"
+  ];
+  const inlinePattern = new RegExp(`</(${inlineElements.join("|")})>__SPACE__<(${inlineElements.join("|")})>`, "gi");
+  minifiedHTMLString = minifiedHTMLString.replace(inlinePattern, "</$1> <$2>");
+  minifiedHTMLString = minifiedHTMLString.replace(/__SPACE__/g, "");
+  preContentMap.forEach((originalContent, placeholder) => {
+    minifiedHTMLString = minifiedHTMLString.replace(placeholder, originalContent);
+  });
   return minifiedHTMLString;
 }
 async function generateContainer(htmlString, headerHTMLString, documentOptions, footerHTMLString) {

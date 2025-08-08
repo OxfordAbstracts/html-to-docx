@@ -231,10 +231,12 @@ function buildBorder(
     .up()
 }
 
-function buildTextElement(text: string) {
-  const normalizedText = text
-    .replace(/[\t\r\n]+/g, " ")
-    .replace(/\s{2,}/g, " ")
+function buildTextElement(text: string, preserveWhitespace: boolean = false) {
+  const normalizedText = preserveWhitespace
+    ? text
+    : text
+      .replace(/[\t\r\n]+/g, " ")
+      .replace(/\s{2,}/g, " ")
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "t")
     .att("@xml", "space", "preserve")
@@ -675,6 +677,7 @@ async function buildRun(
   vNode: VTree | null,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
+  preserveWhitespace: boolean = false,
 ): Promise<XMLBuilder | XMLBuilder[]> {
   // Apply additional style changes (e.g. those coming from CSS
   // classes on the current node) before we start building the
@@ -693,7 +696,12 @@ async function buildRun(
 
   // case where we have recursive spans representing font changes
   if (isVNode(vNode) && (vNode as VNode).tagName === "span") {
-    return buildRunOrRuns(vNode as VNode, attributes, docxDocumentInstance)
+    return buildRunOrRuns(
+      vNode as VNode,
+      attributes,
+      docxDocumentInstance,
+      preserveWhitespace,
+    )
   }
 
   if (
@@ -727,7 +735,10 @@ async function buildRun(
     while (vNodes.length) {
       const tempVNode = vNodes.shift()
       if (isVText(tempVNode)) {
-        const textFragment = buildTextElement((tempVNode as VText).text)
+        const textFragment = buildTextElement(
+          (tempVNode as VText).text,
+          preserveWhitespace,
+        )
         const tempRunPropertiesFragment = buildRunProperties({
           ...attributes,
           ...tempAttributes,
@@ -798,6 +809,7 @@ async function buildRun(
             tempVNode as VNode,
             { ...attributes, ...tempAttributes },
             docxDocumentInstance,
+            preserveWhitespace,
           )
 
           // if spanFragment is an array,
@@ -838,7 +850,10 @@ async function buildRun(
     runFragment.import(runPropertiesFragment)
   }
   if (isVText(vNode)) {
-    const textFragment = buildTextElement((vNode as VText).text)
+    const textFragment = buildTextElement(
+      (vNode as VText).text,
+      preserveWhitespace,
+    )
     runFragment.import(textFragment)
   }
   else if (attributes && attributes.type === "picture") {
@@ -898,6 +913,7 @@ async function buildRunOrRuns(
   vNode: VNode | null,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
+  preserveWhitespace: boolean = false,
 ): Promise<XMLBuilder | XMLBuilder[]> {
   if (vNode && isVNode(vNode) && vNode.tagName === "span") {
     let runFragments: XMLBuilder[] = []
@@ -938,6 +954,7 @@ async function buildRunOrRuns(
         childVNode,
         modifiedAttributes,
         docxDocumentInstance,
+        preserveWhitespace,
       )
       runFragments = runFragments.concat(
         Array.isArray(tempRunFragments) ? tempRunFragments : [tempRunFragments],
@@ -951,6 +968,7 @@ async function buildRunOrRuns(
       vNode,
       attributes,
       docxDocumentInstance,
+      preserveWhitespace,
     )
     return tempRunFragments
   }
@@ -960,6 +978,7 @@ async function buildRunOrHyperLink(
   vNode: VNode,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
+  preserveWhitespace: boolean = false,
 ) {
   if (isVNode(vNode) && vNode.tagName === "a") {
     const relationshipId = docxDocumentInstance.createDocumentRelationships(
@@ -980,6 +999,7 @@ async function buildRunOrHyperLink(
       vNode.children[0] as VNode,
       modifiedAttributes,
       docxDocumentInstance,
+      preserveWhitespace,
     )
     if (Array.isArray(runFragments)) {
       for (let index = 0; index < runFragments.length; index++) {
@@ -1000,6 +1020,7 @@ async function buildRunOrHyperLink(
     vNode,
     attributes,
     docxDocumentInstance,
+    preserveWhitespace,
   )
 
   return runFragments
@@ -1322,6 +1343,7 @@ async function buildParagraph(
   vNode: VTree | null,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
+  preserveWhitespace: boolean = false,
 ): Promise<XMLBuilder> {
   const paragraphFragment = fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "p")
@@ -1360,10 +1382,12 @@ async function buildParagraph(
         "pre",
       ].includes((vNode as VNode).tagName)
     ) {
+      const isPreTag = (vNode as VNode).tagName === "pre"
       const runOrHyperlinkFragments = await buildRunOrHyperLink(
         vNode as VNode,
         modifiedAttributes,
         docxDocumentInstance,
+        isPreTag,
       )
       if (Array.isArray(runOrHyperlinkFragments)) {
         for (
@@ -1385,6 +1409,7 @@ async function buildParagraph(
         vNode,
         attributes,
         docxDocumentInstance,
+        preserveWhitespace,
       )
       if (Array.isArray(runFragmentOrFragments)) {
         for (let index = 0; index < runFragmentOrFragments.length; index++) {
@@ -1431,6 +1456,7 @@ async function buildParagraph(
             }
             : modifiedAttributes,
           docxDocumentInstance,
+          preserveWhitespace,
         )
         if (Array.isArray(runOrHyperlinkFragments)) {
           for (
@@ -1479,6 +1505,7 @@ async function buildParagraph(
       vNode as VNode,
       modifiedAttributes,
       docxDocumentInstance,
+      preserveWhitespace,
     )
     if (Array.isArray(runFragments)) {
       for (let index = 0; index < runFragments.length; index++) {
