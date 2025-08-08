@@ -59,7 +59,7 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">    And some additional text without a wrapping element neither.    </w:t>
+        <w:t xml:space="preserve"> And some additional text without a wrapping element neither. </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -88,6 +88,36 @@
           <w:u w:val="single"/>
         </w:rPr>
         <w:t xml:space="preserve">Underlined monospace text</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">HTML whitespace rules</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve"> All spaces and tabs immediately before and after a line break are ignored. Line breaks are converted to spaces. Any space immediately following another space </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> (even across two separate inline elements)</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> is ignored. Sequences of spaces at the beginning and end of an element are removed. </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">before space</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">after space</w:t>
       </w:r>
     </w:p>
     <w:sectPr>

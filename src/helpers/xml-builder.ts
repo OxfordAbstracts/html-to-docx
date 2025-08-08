@@ -232,10 +232,13 @@ function buildBorder(
 }
 
 function buildTextElement(text: string) {
+  const normalizedText = text
+    .replace(/[\t\r\n]+/g, " ")
+    .replace(/\s{2,}/g, " ")
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "t")
     .att("@xml", "space", "preserve")
-    .txt(text)
+    .txt(normalizedText)
     .up()
 }
 

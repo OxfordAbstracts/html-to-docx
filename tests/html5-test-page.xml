@@ -21,7 +21,7 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">This is a test page filled with common HTML elements to be used to provide visual feedback whilst building CSS         systems and frameworks.</w:t>
+        <w:t xml:space="preserve">This is a test page filled with common HTML elements to be used to provide visual feedback whilst building CSS systems and frameworks.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -605,7 +605,7 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">A paragraph (from the Greek paragraphos, “to write beside” or “written beside”) is a self-contained unit               of a discourse in writing dealing with a particular point or idea. A paragraph consists of one or more               sentences. Though not required by the syntax of any language, paragraphs are usually an expected part of               formal writing, used to organize longer prose.</w:t>
+        <w:t xml:space="preserve">A paragraph (from the Greek paragraphos, “to write beside” or “written beside”) is a self-contained unit of a discourse in writing dealing with a particular point or idea. A paragraph consists of one or more sentences. Though not required by the syntax of any language, paragraphs are usually an expected part of formal writing, used to organize longer prose.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -632,10 +632,10 @@
         <w:jc w:val="both"/>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">A block quotation (also known as a long quotation or extract) is a quotation in a written document,                 that is set off from the main text as a paragraph, or block of text.</w:t>
+        <w:t xml:space="preserve">A block quotation (also known as a long quotation or extract) is a quotation in a written document, that is set off from the main text as a paragraph, or block of text.</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">It is typically distinguished visually using indentation and a different typeface or smaller size                 quotation. It may or may not include a citation, usually placed at the bottom.</w:t>
+        <w:t xml:space="preserve">It is typically distinguished visually using indentation and a different typeface or smaller size quotation. It may or may not include a citation, usually placed at the bottom.</w:t>
       </w:r>
       <w:r>
         <w:t xml:space="preserve">Said no one, ever.</w:t>
@@ -694,7 +694,7 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:t xml:space="preserve">                 List Item 2                 </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -716,7 +716,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">                     List Item 2                     </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -738,7 +738,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">                         List Item 2                         </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -760,7 +760,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">                             List Item 2                             </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -852,7 +852,7 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:t xml:space="preserve">                 List Item 2                 </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -874,7 +874,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">                     List Item 2                     </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -896,7 +896,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">                         List Item 2                         </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -918,7 +918,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">                             List Item 2                             </w:t>
+        <w:t xml:space="preserve"> List Item 2 </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1018,7 +1018,7 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, odio! Odio natus ullam ad quaerat, eaque               necessitatibus, aliquid distinctio similique voluptatibus dicta consequuntur animi. Quaerat facilis quidem               unde eos! Ipsa.</w:t>
+        <w:t xml:space="preserve">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, odio! Odio natus ullam ad quaerat, eaque necessitatibus, aliquid distinctio similique voluptatibus dicta consequuntur animi. Quaerat facilis quidem unde eos! Ipsa.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1041,7 +1041,7 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">             Written by </w:t>
+        <w:t xml:space="preserve"> Written by </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1062,25 +1062,25 @@
         <w:br w:type="textWrapping"/>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">             Visit us at:</w:t>
+        <w:t xml:space="preserve"> Visit us at:</w:t>
       </w:r>
       <w:r>
         <w:br w:type="textWrapping"/>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">             Example.com</w:t>
+        <w:t xml:space="preserve"> Example.com</w:t>
       </w:r>
       <w:r>
         <w:br w:type="textWrapping"/>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">             Box 564, Disneyland</w:t>
+        <w:t xml:space="preserve"> Box 564, Disneyland</w:t>
       </w:r>
       <w:r>
         <w:br w:type="textWrapping"/>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">             USA           </w:t>
+        <w:t xml:space="preserve"> USA </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1594,6 +1594,9 @@
         </w:rPr>
         <w:t xml:space="preserve">Keyboard input:</w:t>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
       <w:r/>
     </w:p>
     <w:p>
@@ -1602,6 +1605,9 @@
           <w:b/>
         </w:rPr>
         <w:t xml:space="preserve">Inline code:</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:t xml:space="preserve">&lt;div&gt;code&lt;/div&gt;</w:t>
@@ -1613,6 +1619,9 @@
           <w:b/>
         </w:rPr>
         <w:t xml:space="preserve">Sample output:</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r/>
     </w:p>
@@ -1630,7 +1639,7 @@
         <w:rPr>
           <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
         </w:rPr>
-        <w:t xml:space="preserve">P R E F O R M A T T E D T E X T   ! " # $ % &amp; ' ( ) * + , - . /   0 1 2 3 4 5 6 7 8 9 : ; &lt; = &gt; ?   @ A B C D E F G H I J K L M N O   P Q R S T U V W X Y Z [ \ ] ^ _   ` a b c d e f g h i j k l m n o   p q r s t u v w x y z { | } ~ </w:t>
+        <w:t xml:space="preserve">P R E F O R M A T T E D T E X T ! " # $ % &amp; ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; &lt; = &gt; ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~ </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1691,7 +1700,7 @@
         <w:t xml:space="preserve">b element</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> is stylistically different text from normal text, without any special importance.             </w:t>
+        <w:t xml:space="preserve"> is stylistically different text from normal text, without any special importance. </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1719,7 +1728,7 @@
         <w:t xml:space="preserve">u element</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> is text with an unarticulated, though explicitly rendered, non-textual annotation.             </w:t>
+        <w:t xml:space="preserve"> is text with an unarticulated, though explicitly rendered, non-textual annotation. </w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1864,11 +1873,6 @@
     <w:p>
       <w:r>
         <w:t xml:space="preserve"/>
-      </w:r>
-    </w:p>
-    <w:p>
-      <w:r>
-        <w:t xml:space="preserve">                       </w:t>
       </w:r>
     </w:p>
     <w:p>

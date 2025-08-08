@@ -3,13 +3,65 @@ import addFilesToContainer from "./src/html-to-docx.ts"
 import { type DocumentOptions } from "./src/types.ts"
 
 function minifyHTMLString(htmlString: string) {
-  const minifiedHTMLString = htmlString
+  let minifiedHTMLString = htmlString
     .replace(/\n/g, " ")
     .replace(/\r/g, " ")
     .replace(/\r\n/g, " ")
     .replace(/[\t]+</g, "<")
-    .replace(/>[\t ]+</g, "><")
     .replace(/>[\t ]+$/g, ">")
+
+  // Use placeholder to protect spaces between closing and opening tags
+  minifiedHTMLString = minifiedHTMLString.replace(/>\s+</g, ">__SPACE__<")
+
+  // Preserve spaces only between inline elements by restoring specific patterns
+  const inlineElements = [
+    "a",
+    "abbr",
+    "acronym",
+    "b",
+    "bdo",
+    "big",
+    "br",
+    "button",
+    "cite",
+    "code",
+    "dfn",
+    "em",
+    "i",
+    "img",
+    "input",
+    "kbd",
+    "label",
+    "map",
+    "object",
+    "q",
+    "samp",
+    "script",
+    "select",
+    "small",
+    "span",
+    "strong",
+    "sub",
+    "sup",
+    "textarea",
+    "tt",
+    "var",
+    "u",
+    "ins",
+    "del",
+    "s",
+    "strike",
+    "mark",
+  ]
+
+  const inlinePattern = new RegExp(
+    `</(${inlineElements.join("|")})>__SPACE__<(${inlineElements.join("|")})>`,
+    "gi",
+  )
+  minifiedHTMLString = minifiedHTMLString.replace(inlinePattern, "</$1> <$2>")
+
+  // Remove remaining placeholder spaces
+  minifiedHTMLString = minifiedHTMLString.replace(/__SPACE__/g, "")
 
   return minifiedHTMLString
 }
