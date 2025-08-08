@@ -257,7 +257,7 @@ function fixupLineHeight(lineHeight?: number, fontSize?: number): number {
   }
 }
 
-function fixupFontSize(fontSizeString: string): number {
+export function fixupFontSize(fontSizeString: string): number {
   if (pointRegex.test(fontSizeString)) {
     const matchedParts = fontSizeString.match(pointRegex)
     // convert point to half point

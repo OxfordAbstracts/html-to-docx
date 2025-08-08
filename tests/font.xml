@@ -52,6 +52,26 @@
         <w:t xml:space="preserve">Just a simple sentence with combined styles</w:t>
       </w:r>
     </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Text in a div shouldn't be a problem</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">    And some additional text without a wrapping element neither.    </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr/>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="15"/>
+          <w:szCs w:val="15"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Child overwrites parent CSS and leads to a small font</w:t>
+      </w:r>
+    </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
       <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720" w:footer="720" w:gutter="0"/>

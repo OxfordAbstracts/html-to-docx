@@ -60257,7 +60257,7 @@ function collectParentAttributes(docxDocumentInstance, vNode, existingAttributes
       }
       if (properties.style.fontSize || properties.style["font-size"]) {
         const fontSize = properties.style.fontSize || properties.style["font-size"];
-        parentAttributes.fontSize = Number(fontSize);
+        parentAttributes.fontSize = fixupFontSize(String(fontSize));
       }
     }
     const classAttr = properties.className || properties.class || properties.attributes && properties.attributes.class || "";
@@ -60275,7 +60275,7 @@ function collectParentAttributes(docxDocumentInstance, vNode, existingAttributes
             parentAttributes.font = docxDocumentInstance.createFont(clsStyles["font-family"]);
           }
           if (clsStyles["font-size"]) {
-            parentAttributes.fontSize = Number(clsStyles["font-size"]);
+            parentAttributes.fontSize = fixupFontSize(String(clsStyles["font-size"]));
           }
         }
       });

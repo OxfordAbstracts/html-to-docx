@@ -18,6 +18,14 @@
       font-weight: bold;
       font-size: 20px;
     }
+
+    .large-font {
+      font-size: 50px;
+    }
+
+    .small-font {
+      font-size: 10px;
+    }
   </style>
 </head>
 
@@ -32,6 +40,16 @@
   <p class="monospace">Just a simple monospace sentence</p>
 
   <p class="combined">Just a simple sentence with combined styles</p>
+
+  <div>Text in a div shouldn't be a problem</div>
+
+  And some additional text without a wrapping element neither.
+
+  <div class="large-font">
+    <div class="small-font">
+      <p>Child overwrites parent CSS and leads to a small font</p>
+    </div>
+  </div>
 </body>
 
 </html>

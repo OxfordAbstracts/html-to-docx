@@ -341,7 +341,7 @@ function collectParentAttributes(
       if (properties.style.fontSize || properties.style["font-size"]) {
         const fontSize = properties.style.fontSize ||
           properties.style["font-size"]
-        parentAttributes.fontSize = Number(fontSize)
+        parentAttributes.fontSize = xmlBuilder.fixupFontSize(String(fontSize))
       }
     }
 
@@ -368,7 +368,9 @@ function collectParentAttributes(
               )
             }
             if (clsStyles["font-size"]) {
-              parentAttributes.fontSize = Number(clsStyles["font-size"])
+              parentAttributes.fontSize = xmlBuilder.fixupFontSize(
+                String(clsStyles["font-size"]),
+              )
             }
           }
         })
