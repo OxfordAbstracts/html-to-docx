@@ -263,10 +263,29 @@ function buildTextElement(text: string, preserveWhitespace: boolean = false) {
       // Collapse consecutive spaces into one
       t = t.replace(/ {2,}/g, " ")
 
-      // Note: we purposely do NOT `trim()` here; trailing/leading spaces
-      // inside inline elements may be required to keep a single inter-element
-      // space once runs are concatenated. Collapsing rules across inline
-      // boundaries will remove any redundant duplicates later.
+      // Handle HTML formatting whitespace:
+      // Trim leading/trailing spaces that come from HTML indentation
+      if (/^ {2,}/.test(text)) {
+        // Remove all leading spaces - they're from HTML indentation
+        t = t.replace(/^ +/, "")
+        // Also trim trailing space if the text had leading indentation
+        // (likely the whole text node is affected by HTML formatting)
+        t = t.replace(/ +$/, "")
+      }
+
+      // Also handle newline-based indentation
+      if (text.includes("\n")) {
+        // Check if text starts with newline + spaces (HTML indentation)
+        if (/^\n\s+/.test(text)) {
+          // Remove leading space that came from newline conversion
+          t = t.replace(/^ /, "")
+        }
+        // Check if text ends with newline + spaces (HTML indentation)
+        if (/\s+\n$/.test(text)) {
+          // Remove trailing space that came from newline conversion
+          t = t.replace(/ $/, "")
+        }
+      }
 
       return t
     })()
