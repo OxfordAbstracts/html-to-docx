@@ -1,0 +1,22 @@
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Spacing Test</title>
+</head>
+
+<body>
+  <span>This sentence</span> must be on a single line.<br>
+
+  <p>
+    All spaces and tabs immediately before and after a line break are ignored.
+    Line breaks are converted to spaces.
+    Any space immediately following another space
+    <span> (even across two separate inline elements)</span> is ignored.
+    Sequences of spaces at the beginning and end of an element are removed.
+  </p>
+  <span>One space</span> <span>is kept between elements</span><br>
+  <span>But only</span> <!----> <!----> <span>one space</span>
+</body>
+
+</html>

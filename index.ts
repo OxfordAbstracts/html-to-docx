@@ -24,6 +24,9 @@ function minifyHTMLString(htmlString: string) {
     .replace(/[\t]+</g, "<")
     .replace(/>[\t ]+$/g, ">")
 
+  // Remove HTML comments
+  minifiedHTMLString = minifiedHTMLString.replace(/<!--.*?-->/g, "")
+
   // Use placeholder to protect spaces between closing and opening tags
   minifiedHTMLString = minifiedHTMLString.replace(/>\s+</g, ">__SPACE__<")
 

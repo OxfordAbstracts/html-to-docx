@@ -123,7 +123,7 @@
           <w:sz w:val="40"/>
           <w:szCs w:val="40"/>
         </w:rPr>
-        <w:t xml:space="preserve"> This text should be large and underlined </w:t>
+        <w:t xml:space="preserve">This text should be large and underlined</w:t>
       </w:r>
       <w:r>
         <w:rPr>
@@ -132,7 +132,7 @@
           <w:szCs w:val="40"/>
           <w:b/>
         </w:rPr>
-        <w:t xml:space="preserve"> This text should be large, bold, and underlined </w:t>
+        <w:t xml:space="preserve">This text should be large, bold, and underlined</w:t>
       </w:r>
       <w:r>
         <w:rPr>
@@ -141,7 +141,7 @@
           <w:szCs w:val="40"/>
           <w:i/>
         </w:rPr>
-        <w:t xml:space="preserve"> This text should be large, italic, and underlined </w:t>
+        <w:t xml:space="preserve">This text should be large, italic, and underlined</w:t>
       </w:r>
     </w:p>
     <w:sectPr>

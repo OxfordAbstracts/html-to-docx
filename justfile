@@ -26,7 +26,8 @@ format: node_modules
 alias fmt := format
 
 
-lint: format
+lint:
+  npx eslint --ignore-pattern=.gitignore
 
 
 # Run the unit tests and hide unhelpful warnings
@@ -47,7 +48,7 @@ test-docx-files:
 
 
 # Run all the tests
-test: format lint check-types test-unit
+test: check-types test-unit
 
 
 build-esm:

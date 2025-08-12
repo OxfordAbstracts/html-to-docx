@@ -377,6 +377,12 @@ function collectParentAttributes(
     }
   }
 
+  // Handle blockquote special attributes
+  if (vNode.tagName === "blockquote") {
+    parentAttributes.indentation = { left: 284, right: 0 }
+    parentAttributes.textAlign = "justify"
+  }
+
   return parentAttributes
 }
 
@@ -508,7 +514,6 @@ async function findXMLEquivalent(
   else if (
     [
       "a",
-      "blockquote",
       "p",
       "pre",
     ].includes(vNode.tagName)
@@ -565,6 +570,95 @@ async function findXMLEquivalent(
     return
   }
   else if (vNode.tagName === "head") {
+    return
+  }
+  else if (vNode.tagName === "blockquote" && vNodeHasChildren(vNode)) {
+    // Special handling for blockquote: process paragraphs first, then add
+    // inline elements
+    const childParentAttributes = collectParentAttributes(
+      docxDocumentInstance,
+      vNode,
+      parentAttributes,
+    )
+
+    // Separate paragraphs from inline elements and cite elements
+    const paragraphNodes: VNode[] = []
+    const inlineElements: (VNode | VText)[] = []
+    const citeElements: VNode[] = []
+
+    for (const childVNode of vNode.children) {
+      if (isVNode(childVNode) && childVNode.tagName === "p") {
+        paragraphNodes.push(childVNode)
+      }
+      else if (isVNode(childVNode) && childVNode.tagName === "cite") {
+        citeElements.push(childVNode)
+      }
+      else if (
+        isVNode(childVNode) && htmlInlineElements.includes(childVNode.tagName)
+      ) {
+        inlineElements.push(childVNode)
+      }
+      else if (isVText(childVNode)) {
+        const text = childVNode.text.trim()
+        if (text) {
+          inlineElements.push(childVNode)
+        }
+      }
+    }
+
+    // Process paragraphs
+    for (let i = 0; i < paragraphNodes.length; i++) {
+      const pNode = paragraphNodes[i]
+      const paragraphFragment = await xmlBuilder.buildParagraph(
+        pNode,
+        childParentAttributes,
+        docxDocumentInstance,
+        false, // preserveWhitespace = false to enable text normalization
+      )
+
+      if (i === paragraphNodes.length - 1) {
+        // This is the last paragraph - add inline elements to it
+        // (but not cite elements)
+
+        // Add inline elements to this paragraph
+        for (const inlineElement of inlineElements) {
+          if (
+            isVNode(inlineElement) &&
+            htmlInlineElements.includes(inlineElement.tagName)
+          ) {
+            const runFragment = await xmlBuilder.buildRun(
+              inlineElement,
+              childParentAttributes,
+              docxDocumentInstance,
+            )
+            if (Array.isArray(runFragment)) {
+              for (const frag of runFragment) {
+                paragraphFragment.import(frag)
+              }
+            }
+            else {
+              paragraphFragment.import(runFragment)
+            }
+          }
+        }
+      }
+
+      xmlFragment.import(paragraphFragment)
+    }
+
+    // Process cite elements as separate paragraphs
+    for (const citeElement of citeElements) {
+      const citeParagraphFragment = await xmlBuilder.buildParagraph(
+        citeElement,
+        // Use childParentAttributes to include blockquote styling
+        // (indentation and justification)
+        childParentAttributes,
+        docxDocumentInstance,
+        false,
+      )
+      xmlFragment.import(citeParagraphFragment)
+    }
+
     return
   }
 

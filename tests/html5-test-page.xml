@@ -95,7 +95,7 @@
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
           </w:rPr>
-          <w:t xml:space="preserve">Blockquotes</w:t>
+          <w:t xml:space="preserve">Details / Summary</w:t>
         </w:r>
       </w:hyperlink>
     </w:p>
@@ -111,7 +111,7 @@
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
           </w:rPr>
-          <w:t xml:space="preserve">Details / Summary</w:t>
+          <w:t xml:space="preserve">Address</w:t>
         </w:r>
       </w:hyperlink>
     </w:p>
@@ -127,7 +127,7 @@
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
           </w:rPr>
-          <w:t xml:space="preserve">Address</w:t>
+          <w:t xml:space="preserve">Horizontal rules</w:t>
         </w:r>
       </w:hyperlink>
     </w:p>
@@ -143,7 +143,7 @@
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
           </w:rPr>
-          <w:t xml:space="preserve">Horizontal rules</w:t>
+          <w:t xml:space="preserve">Tabular data</w:t>
         </w:r>
       </w:hyperlink>
     </w:p>
@@ -159,7 +159,7 @@
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
           </w:rPr>
-          <w:t xml:space="preserve">Tabular data</w:t>
+          <w:t xml:space="preserve">Code</w:t>
         </w:r>
       </w:hyperlink>
     </w:p>
@@ -175,7 +175,7 @@
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
           </w:rPr>
-          <w:t xml:space="preserve">Code</w:t>
+          <w:t xml:space="preserve">Inline elements</w:t>
         </w:r>
       </w:hyperlink>
     </w:p>
@@ -191,29 +191,13 @@
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
           </w:rPr>
-          <w:t xml:space="preserve">Inline elements</w:t>
-        </w:r>
-      </w:hyperlink>
-    </w:p>
-    <w:p>
-      <w:pPr>
-        <w:numPr>
-          <w:ilvl w:val="1"/>
-          <w:numId w:val="2"/>
-        </w:numPr>
-      </w:pPr>
-      <w:hyperlink r:id="rId17">
-        <w:r>
-          <w:rPr>
-            <w:rStyle w:val="Hyperlink"/>
-          </w:rPr>
           <w:t xml:space="preserve">HTML Comments</w:t>
         </w:r>
       </w:hyperlink>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:hyperlink r:id="rId18">
+      <w:hyperlink r:id="rId17">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -229,7 +213,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId19">
+      <w:hyperlink r:id="rId18">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -245,7 +229,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId20">
+      <w:hyperlink r:id="rId19">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -261,7 +245,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId21">
+      <w:hyperlink r:id="rId20">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -277,7 +261,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId22">
+      <w:hyperlink r:id="rId21">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -293,7 +277,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId23">
+      <w:hyperlink r:id="rId22">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -309,7 +293,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId24">
+      <w:hyperlink r:id="rId23">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -325,7 +309,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId25">
+      <w:hyperlink r:id="rId24">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -341,7 +325,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId26">
+      <w:hyperlink r:id="rId25">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -357,7 +341,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId27">
+      <w:hyperlink r:id="rId26">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -373,7 +357,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId28">
+      <w:hyperlink r:id="rId27">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -389,7 +373,7 @@
           <w:numId w:val="3"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId29">
+      <w:hyperlink r:id="rId28">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -400,7 +384,7 @@
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:hyperlink r:id="rId30">
+      <w:hyperlink r:id="rId29">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -416,7 +400,7 @@
           <w:numId w:val="4"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId31">
+      <w:hyperlink r:id="rId30">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -432,7 +416,7 @@
           <w:numId w:val="4"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId32">
+      <w:hyperlink r:id="rId31">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -448,7 +432,7 @@
           <w:numId w:val="4"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId33">
+      <w:hyperlink r:id="rId32">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -464,7 +448,7 @@
           <w:numId w:val="4"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId34">
+      <w:hyperlink r:id="rId33">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -480,7 +464,7 @@
           <w:numId w:val="4"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId35">
+      <w:hyperlink r:id="rId34">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -496,7 +480,7 @@
           <w:numId w:val="4"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId36">
+      <w:hyperlink r:id="rId35">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -512,7 +496,7 @@
           <w:numId w:val="4"/>
         </w:numPr>
       </w:pPr>
-      <w:hyperlink r:id="rId37">
+      <w:hyperlink r:id="rId36">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -586,7 +570,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId38">
+      <w:hyperlink r:id="rId37">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -609,40 +593,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId39">
-        <w:r>
-          <w:rPr>
-            <w:rStyle w:val="Hyperlink"/>
-          </w:rPr>
-          <w:t xml:space="preserve">[Top]</w:t>
-        </w:r>
-      </w:hyperlink>
-    </w:p>
-    <w:p>
-      <w:pPr>
-        <w:pStyle w:val="Heading2"/>
-      </w:pPr>
-      <w:r>
-        <w:t xml:space="preserve">Blockquotes</w:t>
-      </w:r>
-    </w:p>
-    <w:p>
-      <w:pPr>
-        <w:ind w:left="284"/>
-        <w:jc w:val="both"/>
-      </w:pPr>
-      <w:r>
-        <w:t xml:space="preserve">A block quotation (also known as a long quotation or extract) is a quotation in a written document, that is set off from the main text as a paragraph, or block of text.</w:t>
-      </w:r>
-      <w:r>
-        <w:t xml:space="preserve">It is typically distinguished visually using indentation and a different typeface or smaller size quotation. It may or may not include a citation, usually placed at the bottom.</w:t>
-      </w:r>
-      <w:r>
-        <w:t xml:space="preserve">Said no one, ever.</w:t>
-      </w:r>
-    </w:p>
-    <w:p>
-      <w:hyperlink r:id="rId40">
+      <w:hyperlink r:id="rId38">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -994,7 +945,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId41">
+      <w:hyperlink r:id="rId39">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1022,7 +973,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId42">
+      <w:hyperlink r:id="rId40">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1045,7 +996,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId43">
+      <w:hyperlink r:id="rId41">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1084,7 +1035,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId44">
+      <w:hyperlink r:id="rId42">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1102,7 +1053,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId45">
+      <w:hyperlink r:id="rId43">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1570,7 +1521,7 @@
       <w:r/>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId46">
+      <w:hyperlink r:id="rId44">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1597,7 +1548,9 @@
       <w:r>
         <w:t xml:space="preserve"> </w:t>
       </w:r>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Cmd</w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:r>
@@ -1623,7 +1576,9 @@
       <w:r>
         <w:t xml:space="preserve"> </w:t>
       </w:r>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">This is sample output from a computer program.</w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:pPr>
@@ -1649,7 +1604,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId47">
+      <w:hyperlink r:id="rId45">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1667,7 +1622,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId48">
+      <w:hyperlink r:id="rId46">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1697,7 +1652,10 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">The </w:t>
+        <w:t xml:space="preserve">The</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:rPr>
@@ -1706,12 +1664,18 @@
         <w:t xml:space="preserve">b element</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> is stylistically different text from normal text, without any special importance. </w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">is stylistically different text from normal text, without any special importance.</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">The </w:t>
+        <w:t xml:space="preserve">The</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:rPr>
@@ -1720,12 +1684,18 @@
         <w:t xml:space="preserve">i element</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> is text that is offset from the normal text.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">is text that is offset from the normal text.</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">The </w:t>
+        <w:t xml:space="preserve">The</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:rPr>
@@ -1734,7 +1704,10 @@
         <w:t xml:space="preserve">u element</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> is text with an unarticulated, though explicitly rendered, non-textual annotation. </w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">is text with an unarticulated, though explicitly rendered, non-textual annotation.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1742,7 +1715,13 @@
         <w:t xml:space="preserve">This text is deleted</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> and </w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">and</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:t xml:space="preserve">This text is inserted</w:t>
@@ -1788,65 +1767,113 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:r/>
-    </w:p>
-    <w:p>
       <w:r>
-        <w:t xml:space="preserve">Abbreviation: </w:t>
-      </w:r>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r>
-        <w:t xml:space="preserve">The </w:t>
-      </w:r>
-      <w:r/>
-      <w:r>
-        <w:t xml:space="preserve"> indicates a definition.</w:t>
+        <w:t xml:space="preserve">This small text is small for fine print, etc.</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">The </w:t>
+        <w:t xml:space="preserve">Abbreviation:</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">HTML</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">This text is a short inline quotation.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">This is a citation.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">The</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">dfn element</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">indicates a definition.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">The</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:t xml:space="preserve">mark element</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> indicates a highlight.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">indicates a highlight.</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">The </w:t>
+        <w:t xml:space="preserve">The</w:t>
       </w:r>
-      <w:r/>
       <w:r>
-        <w:t xml:space="preserve">, such as </w:t>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
-      <w:r/>
       <w:r>
-        <w:t xml:space="preserve"> = </w:t>
+        <w:t xml:space="preserve">variable element</w:t>
       </w:r>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">, such as</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">x</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">=</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">y</w:t>
+      </w:r>
       <w:r>
         <w:t xml:space="preserve">.</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">The time element: </w:t>
+        <w:t xml:space="preserve">The time element:</w:t>
       </w:r>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">2 weeks ago</w:t>
+      </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId49">
+      <w:hyperlink r:id="rId47">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1867,9 +1894,6 @@
       <w:r>
         <w:t xml:space="preserve">There is comment here: </w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve"/>
-      </w:r>
     </w:p>
     <w:p>
       <w:r>
@@ -1877,12 +1901,7 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:r>
-        <w:t xml:space="preserve"/>
-      </w:r>
-    </w:p>
-    <w:p>
-      <w:hyperlink r:id="rId50">
+      <w:hyperlink r:id="rId48">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1905,39 +1924,55 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Text Input</w:t>
+      </w:r>
       <w:r/>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Password</w:t>
+      </w:r>
       <w:r/>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Web Address</w:t>
+      </w:r>
       <w:r/>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Email Address</w:t>
+      </w:r>
       <w:r/>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId51">
+      <w:r>
+        <w:t xml:space="preserve">Phone Number</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Search</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Number Input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">File Input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId49">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1952,15 +1987,23 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Select</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Option OneOption TwoOption Three</w:t>
+      </w:r>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Select (multiple)</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Option OneOption TwoOption Three</w:t>
+      </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId52">
+      <w:hyperlink r:id="rId50">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -1976,18 +2019,24 @@
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve"> Choice A</w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve"> Choice B</w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve"> Choice C</w:t>
+      </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId53">
+      <w:hyperlink r:id="rId51">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -2003,18 +2052,24 @@
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve"> Option 1</w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve"> Option 2</w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:pPr/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve"> Option 3</w:t>
+      </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId54">
+      <w:hyperlink r:id="rId52">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -2029,11 +2084,13 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">Textarea</w:t>
+      </w:r>
       <w:r/>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId55">
+      <w:hyperlink r:id="rId53">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -2048,44 +2105,62 @@
       </w:r>
     </w:p>
     <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Color input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Number input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Range input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Date input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Month input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Week input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Datetime input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Datetime-local input</w:t>
+      </w:r>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Datalist</w:t>
+      </w:r>
       <w:r/>
       <w:r/>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-      <w:r/>
-    </w:p>
-    <w:p>
-      <w:hyperlink r:id="rId56">
+      <w:hyperlink r:id="rId54">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -2106,13 +2181,21 @@
       <w:r/>
     </w:p>
     <w:p>
-      <w:r/>
-      <w:r/>
-      <w:r/>
-      <w:r/>
+      <w:r>
+        <w:t xml:space="preserve">&lt;button type=submit&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;button type=button&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;button type=reset&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;button disabled&gt;</w:t>
+      </w:r>
     </w:p>
     <w:p>
-      <w:hyperlink r:id="rId57">
+      <w:hyperlink r:id="rId55">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -2123,9 +2206,12 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Made by </w:t>
+        <w:t xml:space="preserve">Made by</w:t>
       </w:r>
-      <w:hyperlink r:id="rId58">
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:hyperlink r:id="rId56">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>
@@ -2134,9 +2220,12 @@
         </w:r>
       </w:hyperlink>
       <w:r>
-        <w:t xml:space="preserve">. Code on </w:t>
+        <w:t xml:space="preserve">. Code on</w:t>
       </w:r>
-      <w:hyperlink r:id="rId59">
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:hyperlink r:id="rId57">
         <w:r>
           <w:rPr>
             <w:rStyle w:val="Hyperlink"/>

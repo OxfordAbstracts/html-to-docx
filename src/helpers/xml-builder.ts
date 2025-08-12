@@ -8,6 +8,10 @@ import type { VNode, VText, VTree } from "virtual-dom"
 import isVNode from "virtual-dom/vnode/is-vnode.js"
 // @ts-expect-error  Could not find a declaration file
 import isVText from "virtual-dom/vnode/is-vtext.js"
+// @ts-expect-error  Could not find a declaration file
+import VTextConstructor from "virtual-dom/vnode/vtext.js"
+// @ts-expect-error  Could not find a declaration file
+import VNodeConstructor from "virtual-dom/vnode/vnode.js"
 import { fragment } from "xmlbuilder2"
 
 import JSZip from "jszip"
@@ -234,9 +238,38 @@ function buildBorder(
 function buildTextElement(text: string, preserveWhitespace: boolean = false) {
   const normalizedText = preserveWhitespace
     ? text
-    : text
-      .replace(/[\t\r\n]+/g, " ")
-      .replace(/\s{2,}/g, " ")
+    : (() => {
+      // Normalize according to CSS whitespace rules (white-space: normal)
+      // 1. All spaces/tabs immediately before & after a line break are ignored.
+      // 2. Line breaks themselves are converted to spaces.
+      // 3. Any space immediately following another space
+      //    (even across inline elements) is ignored
+      //    -> Collapse consecutive spaces to a single space
+      // 4. Do NOT trim leading/trailing spaces here because they may be
+      //    meaningful when concatenated with neighboring inline elements
+
+      // Unify different line-ending styles to "\n" (Windows, macOS, etc.)
+      let t = text.replace(/\r\n?/g, "\n")
+
+      // Remove spaces/tabs *before* a line break
+      t = t.replace(/[ \t]+\n/g, "\n")
+
+      // Remove spaces/tabs *after* a line break
+      t = t.replace(/\n[ \t]+/g, "\n")
+
+      // Convert the remaining line breaks to single spaces
+      t = t.replace(/\n/g, " ")
+
+      // Collapse consecutive spaces into one
+      t = t.replace(/ {2,}/g, " ")
+
+      // Note: we purposely do NOT `trim()` here; trailing/leading spaces
+      // inside inline elements may be required to keep a single inter-element
+      // space once runs are concatenated. Collapsing rules across inline
+      // boundaries will remove any redundant duplicates later.
+
+      return t
+    })()
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "t")
     .att("@xml", "space", "preserve")
@@ -720,7 +753,6 @@ async function buildRun(
       "sub",
       "sup",
       "mark",
-      "blockquote",
       "code",
       "pre",
     ].includes((vNode as VNode).tagName)
@@ -903,6 +935,28 @@ async function buildRun(
   else if (isVNode(vNode) && (vNode as VNode).tagName === "br") {
     const lineBreakFragment = buildLineBreak()
     runFragment.import(lineBreakFragment)
+  }
+  else if (isVNode(vNode) && vNodeHasChildren(vNode as VNode)) {
+    // Handle inline elements with children (like cite, a, etc.)
+    // Extract text content from children recursively
+    function extractTextFromChildren(children: VTree[]): string {
+      return children.map(child => {
+        if (isVText(child)) {
+          return (child as VText).text
+        }
+        else if (isVNode(child) && (child as VNode).children) {
+          return extractTextFromChildren((child as VNode).children)
+        }
+        return ""
+      })
+        .join("")
+    }
+
+    const textContent = extractTextFromChildren((vNode as VNode).children)
+    if (textContent.trim()) {
+      const textFragment = buildTextElement(textContent, preserveWhitespace)
+      runFragment.import(textFragment)
+    }
   }
   runFragment.up()
 
@@ -1339,6 +1393,83 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
   attributes.height = modifiedHeight
 }
 
+function preprocessParagraphChildren(children: VTree[]): VTree[] {
+  if (children.length <= 1) return children
+
+  const processedChildren: VTree[] = []
+
+  for (let i = 0; i < children.length; i++) {
+    const current = children[i]
+
+    if (isVText(current)) {
+      const text = (current as VText).text
+      const trimmedText = text.trim()
+
+      // If this text node has content, check for boundary spaces
+      if (trimmedText) {
+        const leadingSpaces = text.match(/^(\s+)/)?.[1] || ""
+        const trailingSpaces = text.match(/(\s+)$/)?.[1] || ""
+
+        // Add leading space as separate text node
+        // if needed and there's a previous sibling
+        if (leadingSpaces && i > 0) {
+          processedChildren.push(new VTextConstructor(" "))
+        }
+
+        // Add the main text content
+        processedChildren.push(new VTextConstructor(trimmedText))
+
+        // Add trailing space as separate text node
+        // if needed and there's a next sibling
+        if (trailingSpaces && i < children.length - 1) {
+          processedChildren.push(new VTextConstructor(" "))
+        }
+      }
+      else if (text.match(/^\s+$/)) {
+        // If it's only spaces,
+        // add as single space only if between other elements
+        if (i > 0 && i < children.length - 1) {
+          processedChildren.push(new VTextConstructor(" "))
+        }
+      }
+    }
+    else if (isVNode(current)) {
+      // Process inline elements to handle their boundary spaces too
+      const vNodeCurrent = current as VNode
+      if (
+        vNodeCurrent.children && vNodeCurrent.children.length === 1 &&
+        isVText(vNodeCurrent.children[0])
+      ) {
+        const childText = (vNodeCurrent.children[0] as VText).text
+        const trimmedChildText = childText.trim()
+
+        if (trimmedChildText) {
+          // Add the span with trimmed content
+          // (spaces handled by surrounding text nodes)
+          const modifiedSpan = new VNodeConstructor(
+            vNodeCurrent.tagName,
+            vNodeCurrent.properties,
+            [new VTextConstructor(trimmedChildText)],
+          )
+          processedChildren.push(modifiedSpan)
+        }
+        else {
+          // Span with only spaces - convert to space run
+          processedChildren.push(new VTextConstructor(" "))
+        }
+      }
+      else {
+        processedChildren.push(current)
+      }
+    }
+    else {
+      processedChildren.push(current)
+    }
+  }
+
+  return processedChildren
+}
+
 async function buildParagraph(
   vNode: VTree | null,
   attributes: Attributes,
@@ -1404,25 +1535,13 @@ async function buildParagraph(
         paragraphFragment.import(runOrHyperlinkFragments)
       }
     }
-    else if ((vNode as VNode).tagName === "blockquote") {
-      const runFragmentOrFragments = await buildRun(
-        vNode,
-        attributes,
-        docxDocumentInstance,
-        preserveWhitespace,
-      )
-      if (Array.isArray(runFragmentOrFragments)) {
-        for (let index = 0; index < runFragmentOrFragments.length; index++) {
-          paragraphFragment.import(runFragmentOrFragments[index])
-        }
-      }
-      else {
-        paragraphFragment.import(runFragmentOrFragments)
-      }
-    }
     else {
-      for (let index = 0; index < (vNode as VNode).children.length; index++) {
-        const childVNode = (vNode as VNode).children[index]
+      const processedChildren = preserveWhitespace
+        ? (vNode as VNode).children
+        : preprocessParagraphChildren((vNode as VNode).children)
+
+      for (let index = 0; index < processedChildren.length; index++) {
+        const childVNode = processedChildren[index]
         if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
           if (isValidUrl((childVNode as VNode).properties.src)) {
             ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
