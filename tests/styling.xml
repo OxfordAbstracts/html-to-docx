@@ -15,7 +15,6 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:rPr>
           <w:b/>
@@ -24,7 +23,6 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:rPr>
           <w:i/>
@@ -33,7 +31,6 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:rPr>
           <w:u w:val="single"/>
@@ -126,6 +123,9 @@
         <w:t xml:space="preserve">This text should be large and underlined</w:t>
       </w:r>
       <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
         <w:rPr>
           <w:u w:val="single"/>
           <w:sz w:val="40"/>
@@ -133,6 +133,9 @@
           <w:b/>
         </w:rPr>
         <w:t xml:space="preserve">This text should be large, bold, and underlined</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:rPr>

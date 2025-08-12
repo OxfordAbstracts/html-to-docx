@@ -958,8 +958,13 @@ async function buildRun(
       runFragment.import(textFragment)
     }
   }
+  else if (isVNode(vNode) && (vNode as VNode).tagName === "img") {
+    // img nodes should not create runs directly - they should be handled by the picture attributes
+    // If we get here, it means the img wasn't processed correctly, so return empty fragment
+    return fragment({ namespaceAlias: { w: namespaces.w } })
+  }
+  
   runFragment.up()
-
   return runFragment
 }
 
@@ -1198,15 +1203,19 @@ function buildParagraphBorder() {
   return paragraphBorderFragment
 }
 
-function buildParagraphProperties(attributes: Attributes) {
+function buildParagraphProperties(
+  attributes: Attributes,
+  forceEmpty: boolean = false,
+) {
   const keys = Object.keys(attributes)
+  let hasProperties = false
+
+  const paragraphPropertiesFragment = fragment({
+    namespaceAlias: { w: namespaces.w },
+  })
+    .ele("@w", "pPr")
 
   if (keys.length) {
-    const paragraphPropertiesFragment = fragment({
-      namespaceAlias: { w: namespaces.w },
-    })
-      .ele("@w", "pPr")
-
     keys.forEach((key) => {
       switch (key) {
         case "numbering": {
@@ -1219,6 +1228,7 @@ function buildParagraphProperties(attributes: Attributes) {
               attributes.numbering.numberingId,
             )
             paragraphPropertiesFragment.import(numberingPropertiesFragment)
+            hasProperties = true
 
             delete attributes.numbering
           }
@@ -1230,6 +1240,7 @@ function buildParagraphProperties(attributes: Attributes) {
               attributes.textAlign,
             )
             paragraphPropertiesFragment.import(horizontalAlignmentFragment)
+            hasProperties = true
 
             delete attributes.textAlign
           }
@@ -1246,14 +1257,18 @@ function buildParagraphProperties(attributes: Attributes) {
             // FIXME: Inner padding in case of shaded paragraphs.
             const paragraphBorderFragment = buildParagraphBorder()
             paragraphPropertiesFragment.import(paragraphBorderFragment)
+            hasProperties = true
 
             delete attributes.backgroundColor
           }
           break
         case "paragraphStyle": {
-          const pStyleFragment = buildPStyle(attributes.paragraphStyle)
-          paragraphPropertiesFragment.import(pStyleFragment)
-          delete attributes.paragraphStyle
+          if (attributes.paragraphStyle) {
+            const pStyleFragment = buildPStyle(attributes.paragraphStyle)
+            paragraphPropertiesFragment.import(pStyleFragment)
+            hasProperties = true
+            delete attributes.paragraphStyle
+          }
           break
         }
         case "indentation": {
@@ -1263,6 +1278,7 @@ function buildParagraphProperties(attributes: Attributes) {
             )
             if (indentationFragment) {
               paragraphPropertiesFragment.import(indentationFragment)
+              hasProperties = true
             }
             delete attributes.indentation
           }
@@ -1272,23 +1288,30 @@ function buildParagraphProperties(attributes: Attributes) {
           break
       }
     })
+  }
 
-    const spacingFragment = buildSpacing(
-      attributes.lineHeight,
-      attributes.beforeSpacing,
-      attributes.afterSpacing,
-    )
+  const spacingFragment = buildSpacing(
+    attributes.lineHeight,
+    attributes.beforeSpacing,
+    attributes.afterSpacing,
+  )
 
-    delete attributes.lineHeight
-    delete attributes.beforeSpacing
-    delete attributes.afterSpacing
+  delete attributes.lineHeight
+  delete attributes.beforeSpacing
+  delete attributes.afterSpacing
 
-    if (spacingFragment) {
-      paragraphPropertiesFragment.import(spacingFragment)
-    }
+  if (spacingFragment) {
+    paragraphPropertiesFragment.import(spacingFragment)
+    hasProperties = true
+  }
 
+  // Return paragraph properties if there are actual properties or if forced
+  if (hasProperties || forceEmpty) {
     paragraphPropertiesFragment.up()
     return paragraphPropertiesFragment
+  }
+  else {
+    return null
   }
 }
 
@@ -1393,13 +1416,14 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
   attributes.height = modifiedHeight
 }
 
-function preprocessParagraphChildren(children: VTree[]): VTree[] {
+export function preprocessParagraphChildren(children: VTree[]): VTree[] {
   if (children.length === 0) return children
 
   const processedChildren: VTree[] = []
 
   for (let i = 0; i < children.length; i++) {
     const current = children[i]
+    const next = i < children.length - 1 ? children[i + 1] : null
 
     if (isVText(current)) {
       const text = (current as VText).text
@@ -1413,22 +1437,33 @@ function preprocessParagraphChildren(children: VTree[]): VTree[] {
         // Add leading space as separate text node
         // if needed and there's a previous sibling
         if (leadingSpaces && i > 0) {
-          processedChildren.push(new VTextConstructor(" "))
+          const prevInProcessed = processedChildren[processedChildren.length - 1]
+          const prevEndsWithSpace = prevInProcessed && isVText(prevInProcessed) &&
+            (prevInProcessed as VText).text.endsWith(" ")
+          
+          if (!prevEndsWithSpace) {
+            processedChildren.push(new VTextConstructor(" "))
+          }
         }
 
         // Add the main text content
         processedChildren.push(new VTextConstructor(trimmedText))
 
         // Add trailing space as separate text node
-        // if needed and there's a next sibling
+        // if needed
         if (trailingSpaces && i < children.length - 1) {
           processedChildren.push(new VTextConstructor(" "))
         }
       }
       else if (text.match(/^\s+$/)) {
-        // If it's only spaces,
-        // add as single space only if between other elements
-        if (i > 0 && i < children.length - 1) {
+        // If it's only spaces, add as single space only if between other elements
+        // and if the previous element wasn't an inline element that extracted its own trailing space
+        const prevInProcessed = processedChildren[processedChildren.length - 1]
+        const shouldAddSpace = i > 0 && i < children.length - 1 &&
+          !(prevInProcessed && isVText(prevInProcessed) &&
+            (prevInProcessed as VText).text === " ")
+
+        if (shouldAddSpace) {
           processedChildren.push(new VTextConstructor(" "))
         }
       }
@@ -1444,14 +1479,40 @@ function preprocessParagraphChildren(children: VTree[]): VTree[] {
         const trimmedChildText = childText.trim()
 
         if (trimmedChildText) {
-          // Add the span with trimmed content
-          // (spaces handled by surrounding text nodes)
-          const modifiedSpan = new VNodeConstructor(
+          // Extract spaces for all inline elements with single text children
+          const leadingSpaces = childText.match(/^(\s+)/)?.[1] || ""
+          const trailingSpaces = childText.match(/(\s+)$/)?.[1] || ""
+
+          // Add leading space if needed, but only if the previous element doesn't already end with space
+          if (leadingSpaces && i > 0) {
+            const prevInProcessed = processedChildren[processedChildren.length - 1]
+            const prevEndsWithSpace = prevInProcessed && isVText(prevInProcessed) &&
+              (prevInProcessed as VText).text.endsWith(" ")
+            
+            if (!prevEndsWithSpace) {
+              processedChildren.push(new VTextConstructor(" "))
+            }
+          }
+
+          // Add the element with trimmed content
+          const modifiedElement = new VNodeConstructor(
             vNodeCurrent.tagName,
             vNodeCurrent.properties,
             [new VTextConstructor(trimmedChildText)],
           )
-          processedChildren.push(modifiedSpan)
+          processedChildren.push(modifiedElement)
+
+          // Add trailing space if needed, but only if:
+          // 1. There is trailing space in the element
+          // 2. There is a next sibling
+          // 3. The next sibling is not a whitespace-only text node (to avoid duplication)
+          const nextIsWhitespaceOnly = next && isVText(next) &&
+            (next as VText).text.match(/^\s+$/)
+          if (
+            trailingSpaces && i < children.length - 1 && !nextIsWhitespaceOnly
+          ) {
+            processedChildren.push(new VTextConstructor(" "))
+          }
         }
         else {
           // Span with only spaces - convert to space run
@@ -1486,8 +1547,10 @@ async function buildParagraph(
       isParagraph: true,
     },
   )
+
   const paragraphPropertiesFragment = buildParagraphProperties(
     modifiedAttributes,
+    false,
   )
   if (paragraphPropertiesFragment) {
     paragraphFragment.import(paragraphPropertiesFragment)
@@ -1595,33 +1658,16 @@ async function buildParagraph(
       }
     }
   }
+  else if (!vNode) {
+    // For null vNodes, create empty paragraph without any runs
+    // This is used for spacing after tables
+  }
   else {
     // In case paragraphs has to be rendered
     // where vText is present. Eg. table-cell
     // Or in case the vNode is something like img
-    if (vNode && isVNode(vNode) && (vNode as VNode).tagName === "img") {
-      const imageSource = (vNode as VNode).properties.src
-      if (isValidUrl((vNode as VNode).properties.src)) {
-        ;(vNode as VNode).properties.src = await fetchImageToDataUrl(
-          (vNode as VNode).properties.src,
-        )
-      }
-      const base64String = extractBase64Data(imageSource)?.base64Content
-      const imageBuffer = Buffer.from(
-        decodeURIComponent(base64String || ""),
-        "base64",
-      )
-      const imageProperties = imageSize(imageBuffer)
-
-      modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
-        docxDocumentInstance.availableDocumentSpace
-      modifiedAttributes.originalWidth = imageProperties.width
-      modifiedAttributes.originalHeight = imageProperties.height
-
-      computeImageDimensions(vNode as VNode, modifiedAttributes)
-    }
     const runFragments = await buildRunOrRuns(
-      vNode as VNode,
+      vNode,
       modifiedAttributes,
       docxDocumentInstance,
       preserveWhitespace,
@@ -1629,7 +1675,6 @@ async function buildParagraph(
     if (Array.isArray(runFragments)) {
       for (let index = 0; index < runFragments.length; index++) {
         const runFragment = runFragments[index]
-
         paragraphFragment.import(runFragment)
       }
     }

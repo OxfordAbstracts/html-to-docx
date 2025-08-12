@@ -20,19 +20,16 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">Item 1</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">Item 3</w:t>
       </w:r>
@@ -70,7 +67,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Header 1</w:t>
             </w:r>
@@ -86,7 +82,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Header 2</w:t>
             </w:r>
@@ -105,7 +100,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Cell 1</w:t>
             </w:r>
@@ -121,7 +115,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Cell 2</w:t>
             </w:r>
@@ -129,9 +122,6 @@
         </w:tc>
       </w:tr>
     </w:tbl>
-    <w:p>
-      <w:r/>
-    </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
       <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720" w:footer="720" w:gutter="0"/>

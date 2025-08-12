@@ -53,9 +53,6 @@
         </w:tc>
       </w:tr>
     </w:tbl>
-    <w:p>
-      <w:r/>
-    </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait" />
       <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720"

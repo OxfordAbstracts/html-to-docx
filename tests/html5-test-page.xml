@@ -25,7 +25,6 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:hyperlink r:id="rId6">
         <w:r>
           <w:rPr>
@@ -196,7 +195,6 @@
       </w:hyperlink>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:hyperlink r:id="rId17">
         <w:r>
           <w:rPr>
@@ -383,7 +381,6 @@
       </w:hyperlink>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:hyperlink r:id="rId29">
         <w:r>
           <w:rPr>
@@ -637,13 +634,11 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">List Item 1</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
@@ -781,7 +776,6 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">List Item 3</w:t>
       </w:r>
@@ -795,13 +789,11 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">List Item 1</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
@@ -939,7 +931,6 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve">List Item 3</w:t>
       </w:r>
@@ -1106,7 +1097,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Heading 1</w:t>
             </w:r>
@@ -1122,7 +1112,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Heading 2</w:t>
             </w:r>
@@ -1138,7 +1127,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Heading 3</w:t>
             </w:r>
@@ -1154,7 +1142,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Heading 4</w:t>
             </w:r>
@@ -1170,7 +1157,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Heading 5</w:t>
             </w:r>
@@ -1196,7 +1182,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
@@ -1212,7 +1197,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
@@ -1228,7 +1212,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
@@ -1244,7 +1227,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
@@ -1260,7 +1242,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
@@ -1279,7 +1260,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
@@ -1295,7 +1275,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
@@ -1311,7 +1290,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
@@ -1327,7 +1305,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
@@ -1343,7 +1320,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
@@ -1362,7 +1338,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
@@ -1378,7 +1353,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
@@ -1394,7 +1368,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
@@ -1410,7 +1383,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
@@ -1426,7 +1398,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
@@ -1445,7 +1416,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 1</w:t>
             </w:r>
@@ -1461,7 +1431,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 2</w:t>
             </w:r>
@@ -1477,7 +1446,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 3</w:t>
             </w:r>
@@ -1493,7 +1461,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 4</w:t>
             </w:r>
@@ -1509,7 +1476,6 @@
             </w:tcBorders>
           </w:tcPr>
           <w:p>
-            <w:pPr/>
             <w:r>
               <w:t xml:space="preserve">Table Cell 5</w:t>
             </w:r>
@@ -1517,9 +1483,6 @@
         </w:tc>
       </w:tr>
     </w:tbl>
-    <w:p>
-      <w:r/>
-    </w:p>
     <w:p>
       <w:hyperlink r:id="rId44">
         <w:r>
@@ -1589,7 +1552,6 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:rPr>
           <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
@@ -1969,7 +1931,6 @@
       <w:r>
         <w:t xml:space="preserve">File Input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId49">
@@ -2018,19 +1979,16 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve"> Choice A</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve"> Choice B</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve"> Choice C</w:t>
       </w:r>
@@ -2051,19 +2009,16 @@
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve"> Option 1</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve"> Option 2</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr/>
       <w:r>
         <w:t xml:space="preserve"> Option 3</w:t>
       </w:r>
@@ -2087,7 +2042,6 @@
       <w:r>
         <w:t xml:space="preserve">Textarea</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId53">
@@ -2108,56 +2062,46 @@
       <w:r>
         <w:t xml:space="preserve">Color input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Number input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Range input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Date input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Month input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Week input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Datetime input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Datetime-local input</w:t>
       </w:r>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Datalist</w:t>
       </w:r>
-      <w:r/>
-      <w:r/>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId54">
@@ -2173,12 +2117,6 @@
       <w:r>
         <w:t xml:space="preserve">Action buttons</w:t>
       </w:r>
-    </w:p>
-    <w:p>
-      <w:r/>
-      <w:r/>
-      <w:r/>
-      <w:r/>
     </w:p>
     <w:p>
       <w:r>
