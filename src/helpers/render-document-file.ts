@@ -558,6 +558,10 @@ async function findXMLEquivalent(
   else if (vNode.tagName === "head") {
     return
   }
+  else if (vNode.tagName === "input") {
+    // input elements should not generate any content in Docx files
+    return
+  }
   else if (vNode.tagName === "blockquote" && vNodeHasChildren(vNode)) {
     // Special handling for blockquote: process paragraphs first, then add
     // inline elements
@@ -677,10 +681,11 @@ async function findXMLEquivalent(
     ]
 
     // Apply targeted space preprocessing for the very specific pattern where:
-    // - All children are either whitespace-only text nodes OR inline elements with trailing spaces
+    // - All children are either whitespace-only text nodes OR inline elements
+    //   with trailing spaces
     // - This matches the newline test pattern but not other test patterns
-    const needsSpaceExtraction = vNode.children.length > 2 && // at least 3 children
-      vNode.children.every((child, index) => {
+    const needsSpaceExtraction = vNode.children.length > 2 && // 3+ children
+      vNode.children.every((child: VNode, index: number) => {
         if (isVText(child)) {
           const text = (child as VText).text
           return text.trim() === "" // ONLY whitespace-only text nodes

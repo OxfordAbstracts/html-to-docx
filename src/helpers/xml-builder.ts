@@ -959,26 +959,27 @@ async function buildRun(
     }
   }
   else if (isVNode(vNode) && (vNode as VNode).tagName === "img") {
-    // img nodes should not create runs directly - they should be handled by the picture attributes
-    // If we get here, it means the img wasn't processed correctly, so return empty fragment
+    // img nodes should not create runs directly - they should be handled by the
+    // picture attributes. If we get here, it means the img wasn't processed
+    // correctly, so return empty fragment
     return fragment({ namespaceAlias: { w: namespaces.w } })
   }
-  
+
   runFragment.up()
   return runFragment
 }
 
 async function buildRunOrRuns(
-  vNode: VNode | null,
+  vNode: VNode | VTree | null,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
   preserveWhitespace: boolean = false,
 ): Promise<XMLBuilder | XMLBuilder[]> {
-  if (vNode && isVNode(vNode) && vNode.tagName === "span") {
+  if (vNode && isVNode(vNode) && (vNode as VNode).tagName === "span") {
     let runFragments: XMLBuilder[] = []
 
-    for (let index = 0; index < vNode.children.length; index++) {
-      const childVNode = vNode.children[index]
+    for (let index = 0; index < (vNode as VNode).children.length; index++) {
+      const childVNode = (vNode as VNode).children[index]
       const modifiedAttributes = modifiedStyleAttributesBuilder(
         docxDocumentInstance,
         vNode,
@@ -1039,6 +1040,11 @@ async function buildRunOrHyperLink(
   docxDocumentInstance: DocxDocument,
   preserveWhitespace: boolean = false,
 ) {
+  // Input elements should not generate any content in Docx files
+  if (isVNode(vNode) && vNode.tagName === "input") {
+    return fragment({ namespaceAlias: { w: namespaces.w } })
+  }
+
   if (isVNode(vNode) && vNode.tagName === "a") {
     const relationshipId = docxDocumentInstance.createDocumentRelationships(
       docxDocumentInstance.relationshipFilename,
@@ -1437,10 +1443,12 @@ export function preprocessParagraphChildren(children: VTree[]): VTree[] {
         // Add leading space as separate text node
         // if needed and there's a previous sibling
         if (leadingSpaces && i > 0) {
-          const prevInProcessed = processedChildren[processedChildren.length - 1]
-          const prevEndsWithSpace = prevInProcessed && isVText(prevInProcessed) &&
+          const prevInProcessed =
+            processedChildren[processedChildren.length - 1]
+          const prevEndsWithSpace = prevInProcessed &&
+            isVText(prevInProcessed) &&
             (prevInProcessed as VText).text.endsWith(" ")
-          
+
           if (!prevEndsWithSpace) {
             processedChildren.push(new VTextConstructor(" "))
           }
@@ -1456,8 +1464,10 @@ export function preprocessParagraphChildren(children: VTree[]): VTree[] {
         }
       }
       else if (text.match(/^\s+$/)) {
-        // If it's only spaces, add as single space only if between other elements
-        // and if the previous element wasn't an inline element that extracted its own trailing space
+        // If it's only spaces, add as single space only if between other
+        // elements
+        // and if the previous element wasn't an inline element that extracted
+        // its own trailing space
         const prevInProcessed = processedChildren[processedChildren.length - 1]
         const shouldAddSpace = i > 0 && i < children.length - 1 &&
           !(prevInProcessed && isVText(prevInProcessed) &&
@@ -1483,12 +1493,15 @@ export function preprocessParagraphChildren(children: VTree[]): VTree[] {
           const leadingSpaces = childText.match(/^(\s+)/)?.[1] || ""
           const trailingSpaces = childText.match(/(\s+)$/)?.[1] || ""
 
-          // Add leading space if needed, but only if the previous element doesn't already end with space
+          // Add leading space if needed, but only if the previous element
+          // doesn't already end with space
           if (leadingSpaces && i > 0) {
-            const prevInProcessed = processedChildren[processedChildren.length - 1]
-            const prevEndsWithSpace = prevInProcessed && isVText(prevInProcessed) &&
+            const prevInProcessed =
+              processedChildren[processedChildren.length - 1]
+            const prevEndsWithSpace = prevInProcessed &&
+              isVText(prevInProcessed) &&
               (prevInProcessed as VText).text.endsWith(" ")
-            
+
             if (!prevEndsWithSpace) {
               processedChildren.push(new VTextConstructor(" "))
             }
@@ -1505,7 +1518,8 @@ export function preprocessParagraphChildren(children: VTree[]): VTree[] {
           // Add trailing space if needed, but only if:
           // 1. There is trailing space in the element
           // 2. There is a next sibling
-          // 3. The next sibling is not a whitespace-only text node (to avoid duplication)
+          // 3. The next sibling is not a whitespace-only text node
+          //    (to avoid duplication)
           const nextIsWhitespaceOnly = next && isVText(next) &&
             (next as VText).text.match(/^\s+$/)
           if (
@@ -1532,7 +1546,7 @@ export function preprocessParagraphChildren(children: VTree[]): VTree[] {
 }
 
 async function buildParagraph(
-  vNode: VTree | null,
+  vNode: VNode | VTree | null,
   attributes: Attributes,
   docxDocumentInstance: DocxDocument,
   preserveWhitespace: boolean = false,
