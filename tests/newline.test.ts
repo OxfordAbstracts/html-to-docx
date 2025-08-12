@@ -1,7 +1,6 @@
-import assert from "assert"
 import JSZip from "jszip"
 import fs from "node:fs/promises"
-import { test } from "node:test"
+import { assert, test } from "vitest"
 
 import htmlToDocx from "../index.ts"
 import writeFile from "./write-file.ts"

@@ -1,7 +1,6 @@
-import assert from "assert"
 import fs from "fs/promises"
 import JSZip from "jszip"
-import { test } from "node:test"
+import { assert, test } from "vitest"
 
 import { create } from "xmlbuilder2"
 import htmlToDocx from "../index.ts"

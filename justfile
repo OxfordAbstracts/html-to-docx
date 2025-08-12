@@ -35,11 +35,7 @@ test-unit: node_modules
   @grep -q 'xmlbuilder2": "2.1.2' package.json || \
     (echo "xmlbuilder2 must be version 2.1.2 due to " \
     "https://github.com/oozcitak/xmlbuilder2/issues/178" && exit 1)
-  node --test --disable-warning=ExperimentalWarning \
-    | grep --invert-match 'MODULE_TYPELESS_PACKAGE_JSON' \
-    | grep --invert-match 'Reparsing' \
-    | grep --invert-match '"type": "module"' \
-    | grep --invert-match 'Use `node --trace-warnings'
+  npx vitest
 
 
 # Run C#'s OpenXmlValidator on the test Docx files

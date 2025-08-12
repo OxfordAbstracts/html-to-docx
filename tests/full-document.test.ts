@@ -1,5 +1,4 @@
-import assert from "assert"
-import { test } from "node:test"
+import { assert, test } from "vitest"
 
 import { default as htmlToDocx } from "../index.ts"
 

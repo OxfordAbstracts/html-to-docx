@@ -1,8 +1,7 @@
-import assert from "assert"
 import { createCanvas } from "canvas"
 import fs from "fs/promises"
 import JSZip from "jszip"
-import { test } from "node:test"
+import { assert, test } from "vitest"
 
 import htmlToDocx from "../index.ts"
 import writeFile from "./write-file.ts"

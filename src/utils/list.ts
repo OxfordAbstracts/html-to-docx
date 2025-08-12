@@ -1,4 +1,4 @@
-import type { ListType } from "../types"
+import type { ListType } from "../types.ts"
 
 export default class ListStyleBuilder {
   defaults: { defaultOrderedListStyleType: ListType }

@@ -1,4 +1,3 @@
-// @ts-expect-error  ECMAScript module cannot be imported
 import { nanoid } from "nanoid"
 import { createHash } from "node:crypto"
 import { create, fragment } from "xmlbuilder2"

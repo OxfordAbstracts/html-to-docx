@@ -1,5 +1,4 @@
-import assert from "assert"
-import { test } from "node:test"
+import { assert, test } from "vitest"
 import { extractBase64Data } from "../src/utils/base64.ts"
 
 test("extracts file infos from a base64 data URL of a PNG", async () => {
