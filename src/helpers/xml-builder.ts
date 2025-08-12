@@ -1394,7 +1394,7 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
 }
 
 function preprocessParagraphChildren(children: VTree[]): VTree[] {
-  if (children.length <= 1) return children
+  if (children.length === 0) return children
 
   const processedChildren: VTree[] = []
 

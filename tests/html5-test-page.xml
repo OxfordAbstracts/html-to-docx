@@ -645,7 +645,7 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -667,7 +667,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -689,7 +689,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -711,7 +711,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -803,7 +803,7 @@
     <w:p>
       <w:pPr/>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -825,7 +825,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -847,7 +847,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -869,7 +869,7 @@
         </w:numPr>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve"> List Item 2 </w:t>
+        <w:t xml:space="preserve">List Item 2</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -1892,7 +1892,7 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">There is comment here: </w:t>
+        <w:t xml:space="preserve">There is comment here:</w:t>
       </w:r>
     </w:p>
     <w:p>
