@@ -1,3 +1,4 @@
+import { fileTypeFromBuffer } from "file-type"
 import mimeTypes from "mime-types"
 
 export async function fetchImageToDataUrl(imageUrlStr: string) {
@@ -21,8 +22,6 @@ export async function fetchImageToDataUrl(imageUrlStr: string) {
     else {
       let mimeType = mimeTypes.lookup(imageUrl.pathname)
       if (!mimeType) {
-        // TODO: Move import to top once it's converted to ESM
-        const { fileTypeFromBuffer } = await import("file-type")
         const fileType = await fileTypeFromBuffer(imgArrayBuff)
         mimeType = fileType?.mime || false
       }

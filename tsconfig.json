@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "es2021",
     "noEmit": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "strict": true
   }

@@ -39,7 +39,6 @@ var __export = (target, all) => {
       set: (newValue) => all[name] = () => newValue
     });
 };
-var __esm = (fn, res) => () => (fn && (res = fn(fn = 0)), res);
 
 // node_modules/process-nextick-args/index.js
 var require_process_nextick_args = __commonJS((exports2, module2) => {
@@ -45367,6 +45366,818 @@ var require_is_vtext = __commonJS((exports2, module2) => {
   }
 });
 
+// node_modules/ieee754/index.js
+var require_ieee754 = __commonJS((exports2) => {
+  /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+  exports2.read = function(buffer, offset, isLE, mLen, nBytes) {
+    var e, m;
+    var eLen = nBytes * 8 - mLen - 1;
+    var eMax = (1 << eLen) - 1;
+    var eBias = eMax >> 1;
+    var nBits = -7;
+    var i = isLE ? nBytes - 1 : 0;
+    var d = isLE ? -1 : 1;
+    var s = buffer[offset + i];
+    i += d;
+    e = s & (1 << -nBits) - 1;
+    s >>= -nBits;
+    nBits += eLen;
+    for (;nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+    m = e & (1 << -nBits) - 1;
+    e >>= -nBits;
+    nBits += mLen;
+    for (;nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+    if (e === 0) {
+      e = 1 - eBias;
+    } else if (e === eMax) {
+      return m ? NaN : (s ? -1 : 1) * Infinity;
+    } else {
+      m = m + Math.pow(2, mLen);
+      e = e - eBias;
+    }
+    return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
+  };
+  exports2.write = function(buffer, value, offset, isLE, mLen, nBytes) {
+    var e, m, c;
+    var eLen = nBytes * 8 - mLen - 1;
+    var eMax = (1 << eLen) - 1;
+    var eBias = eMax >> 1;
+    var rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0;
+    var i = isLE ? 0 : nBytes - 1;
+    var d = isLE ? 1 : -1;
+    var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
+    value = Math.abs(value);
+    if (isNaN(value) || value === Infinity) {
+      m = isNaN(value) ? 1 : 0;
+      e = eMax;
+    } else {
+      e = Math.floor(Math.log(value) / Math.LN2);
+      if (value * (c = Math.pow(2, -e)) < 1) {
+        e--;
+        c *= 2;
+      }
+      if (e + eBias >= 1) {
+        value += rt / c;
+      } else {
+        value += rt * Math.pow(2, 1 - eBias);
+      }
+      if (value * c >= 2) {
+        e++;
+        c /= 2;
+      }
+      if (e + eBias >= eMax) {
+        m = 0;
+        e = eMax;
+      } else if (e + eBias >= 1) {
+        m = (value * c - 1) * Math.pow(2, mLen);
+        e = e + eBias;
+      } else {
+        m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+        e = 0;
+      }
+    }
+    for (;mLen >= 8; buffer[offset + i] = m & 255, i += d, m /= 256, mLen -= 8) {}
+    e = e << mLen | m;
+    eLen += mLen;
+    for (;eLen > 0; buffer[offset + i] = e & 255, i += d, e /= 256, eLen -= 8) {}
+    buffer[offset + i - d] |= s * 128;
+  };
+});
+
+// node_modules/ms/index.js
+var require_ms = __commonJS((exports2, module2) => {
+  var s = 1000;
+  var m = s * 60;
+  var h = m * 60;
+  var d = h * 24;
+  var w = d * 7;
+  var y = d * 365.25;
+  module2.exports = function(val, options) {
+    options = options || {};
+    var type = typeof val;
+    if (type === "string" && val.length > 0) {
+      return parse(val);
+    } else if (type === "number" && isFinite(val)) {
+      return options.long ? fmtLong(val) : fmtShort(val);
+    }
+    throw new Error("val is not a non-empty string or a valid number. val=" + JSON.stringify(val));
+  };
+  function parse(str) {
+    str = String(str);
+    if (str.length > 100) {
+      return;
+    }
+    var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(str);
+    if (!match) {
+      return;
+    }
+    var n = parseFloat(match[1]);
+    var type = (match[2] || "ms").toLowerCase();
+    switch (type) {
+      case "years":
+      case "year":
+      case "yrs":
+      case "yr":
+      case "y":
+        return n * y;
+      case "weeks":
+      case "week":
+      case "w":
+        return n * w;
+      case "days":
+      case "day":
+      case "d":
+        return n * d;
+      case "hours":
+      case "hour":
+      case "hrs":
+      case "hr":
+      case "h":
+        return n * h;
+      case "minutes":
+      case "minute":
+      case "mins":
+      case "min":
+      case "m":
+        return n * m;
+      case "seconds":
+      case "second":
+      case "secs":
+      case "sec":
+      case "s":
+        return n * s;
+      case "milliseconds":
+      case "millisecond":
+      case "msecs":
+      case "msec":
+      case "ms":
+        return n;
+      default:
+        return;
+    }
+  }
+  function fmtShort(ms) {
+    var msAbs = Math.abs(ms);
+    if (msAbs >= d) {
+      return Math.round(ms / d) + "d";
+    }
+    if (msAbs >= h) {
+      return Math.round(ms / h) + "h";
+    }
+    if (msAbs >= m) {
+      return Math.round(ms / m) + "m";
+    }
+    if (msAbs >= s) {
+      return Math.round(ms / s) + "s";
+    }
+    return ms + "ms";
+  }
+  function fmtLong(ms) {
+    var msAbs = Math.abs(ms);
+    if (msAbs >= d) {
+      return plural(ms, msAbs, d, "day");
+    }
+    if (msAbs >= h) {
+      return plural(ms, msAbs, h, "hour");
+    }
+    if (msAbs >= m) {
+      return plural(ms, msAbs, m, "minute");
+    }
+    if (msAbs >= s) {
+      return plural(ms, msAbs, s, "second");
+    }
+    return ms + " ms";
+  }
+  function plural(ms, msAbs, n, name) {
+    var isPlural = msAbs >= n * 1.5;
+    return Math.round(ms / n) + " " + name + (isPlural ? "s" : "");
+  }
+});
+
+// node_modules/debug/src/common.js
+var require_common2 = __commonJS((exports2, module2) => {
+  function setup(env) {
+    createDebug.debug = createDebug;
+    createDebug.default = createDebug;
+    createDebug.coerce = coerce;
+    createDebug.disable = disable;
+    createDebug.enable = enable;
+    createDebug.enabled = enabled;
+    createDebug.humanize = require_ms();
+    createDebug.destroy = destroy;
+    Object.keys(env).forEach((key) => {
+      createDebug[key] = env[key];
+    });
+    createDebug.names = [];
+    createDebug.skips = [];
+    createDebug.formatters = {};
+    function selectColor(namespace) {
+      let hash = 0;
+      for (let i2 = 0;i2 < namespace.length; i2++) {
+        hash = (hash << 5) - hash + namespace.charCodeAt(i2);
+        hash |= 0;
+      }
+      return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+    }
+    createDebug.selectColor = selectColor;
+    function createDebug(namespace) {
+      let prevTime;
+      let enableOverride = null;
+      let namespacesCache;
+      let enabledCache;
+      function debug(...args) {
+        if (!debug.enabled) {
+          return;
+        }
+        const self2 = debug;
+        const curr = Number(new Date);
+        const ms = curr - (prevTime || curr);
+        self2.diff = ms;
+        self2.prev = prevTime;
+        self2.curr = curr;
+        prevTime = curr;
+        args[0] = createDebug.coerce(args[0]);
+        if (typeof args[0] !== "string") {
+          args.unshift("%O");
+        }
+        let index = 0;
+        args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+          if (match === "%%") {
+            return "%";
+          }
+          index++;
+          const formatter = createDebug.formatters[format];
+          if (typeof formatter === "function") {
+            const val = args[index];
+            match = formatter.call(self2, val);
+            args.splice(index, 1);
+            index--;
+          }
+          return match;
+        });
+        createDebug.formatArgs.call(self2, args);
+        const logFn = self2.log || createDebug.log;
+        logFn.apply(self2, args);
+      }
+      debug.namespace = namespace;
+      debug.useColors = createDebug.useColors();
+      debug.color = createDebug.selectColor(namespace);
+      debug.extend = extend;
+      debug.destroy = createDebug.destroy;
+      Object.defineProperty(debug, "enabled", {
+        enumerable: true,
+        configurable: false,
+        get: () => {
+          if (enableOverride !== null) {
+            return enableOverride;
+          }
+          if (namespacesCache !== createDebug.namespaces) {
+            namespacesCache = createDebug.namespaces;
+            enabledCache = createDebug.enabled(namespace);
+          }
+          return enabledCache;
+        },
+        set: (v) => {
+          enableOverride = v;
+        }
+      });
+      if (typeof createDebug.init === "function") {
+        createDebug.init(debug);
+      }
+      return debug;
+    }
+    function extend(namespace, delimiter) {
+      const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
+      newDebug.log = this.log;
+      return newDebug;
+    }
+    function enable(namespaces2) {
+      createDebug.save(namespaces2);
+      createDebug.namespaces = namespaces2;
+      createDebug.names = [];
+      createDebug.skips = [];
+      const split = (typeof namespaces2 === "string" ? namespaces2 : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
+      for (const ns of split) {
+        if (ns[0] === "-") {
+          createDebug.skips.push(ns.slice(1));
+        } else {
+          createDebug.names.push(ns);
+        }
+      }
+    }
+    function matchesTemplate(search, template) {
+      let searchIndex = 0;
+      let templateIndex = 0;
+      let starIndex = -1;
+      let matchIndex = 0;
+      while (searchIndex < search.length) {
+        if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === "*")) {
+          if (template[templateIndex] === "*") {
+            starIndex = templateIndex;
+            matchIndex = searchIndex;
+            templateIndex++;
+          } else {
+            searchIndex++;
+            templateIndex++;
+          }
+        } else if (starIndex !== -1) {
+          templateIndex = starIndex + 1;
+          matchIndex++;
+          searchIndex = matchIndex;
+        } else {
+          return false;
+        }
+      }
+      while (templateIndex < template.length && template[templateIndex] === "*") {
+        templateIndex++;
+      }
+      return templateIndex === template.length;
+    }
+    function disable() {
+      const namespaces2 = [
+        ...createDebug.names,
+        ...createDebug.skips.map((namespace) => "-" + namespace)
+      ].join(",");
+      createDebug.enable("");
+      return namespaces2;
+    }
+    function enabled(name) {
+      for (const skip of createDebug.skips) {
+        if (matchesTemplate(name, skip)) {
+          return false;
+        }
+      }
+      for (const ns of createDebug.names) {
+        if (matchesTemplate(name, ns)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    function coerce(val) {
+      if (val instanceof Error) {
+        return val.stack || val.message;
+      }
+      return val;
+    }
+    function destroy() {
+      console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+    }
+    createDebug.enable(createDebug.load());
+    return createDebug;
+  }
+  module2.exports = setup;
+});
+
+// node_modules/debug/src/browser.js
+var require_browser = __commonJS((exports2, module2) => {
+  exports2.formatArgs = formatArgs;
+  exports2.save = save;
+  exports2.load = load;
+  exports2.useColors = useColors;
+  exports2.storage = localstorage();
+  exports2.destroy = (() => {
+    let warned = false;
+    return () => {
+      if (!warned) {
+        warned = true;
+        console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+      }
+    };
+  })();
+  exports2.colors = [
+    "#0000CC",
+    "#0000FF",
+    "#0033CC",
+    "#0033FF",
+    "#0066CC",
+    "#0066FF",
+    "#0099CC",
+    "#0099FF",
+    "#00CC00",
+    "#00CC33",
+    "#00CC66",
+    "#00CC99",
+    "#00CCCC",
+    "#00CCFF",
+    "#3300CC",
+    "#3300FF",
+    "#3333CC",
+    "#3333FF",
+    "#3366CC",
+    "#3366FF",
+    "#3399CC",
+    "#3399FF",
+    "#33CC00",
+    "#33CC33",
+    "#33CC66",
+    "#33CC99",
+    "#33CCCC",
+    "#33CCFF",
+    "#6600CC",
+    "#6600FF",
+    "#6633CC",
+    "#6633FF",
+    "#66CC00",
+    "#66CC33",
+    "#9900CC",
+    "#9900FF",
+    "#9933CC",
+    "#9933FF",
+    "#99CC00",
+    "#99CC33",
+    "#CC0000",
+    "#CC0033",
+    "#CC0066",
+    "#CC0099",
+    "#CC00CC",
+    "#CC00FF",
+    "#CC3300",
+    "#CC3333",
+    "#CC3366",
+    "#CC3399",
+    "#CC33CC",
+    "#CC33FF",
+    "#CC6600",
+    "#CC6633",
+    "#CC9900",
+    "#CC9933",
+    "#CCCC00",
+    "#CCCC33",
+    "#FF0000",
+    "#FF0033",
+    "#FF0066",
+    "#FF0099",
+    "#FF00CC",
+    "#FF00FF",
+    "#FF3300",
+    "#FF3333",
+    "#FF3366",
+    "#FF3399",
+    "#FF33CC",
+    "#FF33FF",
+    "#FF6600",
+    "#FF6633",
+    "#FF9900",
+    "#FF9933",
+    "#FFCC00",
+    "#FFCC33"
+  ];
+  function useColors() {
+    if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
+      return true;
+    }
+    if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+      return false;
+    }
+    let m;
+    return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && (m = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m[1], 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+  }
+  function formatArgs(args) {
+    args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
+    if (!this.useColors) {
+      return;
+    }
+    const c = "color: " + this.color;
+    args.splice(1, 0, c, "color: inherit");
+    let index = 0;
+    let lastC = 0;
+    args[0].replace(/%[a-zA-Z%]/g, (match) => {
+      if (match === "%%") {
+        return;
+      }
+      index++;
+      if (match === "%c") {
+        lastC = index;
+      }
+    });
+    args.splice(lastC, 0, c);
+  }
+  exports2.log = console.debug || console.log || (() => {});
+  function save(namespaces2) {
+    try {
+      if (namespaces2) {
+        exports2.storage.setItem("debug", namespaces2);
+      } else {
+        exports2.storage.removeItem("debug");
+      }
+    } catch (error) {}
+  }
+  function load() {
+    let r;
+    try {
+      r = exports2.storage.getItem("debug") || exports2.storage.getItem("DEBUG");
+    } catch (error) {}
+    if (!r && typeof process !== "undefined" && "env" in process) {
+      r = process.env.DEBUG;
+    }
+    return r;
+  }
+  function localstorage() {
+    try {
+      return localStorage;
+    } catch (error) {}
+  }
+  module2.exports = require_common2()(exports2);
+  var { formatters } = module2.exports;
+  formatters.j = function(v) {
+    try {
+      return JSON.stringify(v);
+    } catch (error) {
+      return "[UnexpectedJSONParseError]: " + error.message;
+    }
+  };
+});
+
+// node_modules/has-flag/index.js
+var require_has_flag = __commonJS((exports2, module2) => {
+  module2.exports = (flag, argv = process.argv) => {
+    const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
+    const position = argv.indexOf(prefix + flag);
+    const terminatorPosition = argv.indexOf("--");
+    return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+  };
+});
+
+// node_modules/supports-color/index.js
+var require_supports_color = __commonJS((exports2, module2) => {
+  var os = require("os");
+  var tty = require("tty");
+  var hasFlag = require_has_flag();
+  var { env } = process;
+  var forceColor;
+  if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
+    forceColor = 0;
+  } else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
+    forceColor = 1;
+  }
+  if ("FORCE_COLOR" in env) {
+    if (env.FORCE_COLOR === "true") {
+      forceColor = 1;
+    } else if (env.FORCE_COLOR === "false") {
+      forceColor = 0;
+    } else {
+      forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
+    }
+  }
+  function translateLevel(level) {
+    if (level === 0) {
+      return false;
+    }
+    return {
+      level,
+      hasBasic: true,
+      has256: level >= 2,
+      has16m: level >= 3
+    };
+  }
+  function supportsColor(haveStream, streamIsTTY) {
+    if (forceColor === 0) {
+      return 0;
+    }
+    if (hasFlag("color=16m") || hasFlag("color=full") || hasFlag("color=truecolor")) {
+      return 3;
+    }
+    if (hasFlag("color=256")) {
+      return 2;
+    }
+    if (haveStream && !streamIsTTY && forceColor === undefined) {
+      return 0;
+    }
+    const min = forceColor || 0;
+    if (env.TERM === "dumb") {
+      return min;
+    }
+    if (process.platform === "win32") {
+      const osRelease = os.release().split(".");
+      if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
+        return Number(osRelease[2]) >= 14931 ? 3 : 2;
+      }
+      return 1;
+    }
+    if ("CI" in env) {
+      if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => (sign in env)) || env.CI_NAME === "codeship") {
+        return 1;
+      }
+      return min;
+    }
+    if ("TEAMCITY_VERSION" in env) {
+      return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
+    }
+    if (env.COLORTERM === "truecolor") {
+      return 3;
+    }
+    if ("TERM_PROGRAM" in env) {
+      const version = parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+      switch (env.TERM_PROGRAM) {
+        case "iTerm.app":
+          return version >= 3 ? 3 : 2;
+        case "Apple_Terminal":
+          return 2;
+      }
+    }
+    if (/-256(color)?$/i.test(env.TERM)) {
+      return 2;
+    }
+    if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
+      return 1;
+    }
+    if ("COLORTERM" in env) {
+      return 1;
+    }
+    return min;
+  }
+  function getSupportLevel(stream) {
+    const level = supportsColor(stream, stream && stream.isTTY);
+    return translateLevel(level);
+  }
+  module2.exports = {
+    supportsColor: getSupportLevel,
+    stdout: translateLevel(supportsColor(true, tty.isatty(1))),
+    stderr: translateLevel(supportsColor(true, tty.isatty(2)))
+  };
+});
+
+// node_modules/debug/src/node.js
+var require_node3 = __commonJS((exports2, module2) => {
+  var tty = require("tty");
+  var util = require("util");
+  exports2.init = init;
+  exports2.log = log;
+  exports2.formatArgs = formatArgs;
+  exports2.save = save;
+  exports2.load = load;
+  exports2.useColors = useColors;
+  exports2.destroy = util.deprecate(() => {}, "Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+  exports2.colors = [6, 2, 3, 4, 5, 1];
+  try {
+    const supportsColor = require_supports_color();
+    if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
+      exports2.colors = [
+        20,
+        21,
+        26,
+        27,
+        32,
+        33,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        56,
+        57,
+        62,
+        63,
+        68,
+        69,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        92,
+        93,
+        98,
+        99,
+        112,
+        113,
+        128,
+        129,
+        134,
+        135,
+        148,
+        149,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        178,
+        179,
+        184,
+        185,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        214,
+        215,
+        220,
+        221
+      ];
+    }
+  } catch (error) {}
+  exports2.inspectOpts = Object.keys(process.env).filter((key) => {
+    return /^debug_/i.test(key);
+  }).reduce((obj, key) => {
+    const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_, k) => {
+      return k.toUpperCase();
+    });
+    let val = process.env[key];
+    if (/^(yes|on|true|enabled)$/i.test(val)) {
+      val = true;
+    } else if (/^(no|off|false|disabled)$/i.test(val)) {
+      val = false;
+    } else if (val === "null") {
+      val = null;
+    } else {
+      val = Number(val);
+    }
+    obj[prop] = val;
+    return obj;
+  }, {});
+  function useColors() {
+    return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty.isatty(process.stderr.fd);
+  }
+  function formatArgs(args) {
+    const { namespace: name, useColors: useColors2 } = this;
+    if (useColors2) {
+      const c = this.color;
+      const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
+      const prefix = `  ${colorCode};1m${name} \x1B[0m`;
+      args[0] = prefix + args[0].split(`
+`).join(`
+` + prefix);
+      args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
+    } else {
+      args[0] = getDate() + name + " " + args[0];
+    }
+  }
+  function getDate() {
+    if (exports2.inspectOpts.hideDate) {
+      return "";
+    }
+    return new Date().toISOString() + " ";
+  }
+  function log(...args) {
+    return process.stderr.write(util.formatWithOptions(exports2.inspectOpts, ...args) + `
+`);
+  }
+  function save(namespaces2) {
+    if (namespaces2) {
+      process.env.DEBUG = namespaces2;
+    } else {
+      delete process.env.DEBUG;
+    }
+  }
+  function load() {
+    return process.env.DEBUG;
+  }
+  function init(debug) {
+    debug.inspectOpts = {};
+    const keys = Object.keys(exports2.inspectOpts);
+    for (let i2 = 0;i2 < keys.length; i2++) {
+      debug.inspectOpts[keys[i2]] = exports2.inspectOpts[keys[i2]];
+    }
+  }
+  module2.exports = require_common2()(exports2);
+  var { formatters } = module2.exports;
+  formatters.o = function(v) {
+    this.inspectOpts.colors = this.useColors;
+    return util.inspect(v, this.inspectOpts).split(`
+`).map((str) => str.trim()).join(" ");
+  };
+  formatters.O = function(v) {
+    this.inspectOpts.colors = this.useColors;
+    return util.inspect(v, this.inspectOpts);
+  };
+});
+
+// node_modules/debug/src/index.js
+var require_src = __commonJS((exports2, module2) => {
+  if (typeof process === "undefined" || process.type === "renderer" || false || process.__nwjs) {
+    module2.exports = require_browser();
+  } else {
+    module2.exports = require_node3();
+  }
+});
+
 // node_modules/mime-db/db.json
 var require_db = __commonJS((exports2, module2) => {
   module2.exports = {
@@ -53971,7 +54782,7 @@ var require_mime_types = __commonJS((exports2) => {
     }
     return exports2.types[extension2] || false;
   }
-  function populateMaps(extensions, types) {
+  function populateMaps(extensions2, types) {
     var preference = ["nginx", "apache", undefined, "iana"];
     Object.keys(db).forEach(function forEachMimeType(type) {
       var mime = db[type];
@@ -53979,9 +54790,9 @@ var require_mime_types = __commonJS((exports2) => {
       if (!exts || !exts.length) {
         return;
       }
-      extensions[type] = exts;
-      for (var i = 0;i < exts.length; i++) {
-        var extension2 = exts[i];
+      extensions2[type] = exts;
+      for (var i2 = 0;i2 < exts.length; i2++) {
+        var extension2 = exts[i2];
         if (types[extension2]) {
           var from = preference.indexOf(db[types[extension2]].source);
           var to = preference.indexOf(mime.source);
@@ -53995,35 +54806,236 @@ var require_mime_types = __commonJS((exports2) => {
   }
 });
 
-// node_modules/peek-readable/lib/Errors.js
-var defaultMessages = "End-Of-Stream", EndOfStreamError, AbortError;
-var init_Errors = __esm(() => {
-  EndOfStreamError = class EndOfStreamError extends Error {
-    constructor() {
-      super(defaultMessages);
-      this.name = "EndOfStreamError";
-    }
-  };
-  AbortError = class AbortError extends Error {
-    constructor(message = "The operation was aborted") {
-      super(message);
-      this.name = "AbortError";
-    }
-  };
+// index.ts
+var exports_html_to_docx = {};
+__export(exports_html_to_docx, {
+  default: () => generateContainer
 });
+module.exports = __toCommonJS(exports_html_to_docx);
+var import_jszip = __toESM(require_lib3());
 
-// node_modules/peek-readable/lib/Deferred.js
-class Deferred {
+// src/html-to-docx.ts
+var import_html_entities = __toESM(require_lib4());
+var import_html_to_vdom2 = __toESM(require_html_to_vdom2());
+var import_vnode5 = __toESM(require_vnode());
+var import_vtext3 = __toESM(require_vtext());
+var import_xmlbuilder24 = __toESM(require_lib12());
+
+// src/constants.ts
+var import_lodash = __toESM(require_lodash());
+var applicationName = "html-to-docx";
+var defaultOrientation = "portrait";
+var landscapeWidth = 15840;
+var landscapeHeight = 12240;
+var landscapeMargins = {
+  top: 1800,
+  right: 1440,
+  bottom: 1800,
+  left: 1440,
+  header: 720,
+  footer: 720,
+  gutter: 0
+};
+var portraitMargins = {
+  top: 1440,
+  right: 1800,
+  bottom: 1440,
+  left: 1800,
+  header: 720,
+  footer: 720,
+  gutter: 0
+};
+var defaultFont = "Times New Roman";
+var defaultFontSize = 22;
+var defaultLang = "en-US";
+var defaultDocumentOptions = {
+  orientation: defaultOrientation,
+  margins: import_lodash.default.cloneDeep(portraitMargins),
+  creator: applicationName,
+  keywords: [applicationName],
+  lastModifiedBy: applicationName,
+  font: defaultFont,
+  fontSize: defaultFontSize,
+  complexScriptFontSize: defaultFontSize,
+  pageSize: {
+    width: landscapeHeight,
+    height: landscapeWidth
+  },
+  defaultLang
+};
+var defaultHTMLString = "<p></p>";
+var relsFolderName = "_rels";
+var headerFileName = "header1";
+var footerFileName = "footer1";
+var themeFileName = "theme1";
+var documentFileName = "document";
+var headerType = "header";
+var footerType = "footer";
+var themeType = "theme";
+var hyperlinkType = "hyperlink";
+var imageType = "image";
+var internalRelationship = "Internal";
+var wordFolder = "word";
+var themeFolder = "theme";
+var paragraphBordersObject = {
+  top: {
+    size: 0,
+    spacing: 3,
+    color: "FFFFFF"
+  },
+  left: {
+    size: 0,
+    spacing: 3,
+    color: "FFFFFF"
+  },
+  bottom: {
+    size: 0,
+    spacing: 3,
+    color: "FFFFFF"
+  },
+  right: {
+    size: 0,
+    spacing: 3,
+    color: "FFFFFF"
+  }
+};
+var colorlessColors = ["transparent", "auto"];
+var verticalAlignValues = ["top", "middle", "bottom"];
+var htmlInlineElements = [
+  "a",
+  "abbr",
+  "acronym",
+  "b",
+  "bdo",
+  "big",
+  "br",
+  "button",
+  "cite",
+  "code",
+  "dfn",
+  "em",
+  "i",
+  "img",
+  "input",
+  "kbd",
+  "label",
+  "map",
+  "object",
+  "output",
+  "q",
+  "samp",
+  "script",
+  "select",
+  "small",
+  "span",
+  "strong",
+  "sub",
+  "sup",
+  "textarea",
+  "time",
+  "tt",
+  "var"
+];
+var htmlHeadings = ["h1", "h2", "h3", "h4", "h5", "h6"];
+
+// node_modules/nanoid/index.js
+var import_node_crypto = require("node:crypto");
+
+// node_modules/nanoid/url-alphabet/index.js
+var urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
+
+// node_modules/nanoid/index.js
+var POOL_SIZE_MULTIPLIER = 128;
+var pool;
+var poolOffset;
+function fillPool(bytes) {
+  if (!pool || pool.length < bytes) {
+    pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
+    import_node_crypto.webcrypto.getRandomValues(pool);
+    poolOffset = 0;
+  } else if (poolOffset + bytes > pool.length) {
+    import_node_crypto.webcrypto.getRandomValues(pool);
+    poolOffset = 0;
+  }
+  poolOffset += bytes;
+}
+function nanoid(size = 21) {
+  fillPool(size |= 0);
+  let id = "";
+  for (let i = poolOffset - size;i < poolOffset; i++) {
+    id += urlAlphabet[pool[i] & 63];
+  }
+  return id;
+}
+
+// src/docx-document.ts
+var import_node_crypto2 = require("node:crypto");
+var import_xmlbuilder23 = __toESM(require_lib12());
+
+// src/helpers/render-document-file.ts
+var import_html_to_vdom = __toESM(require_html_to_vdom2());
+var import_image_size2 = __toESM(require_dist());
+var import_is_vnode2 = __toESM(require_is_vnode());
+var import_is_vtext2 = __toESM(require_is_vtext());
+var import_vnode3 = __toESM(require_vnode());
+var import_vtext2 = __toESM(require_vtext());
+var import_xmlbuilder22 = __toESM(require_lib12());
+
+// src/namespaces.ts
+var namespaces = {
+  a: "http://schemas.openxmlformats.org/drawingml/2006/main",
+  b: "http://schemas.openxmlformats.org/officeDocument/2006/bibliography",
+  cdr: "http://schemas.openxmlformats.org/drawingml/2006/chartDrawing",
+  dc: "http://purl.org/dc/elements/1.1/",
+  dcmitype: "http://purl.org/dc/dcmitype/",
+  dcterms: "http://purl.org/dc/terms/",
+  o: "urn:schemas-microsoft-com:office:office",
+  pic: "http://schemas.openxmlformats.org/drawingml/2006/picture",
+  r: "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+  v: "urn:schemas-microsoft-com:vml",
+  ve: "http://schemas.openxmlformats.org/markup-compatibility/2006",
+  vt: "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes",
+  w: "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+  w10: "urn:schemas-microsoft-com:office:word",
+  wp: "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing",
+  wne: "http://schemas.microsoft.com/office/word/2006/wordml",
+  xsd: "http://www.w3.org/2001/XMLSchema",
+  xsi: "http://www.w3.org/2001/XMLSchema-instance",
+  numbering: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering",
+  fontTable: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable",
+  hyperlinks: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+  images: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
+  styles: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles",
+  headers: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/header",
+  footers: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer",
+  themes: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",
+  coreProperties: "http://schemas.openxmlformats.org/package/2006/metadata/core-properties",
+  officeDocumentRelation: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+  corePropertiesRelation: "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",
+  settingsRelation: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings",
+  webSettingsRelation: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings",
+  sl: "http://schemas.openxmlformats.org/schemaLibrary/2006/main",
+  contentTypes: "http://schemas.openxmlformats.org/package/2006/content-types",
+  relationship: "http://schemas.openxmlformats.org/package/2006/relationships"
+};
+var namespaces_default = namespaces;
+
+// node_modules/peek-readable/lib/Errors.js
+var defaultMessages = "End-Of-Stream";
+
+class EndOfStreamError extends Error {
   constructor() {
-    this.resolve = () => null;
-    this.reject = () => null;
-    this.promise = new Promise((resolve, reject) => {
-      this.reject = reject;
-      this.resolve = resolve;
-    });
+    super(defaultMessages);
+    this.name = "EndOfStreamError";
   }
 }
 
+class AbortError extends Error {
+  constructor(message = "The operation was aborted") {
+    super(message);
+    this.name = "AbortError";
+  }
+}
 // node_modules/peek-readable/lib/AbstractStreamReader.js
 class AbstractStreamReader {
   constructor() {
@@ -54082,179 +55094,92 @@ class AbstractStreamReader {
     return bytesRead;
   }
 }
-var init_AbstractStreamReader = __esm(() => {
-  init_Errors();
-});
-
-// node_modules/peek-readable/lib/StreamReader.js
-var StreamReader;
-var init_StreamReader = __esm(() => {
-  init_Errors();
-  init_AbstractStreamReader();
-  StreamReader = class StreamReader extends AbstractStreamReader {
-    constructor(s) {
-      super();
-      this.s = s;
-      this.deferred = null;
-      if (!s.read || !s.once) {
-        throw new Error("Expected an instance of stream.Readable");
-      }
-      this.s.once("end", () => {
-        this.endOfStream = true;
-        if (this.deferred) {
-          this.deferred.resolve(0);
-        }
-      });
-      this.s.once("error", (err) => this.reject(err));
-      this.s.once("close", () => this.abort());
-    }
-    async readFromStream(buffer, offset, length) {
-      const readBuffer = this.s.read(length);
-      if (readBuffer) {
-        buffer.set(readBuffer, offset);
-        return readBuffer.length;
-      }
-      const request = {
-        buffer,
-        offset,
-        length,
-        deferred: new Deferred
-      };
-      this.deferred = request.deferred;
-      this.s.once("readable", () => {
-        this.readDeferred(request);
-      });
-      return request.deferred.promise;
-    }
-    readDeferred(request) {
-      const readBuffer = this.s.read(request.length);
-      if (readBuffer) {
-        request.buffer.set(readBuffer, request.offset);
-        request.deferred.resolve(readBuffer.length);
-        this.deferred = null;
-      } else {
-        this.s.once("readable", () => {
-          this.readDeferred(request);
-        });
-      }
-    }
-    reject(err) {
-      this.interrupted = true;
-      if (this.deferred) {
-        this.deferred.reject(err);
-        this.deferred = null;
-      }
-    }
-    async abort() {
-      this.reject(new AbortError);
-    }
-    async close() {
-      return this.abort();
-    }
-  };
-});
-
 // node_modules/peek-readable/lib/WebStreamReader.js
-var WebStreamReader;
-var init_WebStreamReader = __esm(() => {
-  init_AbstractStreamReader();
-  WebStreamReader = class WebStreamReader extends AbstractStreamReader {
-    constructor(reader) {
-      super();
-      this.reader = reader;
-    }
-    async abort() {
-      return this.close();
-    }
-    async close() {
-      this.reader.releaseLock();
-    }
-  };
-});
+class WebStreamReader extends AbstractStreamReader {
+  constructor(reader) {
+    super();
+    this.reader = reader;
+  }
+  async abort() {
+    return this.close();
+  }
+  async close() {
+    this.reader.releaseLock();
+  }
+}
 
 // node_modules/peek-readable/lib/WebStreamByobReader.js
-var WebStreamByobReader;
-var init_WebStreamByobReader = __esm(() => {
-  init_WebStreamReader();
-  WebStreamByobReader = class WebStreamByobReader extends WebStreamReader {
-    async readFromStream(buffer, offset, length) {
-      const result = await this.reader.read(new Uint8Array(length));
+class WebStreamByobReader extends WebStreamReader {
+  async readFromStream(buffer, offset, length) {
+    const result = await this.reader.read(new Uint8Array(length));
+    if (result.done) {
+      this.endOfStream = result.done;
+    }
+    if (result.value) {
+      buffer.set(result.value, offset);
+      return result.value.byteLength;
+    }
+    return 0;
+  }
+}
+// node_modules/peek-readable/lib/WebStreamDefaultReader.js
+class WebStreamDefaultReader extends AbstractStreamReader {
+  constructor(reader) {
+    super();
+    this.reader = reader;
+    this.buffer = null;
+    this.bufferOffset = 0;
+  }
+  async readFromStream(buffer, offset, length) {
+    let totalBytesRead = 0;
+    if (this.buffer) {
+      const remainingInBuffer = this.buffer.byteLength - this.bufferOffset;
+      const toCopy = Math.min(remainingInBuffer, length);
+      buffer.set(this.buffer.subarray(this.bufferOffset, this.bufferOffset + toCopy), offset);
+      this.bufferOffset += toCopy;
+      totalBytesRead += toCopy;
+      length -= toCopy;
+      offset += toCopy;
+      if (this.bufferOffset >= this.buffer.byteLength) {
+        this.buffer = null;
+        this.bufferOffset = 0;
+      }
+    }
+    while (length > 0 && !this.endOfStream) {
+      const result = await this.reader.read();
       if (result.done) {
-        this.endOfStream = result.done;
+        this.endOfStream = true;
+        break;
       }
       if (result.value) {
-        buffer.set(result.value, offset);
-        return result.value.byteLength;
-      }
-      return 0;
-    }
-  };
-});
-
-// node_modules/peek-readable/lib/WebStreamDefaultReader.js
-var WebStreamDefaultReader;
-var init_WebStreamDefaultReader = __esm(() => {
-  init_Errors();
-  init_AbstractStreamReader();
-  WebStreamDefaultReader = class WebStreamDefaultReader extends AbstractStreamReader {
-    constructor(reader) {
-      super();
-      this.reader = reader;
-      this.buffer = null;
-      this.bufferOffset = 0;
-    }
-    async readFromStream(buffer, offset, length) {
-      let totalBytesRead = 0;
-      if (this.buffer) {
-        const remainingInBuffer = this.buffer.byteLength - this.bufferOffset;
-        const toCopy = Math.min(remainingInBuffer, length);
-        buffer.set(this.buffer.subarray(this.bufferOffset, this.bufferOffset + toCopy), offset);
-        this.bufferOffset += toCopy;
-        totalBytesRead += toCopy;
-        length -= toCopy;
-        offset += toCopy;
-        if (this.bufferOffset >= this.buffer.byteLength) {
-          this.buffer = null;
-          this.bufferOffset = 0;
+        const chunk = result.value;
+        if (chunk.byteLength > length) {
+          buffer.set(chunk.subarray(0, length), offset);
+          this.buffer = chunk;
+          this.bufferOffset = length;
+          totalBytesRead += length;
+          return totalBytesRead;
         }
+        buffer.set(chunk, offset);
+        totalBytesRead += chunk.byteLength;
+        length -= chunk.byteLength;
+        offset += chunk.byteLength;
       }
-      while (length > 0 && !this.endOfStream) {
-        const result = await this.reader.read();
-        if (result.done) {
-          this.endOfStream = true;
-          break;
-        }
-        if (result.value) {
-          const chunk = result.value;
-          if (chunk.byteLength > length) {
-            buffer.set(chunk.subarray(0, length), offset);
-            this.buffer = chunk;
-            this.bufferOffset = length;
-            totalBytesRead += length;
-            return totalBytesRead;
-          }
-          buffer.set(chunk, offset);
-          totalBytesRead += chunk.byteLength;
-          length -= chunk.byteLength;
-          offset += chunk.byteLength;
-        }
-      }
-      if (totalBytesRead === 0 && this.endOfStream) {
-        throw new EndOfStreamError;
-      }
-      return totalBytesRead;
     }
-    abort() {
-      this.interrupted = true;
-      return this.reader.cancel();
+    if (totalBytesRead === 0 && this.endOfStream) {
+      throw new EndOfStreamError;
     }
-    async close() {
-      await this.abort();
-      this.reader.releaseLock();
-    }
-  };
-});
-
+    return totalBytesRead;
+  }
+  abort() {
+    this.interrupted = true;
+    return this.reader.cancel();
+  }
+  async close() {
+    await this.abort();
+    this.reader.releaseLock();
+  }
+}
 // node_modules/peek-readable/lib/WebStreamReaderFactory.js
 function makeWebStreamReader(stream) {
   try {
@@ -54270,20 +55195,6 @@ function makeWebStreamReader(stream) {
     throw error;
   }
 }
-var init_WebStreamReaderFactory = __esm(() => {
-  init_WebStreamByobReader();
-  init_WebStreamDefaultReader();
-});
-
-// node_modules/peek-readable/lib/index.js
-var init_lib = __esm(() => {
-  init_Errors();
-  init_StreamReader();
-  init_WebStreamByobReader();
-  init_WebStreamDefaultReader();
-  init_WebStreamReaderFactory();
-});
-
 // node_modules/strtok3/lib/AbstractTokenizer.js
 class AbstractTokenizer {
   constructor(options) {
@@ -54355,150 +55266,126 @@ class AbstractTokenizer {
     return Promise.resolve();
   }
 }
-var init_AbstractTokenizer = __esm(() => {
-  init_lib();
-});
 
 // node_modules/strtok3/lib/ReadStreamTokenizer.js
-var maxBufferSize = 256000, ReadStreamTokenizer;
-var init_ReadStreamTokenizer = __esm(() => {
-  init_AbstractTokenizer();
-  init_lib();
-  ReadStreamTokenizer = class ReadStreamTokenizer extends AbstractTokenizer {
-    constructor(streamReader, options) {
-      super(options);
-      this.streamReader = streamReader;
-      this.fileInfo = options?.fileInfo ?? {};
+var maxBufferSize = 256000;
+
+class ReadStreamTokenizer extends AbstractTokenizer {
+  constructor(streamReader, options) {
+    super(options);
+    this.streamReader = streamReader;
+    this.fileInfo = options?.fileInfo ?? {};
+  }
+  async readBuffer(uint8Array, options) {
+    const normOptions = this.normalizeOptions(uint8Array, options);
+    const skipBytes = normOptions.position - this.position;
+    if (skipBytes > 0) {
+      await this.ignore(skipBytes);
+      return this.readBuffer(uint8Array, options);
     }
-    async readBuffer(uint8Array, options) {
-      const normOptions = this.normalizeOptions(uint8Array, options);
+    if (skipBytes < 0) {
+      throw new Error("`options.position` must be equal or greater than `tokenizer.position`");
+    }
+    if (normOptions.length === 0) {
+      return 0;
+    }
+    const bytesRead = await this.streamReader.read(uint8Array, 0, normOptions.length);
+    this.position += bytesRead;
+    if ((!options || !options.mayBeLess) && bytesRead < normOptions.length) {
+      throw new EndOfStreamError;
+    }
+    return bytesRead;
+  }
+  async peekBuffer(uint8Array, options) {
+    const normOptions = this.normalizeOptions(uint8Array, options);
+    let bytesRead = 0;
+    if (normOptions.position) {
       const skipBytes = normOptions.position - this.position;
       if (skipBytes > 0) {
-        await this.ignore(skipBytes);
-        return this.readBuffer(uint8Array, options);
+        const skipBuffer = new Uint8Array(normOptions.length + skipBytes);
+        bytesRead = await this.peekBuffer(skipBuffer, { mayBeLess: normOptions.mayBeLess });
+        uint8Array.set(skipBuffer.subarray(skipBytes));
+        return bytesRead - skipBytes;
       }
       if (skipBytes < 0) {
-        throw new Error("`options.position` must be equal or greater than `tokenizer.position`");
+        throw new Error("Cannot peek from a negative offset in a stream");
       }
-      if (normOptions.length === 0) {
-        return 0;
+    }
+    if (normOptions.length > 0) {
+      try {
+        bytesRead = await this.streamReader.peek(uint8Array, 0, normOptions.length);
+      } catch (err) {
+        if (options?.mayBeLess && err instanceof EndOfStreamError) {
+          return 0;
+        }
+        throw err;
       }
-      const bytesRead = await this.streamReader.read(uint8Array, 0, normOptions.length);
-      this.position += bytesRead;
-      if ((!options || !options.mayBeLess) && bytesRead < normOptions.length) {
+      if (!normOptions.mayBeLess && bytesRead < normOptions.length) {
         throw new EndOfStreamError;
       }
-      return bytesRead;
     }
-    async peekBuffer(uint8Array, options) {
-      const normOptions = this.normalizeOptions(uint8Array, options);
-      let bytesRead = 0;
-      if (normOptions.position) {
-        const skipBytes = normOptions.position - this.position;
-        if (skipBytes > 0) {
-          const skipBuffer = new Uint8Array(normOptions.length + skipBytes);
-          bytesRead = await this.peekBuffer(skipBuffer, { mayBeLess: normOptions.mayBeLess });
-          uint8Array.set(skipBuffer.subarray(skipBytes));
-          return bytesRead - skipBytes;
-        }
-        if (skipBytes < 0) {
-          throw new Error("Cannot peek from a negative offset in a stream");
-        }
+    return bytesRead;
+  }
+  async ignore(length) {
+    const bufSize = Math.min(maxBufferSize, length);
+    const buf = new Uint8Array(bufSize);
+    let totBytesRead = 0;
+    while (totBytesRead < length) {
+      const remaining = length - totBytesRead;
+      const bytesRead = await this.readBuffer(buf, { length: Math.min(bufSize, remaining) });
+      if (bytesRead < 0) {
+        return bytesRead;
       }
-      if (normOptions.length > 0) {
-        try {
-          bytesRead = await this.streamReader.peek(uint8Array, 0, normOptions.length);
-        } catch (err) {
-          if (options?.mayBeLess && err instanceof EndOfStreamError) {
-            return 0;
-          }
-          throw err;
-        }
-        if (!normOptions.mayBeLess && bytesRead < normOptions.length) {
-          throw new EndOfStreamError;
-        }
-      }
-      return bytesRead;
+      totBytesRead += bytesRead;
     }
-    async ignore(length) {
-      const bufSize = Math.min(maxBufferSize, length);
-      const buf = new Uint8Array(bufSize);
-      let totBytesRead = 0;
-      while (totBytesRead < length) {
-        const remaining = length - totBytesRead;
-        const bytesRead = await this.readBuffer(buf, { length: Math.min(bufSize, remaining) });
-        if (bytesRead < 0) {
-          return bytesRead;
-        }
-        totBytesRead += bytesRead;
-      }
-      return totBytesRead;
-    }
-    abort() {
-      return this.streamReader.abort();
-    }
-    async close() {
-      return this.streamReader.close();
-    }
-    supportsRandomAccess() {
-      return false;
-    }
-  };
-});
+    return totBytesRead;
+  }
+  abort() {
+    return this.streamReader.abort();
+  }
+  async close() {
+    return this.streamReader.close();
+  }
+  supportsRandomAccess() {
+    return false;
+  }
+}
 
 // node_modules/strtok3/lib/BufferTokenizer.js
-var BufferTokenizer;
-var init_BufferTokenizer = __esm(() => {
-  init_lib();
-  init_AbstractTokenizer();
-  BufferTokenizer = class BufferTokenizer extends AbstractTokenizer {
-    constructor(uint8Array, options) {
-      super(options);
-      this.uint8Array = uint8Array;
-      this.fileInfo = { ...options?.fileInfo ?? {}, ...{ size: uint8Array.length } };
+class BufferTokenizer extends AbstractTokenizer {
+  constructor(uint8Array, options) {
+    super(options);
+    this.uint8Array = uint8Array;
+    this.fileInfo = { ...options?.fileInfo ?? {}, ...{ size: uint8Array.length } };
+  }
+  async readBuffer(uint8Array, options) {
+    if (options?.position) {
+      this.position = options.position;
     }
-    async readBuffer(uint8Array, options) {
-      if (options?.position) {
-        this.position = options.position;
-      }
-      const bytesRead = await this.peekBuffer(uint8Array, options);
-      this.position += bytesRead;
-      return bytesRead;
+    const bytesRead = await this.peekBuffer(uint8Array, options);
+    this.position += bytesRead;
+    return bytesRead;
+  }
+  async peekBuffer(uint8Array, options) {
+    const normOptions = this.normalizeOptions(uint8Array, options);
+    const bytes2read = Math.min(this.uint8Array.length - normOptions.position, normOptions.length);
+    if (!normOptions.mayBeLess && bytes2read < normOptions.length) {
+      throw new EndOfStreamError;
     }
-    async peekBuffer(uint8Array, options) {
-      const normOptions = this.normalizeOptions(uint8Array, options);
-      const bytes2read = Math.min(this.uint8Array.length - normOptions.position, normOptions.length);
-      if (!normOptions.mayBeLess && bytes2read < normOptions.length) {
-        throw new EndOfStreamError;
-      }
-      uint8Array.set(this.uint8Array.subarray(normOptions.position, normOptions.position + bytes2read));
-      return bytes2read;
-    }
-    close() {
-      return super.close();
-    }
-    supportsRandomAccess() {
-      return true;
-    }
-    setPosition(position) {
-      this.position = position;
-    }
-  };
-});
-
-// node_modules/strtok3/lib/core.js
-function fromStream(stream, options) {
-  const streamReader = new StreamReader(stream);
-  const _options = options ?? {};
-  const chainedClose = _options.onClose;
-  _options.onClose = async () => {
-    await streamReader.close();
-    if (chainedClose) {
-      return chainedClose();
-    }
-  };
-  return new ReadStreamTokenizer(streamReader, _options);
+    uint8Array.set(this.uint8Array.subarray(normOptions.position, normOptions.position + bytes2read));
+    return bytes2read;
+  }
+  close() {
+    return super.close();
+  }
+  supportsRandomAccess() {
+    return true;
+  }
+  setPosition(position) {
+    this.position = position;
+  }
 }
+// node_modules/strtok3/lib/core.js
 function fromWebStream(webStream, options) {
   const webStreamReader = makeWebStreamReader(webStream);
   const _options = options ?? {};
@@ -54514,167 +55401,130 @@ function fromWebStream(webStream, options) {
 function fromBuffer(uint8Array, options) {
   return new BufferTokenizer(uint8Array, options);
 }
-var init_core = __esm(() => {
-  init_lib();
-  init_ReadStreamTokenizer();
-  init_BufferTokenizer();
-  init_lib();
-  init_AbstractTokenizer();
-});
 
 // node_modules/strtok3/lib/FileTokenizer.js
-var import_promises, FileTokenizer;
-var init_FileTokenizer = __esm(() => {
-  init_AbstractTokenizer();
-  init_lib();
-  import_promises = require("node:fs/promises");
-  FileTokenizer = class FileTokenizer extends AbstractTokenizer {
-    static async fromFile(sourceFilePath) {
-      const fileHandle = await import_promises.open(sourceFilePath, "r");
-      const stat = await fileHandle.stat();
-      return new FileTokenizer(fileHandle, { fileInfo: { path: sourceFilePath, size: stat.size } });
-    }
-    constructor(fileHandle, options) {
-      super(options);
-      this.fileHandle = fileHandle;
-      this.fileInfo = options.fileInfo;
-    }
-    async readBuffer(uint8Array, options) {
-      const normOptions = this.normalizeOptions(uint8Array, options);
-      this.position = normOptions.position;
-      if (normOptions.length === 0)
-        return 0;
-      const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
-      this.position += res.bytesRead;
-      if (res.bytesRead < normOptions.length && (!options || !options.mayBeLess)) {
-        throw new EndOfStreamError;
-      }
-      return res.bytesRead;
-    }
-    async peekBuffer(uint8Array, options) {
-      const normOptions = this.normalizeOptions(uint8Array, options);
-      const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
-      if (!normOptions.mayBeLess && res.bytesRead < normOptions.length) {
-        throw new EndOfStreamError;
-      }
-      return res.bytesRead;
-    }
-    async close() {
-      await this.fileHandle.close();
-      return super.close();
-    }
-    setPosition(position) {
-      this.position = position;
-    }
-    supportsRandomAccess() {
-      return true;
-    }
-  };
-});
+var import_promises = require("node:fs/promises");
 
-// node_modules/strtok3/lib/index.js
-async function fromStream2(stream, options) {
-  const rst = fromStream(stream, options);
-  if (stream.path) {
-    const stat = await import_promises2.stat(stream.path);
-    rst.fileInfo.path = stream.path;
-    rst.fileInfo.size = stat.size;
+class FileTokenizer extends AbstractTokenizer {
+  static async fromFile(sourceFilePath) {
+    const fileHandle = await import_promises.open(sourceFilePath, "r");
+    const stat = await fileHandle.stat();
+    return new FileTokenizer(fileHandle, { fileInfo: { path: sourceFilePath, size: stat.size } });
   }
-  return rst;
+  constructor(fileHandle, options) {
+    super(options);
+    this.fileHandle = fileHandle;
+    this.fileInfo = options.fileInfo;
+  }
+  async readBuffer(uint8Array, options) {
+    const normOptions = this.normalizeOptions(uint8Array, options);
+    this.position = normOptions.position;
+    if (normOptions.length === 0)
+      return 0;
+    const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
+    this.position += res.bytesRead;
+    if (res.bytesRead < normOptions.length && (!options || !options.mayBeLess)) {
+      throw new EndOfStreamError;
+    }
+    return res.bytesRead;
+  }
+  async peekBuffer(uint8Array, options) {
+    const normOptions = this.normalizeOptions(uint8Array, options);
+    const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
+    if (!normOptions.mayBeLess && res.bytesRead < normOptions.length) {
+      throw new EndOfStreamError;
+    }
+    return res.bytesRead;
+  }
+  async close() {
+    await this.fileHandle.close();
+    return super.close();
+  }
+  setPosition(position) {
+    this.position = position;
+  }
+  supportsRandomAccess() {
+    return true;
+  }
 }
-var import_promises2, fromFile;
-var init_lib2 = __esm(() => {
-  import_promises2 = require("node:fs/promises");
-  init_core();
-  init_FileTokenizer();
-  init_FileTokenizer();
-  init_core();
-  fromFile = FileTokenizer.fromFile;
-});
-
-// node_modules/ieee754/index.js
-var require_ieee754 = __commonJS((exports2) => {
-  /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
-  exports2.read = function(buffer, offset, isLE, mLen, nBytes) {
-    var e, m;
-    var eLen = nBytes * 8 - mLen - 1;
-    var eMax = (1 << eLen) - 1;
-    var eBias = eMax >> 1;
-    var nBits = -7;
-    var i = isLE ? nBytes - 1 : 0;
-    var d = isLE ? -1 : 1;
-    var s = buffer[offset + i];
-    i += d;
-    e = s & (1 << -nBits) - 1;
-    s >>= -nBits;
-    nBits += eLen;
-    for (;nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-    m = e & (1 << -nBits) - 1;
-    e >>= -nBits;
-    nBits += mLen;
-    for (;nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-    if (e === 0) {
-      e = 1 - eBias;
-    } else if (e === eMax) {
-      return m ? NaN : (s ? -1 : 1) * Infinity;
-    } else {
-      m = m + Math.pow(2, mLen);
-      e = e - eBias;
-    }
-    return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
-  };
-  exports2.write = function(buffer, value, offset, isLE, mLen, nBytes) {
-    var e, m, c;
-    var eLen = nBytes * 8 - mLen - 1;
-    var eMax = (1 << eLen) - 1;
-    var eBias = eMax >> 1;
-    var rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0;
-    var i = isLE ? 0 : nBytes - 1;
-    var d = isLE ? 1 : -1;
-    var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
-    value = Math.abs(value);
-    if (isNaN(value) || value === Infinity) {
-      m = isNaN(value) ? 1 : 0;
-      e = eMax;
-    } else {
-      e = Math.floor(Math.log(value) / Math.LN2);
-      if (value * (c = Math.pow(2, -e)) < 1) {
-        e--;
-        c *= 2;
-      }
-      if (e + eBias >= 1) {
-        value += rt / c;
-      } else {
-        value += rt * Math.pow(2, 1 - eBias);
-      }
-      if (value * c >= 2) {
-        e++;
-        c /= 2;
-      }
-      if (e + eBias >= eMax) {
-        m = 0;
-        e = eMax;
-      } else if (e + eBias >= 1) {
-        m = (value * c - 1) * Math.pow(2, mLen);
-        e = e + eBias;
-      } else {
-        m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
-        e = 0;
-      }
-    }
-    for (;mLen >= 8; buffer[offset + i] = m & 255, i += d, m /= 256, mLen -= 8) {}
-    e = e << mLen | m;
-    eLen += mLen;
-    for (;eLen > 0; buffer[offset + i] = e & 255, i += d, e /= 256, eLen -= 8) {}
-    buffer[offset + i - d] |= s * 128;
-  };
-});
+// node_modules/strtok3/lib/index.js
+var fromFile = FileTokenizer.fromFile;
 
 // node_modules/token-types/lib/index.js
+var ieee754 = __toESM(require_ieee754());
 function dv(array) {
   return new DataView(array.buffer, array.byteOffset);
 }
-
+var UINT8 = {
+  len: 1,
+  get(array, offset) {
+    return dv(array).getUint8(offset);
+  },
+  put(array, offset, value) {
+    dv(array).setUint8(offset, value);
+    return offset + 1;
+  }
+};
+var UINT16_LE = {
+  len: 2,
+  get(array, offset) {
+    return dv(array).getUint16(offset, true);
+  },
+  put(array, offset, value) {
+    dv(array).setUint16(offset, value, true);
+    return offset + 2;
+  }
+};
+var UINT16_BE = {
+  len: 2,
+  get(array, offset) {
+    return dv(array).getUint16(offset);
+  },
+  put(array, offset, value) {
+    dv(array).setUint16(offset, value);
+    return offset + 2;
+  }
+};
+var UINT32_LE = {
+  len: 4,
+  get(array, offset) {
+    return dv(array).getUint32(offset, true);
+  },
+  put(array, offset, value) {
+    dv(array).setUint32(offset, value, true);
+    return offset + 4;
+  }
+};
+var UINT32_BE = {
+  len: 4,
+  get(array, offset) {
+    return dv(array).getUint32(offset);
+  },
+  put(array, offset, value) {
+    dv(array).setUint32(offset, value);
+    return offset + 4;
+  }
+};
+var INT32_BE = {
+  len: 4,
+  get(array, offset) {
+    return dv(array).getInt32(offset);
+  },
+  put(array, offset, value) {
+    dv(array).setInt32(offset, value);
+    return offset + 4;
+  }
+};
+var UINT64_LE = {
+  len: 8,
+  get(array, offset) {
+    return dv(array).getBigUint64(offset, true);
+  },
+  put(array, offset, value) {
+    dv(array).setBigUint64(offset, value, true);
+    return offset + 8;
+  }
+};
 class StringType {
   constructor(len, encoding) {
     this.len = len;
@@ -54685,98 +55535,21 @@ class StringType {
     return this.textDecoder.decode(uint8Array.subarray(offset, offset + this.len));
   }
 }
-var ieee754, UINT8, UINT16_LE, UINT16_BE, UINT32_LE, UINT32_BE, INT32_BE, UINT64_LE;
-var init_lib3 = __esm(() => {
-  ieee754 = __toESM(require_ieee754());
-  UINT8 = {
-    len: 1,
-    get(array, offset) {
-      return dv(array).getUint8(offset);
-    },
-    put(array, offset, value) {
-      dv(array).setUint8(offset, value);
-      return offset + 1;
-    }
-  };
-  UINT16_LE = {
-    len: 2,
-    get(array, offset) {
-      return dv(array).getUint16(offset, true);
-    },
-    put(array, offset, value) {
-      dv(array).setUint16(offset, value, true);
-      return offset + 2;
-    }
-  };
-  UINT16_BE = {
-    len: 2,
-    get(array, offset) {
-      return dv(array).getUint16(offset);
-    },
-    put(array, offset, value) {
-      dv(array).setUint16(offset, value);
-      return offset + 2;
-    }
-  };
-  UINT32_LE = {
-    len: 4,
-    get(array, offset) {
-      return dv(array).getUint32(offset, true);
-    },
-    put(array, offset, value) {
-      dv(array).setUint32(offset, value, true);
-      return offset + 4;
-    }
-  };
-  UINT32_BE = {
-    len: 4,
-    get(array, offset) {
-      return dv(array).getUint32(offset);
-    },
-    put(array, offset, value) {
-      dv(array).setUint32(offset, value);
-      return offset + 4;
-    }
-  };
-  INT32_BE = {
-    len: 4,
-    get(array, offset) {
-      return dv(array).getInt32(offset);
-    },
-    put(array, offset, value) {
-      dv(array).setInt32(offset, value);
-      return offset + 4;
-    }
-  };
-  UINT64_LE = {
-    len: 8,
-    get(array, offset) {
-      return dv(array).getBigUint64(offset, true);
-    },
-    put(array, offset, value) {
-      dv(array).setBigUint64(offset, value, true);
-      return offset + 8;
-    }
-  };
-});
 
 // node_modules/fflate/esm/index.mjs
-function inflateSync(data, opts) {
-  return inflt(data, { i: 2 }, opts && opts.out, opts && opts.dictionary);
-}
-function gunzipSync(data, opts) {
-  var st = gzs(data);
-  if (st + 8 > data.length)
-    err(6, "invalid gzip data");
-  return inflt(data.subarray(st, -8), { i: 2 }, opts && opts.out || new u8(gzl(data)), opts && opts.dictionary);
-}
-function unzlibSync(data, opts) {
-  return inflt(data.subarray(zls(data, opts && opts.dictionary), -4), { i: 2 }, opts && opts.out, opts && opts.dictionary);
-}
-function decompressSync(data, opts) {
-  return data[0] == 31 && data[1] == 139 && data[2] == 8 ? gunzipSync(data, opts) : (data[0] & 15) != 8 || data[0] >> 4 > 7 || (data[0] << 8 | data[1]) % 31 ? inflateSync(data, opts) : unzlibSync(data, opts);
-}
-var import_module, require2, Worker, u8, u16, i32, fleb, fdeb, clim, freb = function(eb, start) {
+var import_module = require("module");
+var require2 = import_module.createRequire("/");
+var Worker;
+try {
+  Worker = require2("worker_threads").Worker;
+} catch (e) {}
+var u8 = Uint8Array;
+var u16 = Uint16Array;
+var i32 = Int32Array;
+var fleb = new u8([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0]);
+var fdeb = new u8([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 0, 0]);
+var clim = new u8([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
+var freb = function(eb, start) {
   var b = new u16(31);
   for (var i = 0;i < 31; ++i) {
     b[i] = start += 1 << eb[i - 1];
@@ -54788,7 +55561,24 @@ var import_module, require2, Worker, u8, u16, i32, fleb, fdeb, clim, freb = func
     }
   }
   return { b, r };
-}, _a, fl, revfl, _b, fd, revfd, rev, x, i, hMap = function(cd, mb, r) {
+};
+var _a = freb(fleb, 2);
+var fl = _a.b;
+var revfl = _a.r;
+fl[28] = 258, revfl[258] = 28;
+var _b = freb(fdeb, 0);
+var fd = _b.b;
+var revfd = _b.r;
+var rev = new u16(32768);
+for (i = 0;i < 32768; ++i) {
+  x = (i & 43690) >> 1 | (i & 21845) << 1;
+  x = (x & 52428) >> 2 | (x & 13107) << 2;
+  x = (x & 61680) >> 4 | (x & 3855) << 4;
+  rev[i] = ((x & 65280) >> 8 | (x & 255) << 8) >> 1;
+}
+var x;
+var i;
+var hMap = function(cd, mb, r) {
   var s = cd.length;
   var i2 = 0;
   var l = new u16(mb);
@@ -54823,28 +55613,69 @@ var import_module, require2, Worker, u8, u16, i32, fleb, fdeb, clim, freb = func
     }
   }
   return co;
-}, flt, i, i, i, i, fdt, i, flrm, fdrm, max = function(a) {
+};
+var flt = new u8(288);
+for (i = 0;i < 144; ++i)
+  flt[i] = 8;
+var i;
+for (i = 144;i < 256; ++i)
+  flt[i] = 9;
+var i;
+for (i = 256;i < 280; ++i)
+  flt[i] = 7;
+var i;
+for (i = 280;i < 288; ++i)
+  flt[i] = 8;
+var i;
+var fdt = new u8(32);
+for (i = 0;i < 32; ++i)
+  fdt[i] = 5;
+var i;
+var flrm = /* @__PURE__ */ hMap(flt, 9, 1);
+var fdrm = /* @__PURE__ */ hMap(fdt, 5, 1);
+var max = function(a) {
   var m = a[0];
   for (var i2 = 1;i2 < a.length; ++i2) {
     if (a[i2] > m)
       m = a[i2];
   }
   return m;
-}, bits = function(d, p, m) {
+};
+var bits = function(d, p, m) {
   var o = p / 8 | 0;
   return (d[o] | d[o + 1] << 8) >> (p & 7) & m;
-}, bits16 = function(d, p) {
+};
+var bits16 = function(d, p) {
   var o = p / 8 | 0;
   return (d[o] | d[o + 1] << 8 | d[o + 2] << 16) >> (p & 7);
-}, shft = function(p) {
+};
+var shft = function(p) {
   return (p + 7) / 8 | 0;
-}, slc = function(v, s, e) {
+};
+var slc = function(v, s, e) {
   if (s == null || s < 0)
     s = 0;
   if (e == null || e > v.length)
     e = v.length;
   return new u8(v.subarray(s, e));
-}, ec, err = function(ind, msg, nt) {
+};
+var ec = [
+  "unexpected EOF",
+  "invalid block type",
+  "invalid length/literal",
+  "invalid distance",
+  "stream finished",
+  "no stream handler",
+  ,
+  "no callback",
+  "invalid UTF-8 data",
+  "extra field too long",
+  "date not in range 1980-2099",
+  "filename too long",
+  "stream finishing",
+  "invalid zip data"
+];
+var err = function(ind, msg, nt) {
   var e = new Error(msg || ec[ind]);
   e.code = ind;
   if (Error.captureStackTrace)
@@ -54852,7 +55683,8 @@ var import_module, require2, Worker, u8, u16, i32, fleb, fdeb, clim, freb = func
   if (!nt)
     throw e;
   return e;
-}, inflt = function(dat, st, buf, dict) {
+};
+var inflt = function(dat, st, buf, dict) {
   var sl = dat.length, dl = dict ? dict.length : 0;
   if (!sl || st.f && !st.l)
     return buf || new u8(0);
@@ -54992,7 +55824,9 @@ var import_module, require2, Worker, u8, u16, i32, fleb, fdeb, clim, freb = func
       final = 1, st.m = lbt, st.d = dm, st.n = dbt;
   } while (!final);
   return bt != buf.length && noBuf ? slc(buf, 0, bt) : buf.subarray(0, bt);
-}, et, gzs = function(d) {
+};
+var et = /* @__PURE__ */ new u8(0);
+var gzs = function(d) {
   if (d[0] != 31 || d[1] != 139 || d[2] != 8)
     err(6, "invalid gzip data");
   var flg = d[3];
@@ -55002,887 +55836,112 @@ var import_module, require2, Worker, u8, u16, i32, fleb, fdeb, clim, freb = func
   for (var zs = (flg >> 3 & 1) + (flg >> 4 & 1);zs > 0; zs -= !d[st++])
     ;
   return st + (flg & 2);
-}, gzl = function(d) {
+};
+var gzl = function(d) {
   var l = d.length;
   return (d[l - 4] | d[l - 3] << 8 | d[l - 2] << 16 | d[l - 1] << 24) >>> 0;
-}, zls = function(d, dict) {
+};
+var zls = function(d, dict) {
   if ((d[0] & 15) != 8 || d[0] >> 4 > 7 || (d[0] << 8 | d[1]) % 31)
     err(6, "invalid zlib data");
   if ((d[1] >> 5 & 1) == +!dict)
     err(6, "invalid zlib data: " + (d[1] & 32 ? "need" : "unexpected") + " dictionary");
   return (d[1] >> 3 & 4) + 2;
-}, td, tds = 0;
-var init_esm = __esm(() => {
-  import_module = require("module");
-  require2 = import_module.createRequire("/");
-  try {
-    Worker = require2("worker_threads").Worker;
-  } catch (e) {}
-  u8 = Uint8Array;
-  u16 = Uint16Array;
-  i32 = Int32Array;
-  fleb = new u8([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0]);
-  fdeb = new u8([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 0, 0]);
-  clim = new u8([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
-  _a = freb(fleb, 2);
-  fl = _a.b;
-  revfl = _a.r;
-  fl[28] = 258, revfl[258] = 28;
-  _b = freb(fdeb, 0);
-  fd = _b.b;
-  revfd = _b.r;
-  rev = new u16(32768);
-  for (i = 0;i < 32768; ++i) {
-    x = (i & 43690) >> 1 | (i & 21845) << 1;
-    x = (x & 52428) >> 2 | (x & 13107) << 2;
-    x = (x & 61680) >> 4 | (x & 3855) << 4;
-    rev[i] = ((x & 65280) >> 8 | (x & 255) << 8) >> 1;
-  }
-  flt = new u8(288);
-  for (i = 0;i < 144; ++i)
-    flt[i] = 8;
-  for (i = 144;i < 256; ++i)
-    flt[i] = 9;
-  for (i = 256;i < 280; ++i)
-    flt[i] = 7;
-  for (i = 280;i < 288; ++i)
-    flt[i] = 8;
-  fdt = new u8(32);
-  for (i = 0;i < 32; ++i)
-    fdt[i] = 5;
-  flrm = /* @__PURE__ */ hMap(flt, 9, 1);
-  fdrm = /* @__PURE__ */ hMap(fdt, 5, 1);
-  ec = [
-    "unexpected EOF",
-    "invalid block type",
-    "invalid length/literal",
-    "invalid distance",
-    "stream finished",
-    "no stream handler",
-    ,
-    "no callback",
-    "invalid UTF-8 data",
-    "extra field too long",
-    "date not in range 1980-2099",
-    "filename too long",
-    "stream finishing",
-    "invalid zip data"
-  ];
-  et = /* @__PURE__ */ new u8(0);
-  td = typeof TextDecoder != "undefined" && /* @__PURE__ */ new TextDecoder;
-  try {
-    td.decode(et, { stream: true });
-    tds = 1;
-  } catch (e) {}
-});
+};
+function inflateSync(data, opts) {
+  return inflt(data, { i: 2 }, opts && opts.out, opts && opts.dictionary);
+}
+function gunzipSync(data, opts) {
+  var st = gzs(data);
+  if (st + 8 > data.length)
+    err(6, "invalid gzip data");
+  return inflt(data.subarray(st, -8), { i: 2 }, opts && opts.out || new u8(gzl(data)), opts && opts.dictionary);
+}
+function unzlibSync(data, opts) {
+  return inflt(data.subarray(zls(data, opts && opts.dictionary), -4), { i: 2 }, opts && opts.out, opts && opts.dictionary);
+}
+function decompressSync(data, opts) {
+  return data[0] == 31 && data[1] == 139 && data[2] == 8 ? gunzipSync(data, opts) : (data[0] & 15) != 8 || data[0] >> 4 > 7 || (data[0] << 8 | data[1]) % 31 ? inflateSync(data, opts) : unzlibSync(data, opts);
+}
+var td = typeof TextDecoder != "undefined" && /* @__PURE__ */ new TextDecoder;
+var tds = 0;
+try {
+  td.decode(et, { stream: true });
+  tds = 1;
+} catch (e) {}
 
-// node_modules/ms/index.js
-var require_ms = __commonJS((exports2, module2) => {
-  var s = 1000;
-  var m = s * 60;
-  var h = m * 60;
-  var d = h * 24;
-  var w = d * 7;
-  var y = d * 365.25;
-  module2.exports = function(val, options) {
-    options = options || {};
-    var type = typeof val;
-    if (type === "string" && val.length > 0) {
-      return parse(val);
-    } else if (type === "number" && isFinite(val)) {
-      return options.long ? fmtLong(val) : fmtShort(val);
-    }
-    throw new Error("val is not a non-empty string or a valid number. val=" + JSON.stringify(val));
-  };
-  function parse(str) {
-    str = String(str);
-    if (str.length > 100) {
-      return;
-    }
-    var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(str);
-    if (!match) {
-      return;
-    }
-    var n = parseFloat(match[1]);
-    var type = (match[2] || "ms").toLowerCase();
-    switch (type) {
-      case "years":
-      case "year":
-      case "yrs":
-      case "yr":
-      case "y":
-        return n * y;
-      case "weeks":
-      case "week":
-      case "w":
-        return n * w;
-      case "days":
-      case "day":
-      case "d":
-        return n * d;
-      case "hours":
-      case "hour":
-      case "hrs":
-      case "hr":
-      case "h":
-        return n * h;
-      case "minutes":
-      case "minute":
-      case "mins":
-      case "min":
-      case "m":
-        return n * m;
-      case "seconds":
-      case "second":
-      case "secs":
-      case "sec":
-      case "s":
-        return n * s;
-      case "milliseconds":
-      case "millisecond":
-      case "msecs":
-      case "msec":
-      case "ms":
-        return n;
-      default:
-        return;
-    }
-  }
-  function fmtShort(ms) {
-    var msAbs = Math.abs(ms);
-    if (msAbs >= d) {
-      return Math.round(ms / d) + "d";
-    }
-    if (msAbs >= h) {
-      return Math.round(ms / h) + "h";
-    }
-    if (msAbs >= m) {
-      return Math.round(ms / m) + "m";
-    }
-    if (msAbs >= s) {
-      return Math.round(ms / s) + "s";
-    }
-    return ms + "ms";
-  }
-  function fmtLong(ms) {
-    var msAbs = Math.abs(ms);
-    if (msAbs >= d) {
-      return plural(ms, msAbs, d, "day");
-    }
-    if (msAbs >= h) {
-      return plural(ms, msAbs, h, "hour");
-    }
-    if (msAbs >= m) {
-      return plural(ms, msAbs, m, "minute");
-    }
-    if (msAbs >= s) {
-      return plural(ms, msAbs, s, "second");
-    }
-    return ms + " ms";
-  }
-  function plural(ms, msAbs, n, name) {
-    var isPlural = msAbs >= n * 1.5;
-    return Math.round(ms / n) + " " + name + (isPlural ? "s" : "");
-  }
-});
-
-// node_modules/debug/src/common.js
-var require_common2 = __commonJS((exports2, module2) => {
-  function setup(env) {
-    createDebug.debug = createDebug;
-    createDebug.default = createDebug;
-    createDebug.coerce = coerce;
-    createDebug.disable = disable;
-    createDebug.enable = enable;
-    createDebug.enabled = enabled;
-    createDebug.humanize = require_ms();
-    createDebug.destroy = destroy;
-    Object.keys(env).forEach((key) => {
-      createDebug[key] = env[key];
-    });
-    createDebug.names = [];
-    createDebug.skips = [];
-    createDebug.formatters = {};
-    function selectColor(namespace) {
-      let hash = 0;
-      for (let i2 = 0;i2 < namespace.length; i2++) {
-        hash = (hash << 5) - hash + namespace.charCodeAt(i2);
-        hash |= 0;
-      }
-      return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
-    }
-    createDebug.selectColor = selectColor;
-    function createDebug(namespace) {
-      let prevTime;
-      let enableOverride = null;
-      let namespacesCache;
-      let enabledCache;
-      function debug(...args) {
-        if (!debug.enabled) {
-          return;
-        }
-        const self2 = debug;
-        const curr = Number(new Date);
-        const ms = curr - (prevTime || curr);
-        self2.diff = ms;
-        self2.prev = prevTime;
-        self2.curr = curr;
-        prevTime = curr;
-        args[0] = createDebug.coerce(args[0]);
-        if (typeof args[0] !== "string") {
-          args.unshift("%O");
-        }
-        let index = 0;
-        args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
-          if (match === "%%") {
-            return "%";
-          }
-          index++;
-          const formatter = createDebug.formatters[format];
-          if (typeof formatter === "function") {
-            const val = args[index];
-            match = formatter.call(self2, val);
-            args.splice(index, 1);
-            index--;
-          }
-          return match;
-        });
-        createDebug.formatArgs.call(self2, args);
-        const logFn = self2.log || createDebug.log;
-        logFn.apply(self2, args);
-      }
-      debug.namespace = namespace;
-      debug.useColors = createDebug.useColors();
-      debug.color = createDebug.selectColor(namespace);
-      debug.extend = extend;
-      debug.destroy = createDebug.destroy;
-      Object.defineProperty(debug, "enabled", {
-        enumerable: true,
-        configurable: false,
-        get: () => {
-          if (enableOverride !== null) {
-            return enableOverride;
-          }
-          if (namespacesCache !== createDebug.namespaces) {
-            namespacesCache = createDebug.namespaces;
-            enabledCache = createDebug.enabled(namespace);
-          }
-          return enabledCache;
-        },
-        set: (v) => {
-          enableOverride = v;
-        }
-      });
-      if (typeof createDebug.init === "function") {
-        createDebug.init(debug);
-      }
-      return debug;
-    }
-    function extend(namespace, delimiter) {
-      const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace);
-      newDebug.log = this.log;
-      return newDebug;
-    }
-    function enable(namespaces2) {
-      createDebug.save(namespaces2);
-      createDebug.namespaces = namespaces2;
-      createDebug.names = [];
-      createDebug.skips = [];
-      const split = (typeof namespaces2 === "string" ? namespaces2 : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
-      for (const ns of split) {
-        if (ns[0] === "-") {
-          createDebug.skips.push(ns.slice(1));
-        } else {
-          createDebug.names.push(ns);
-        }
-      }
-    }
-    function matchesTemplate(search, template) {
-      let searchIndex = 0;
-      let templateIndex = 0;
-      let starIndex = -1;
-      let matchIndex = 0;
-      while (searchIndex < search.length) {
-        if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === "*")) {
-          if (template[templateIndex] === "*") {
-            starIndex = templateIndex;
-            matchIndex = searchIndex;
-            templateIndex++;
-          } else {
-            searchIndex++;
-            templateIndex++;
-          }
-        } else if (starIndex !== -1) {
-          templateIndex = starIndex + 1;
-          matchIndex++;
-          searchIndex = matchIndex;
-        } else {
-          return false;
-        }
-      }
-      while (templateIndex < template.length && template[templateIndex] === "*") {
-        templateIndex++;
-      }
-      return templateIndex === template.length;
-    }
-    function disable() {
-      const namespaces2 = [
-        ...createDebug.names,
-        ...createDebug.skips.map((namespace) => "-" + namespace)
-      ].join(",");
-      createDebug.enable("");
-      return namespaces2;
-    }
-    function enabled(name) {
-      for (const skip of createDebug.skips) {
-        if (matchesTemplate(name, skip)) {
-          return false;
-        }
-      }
-      for (const ns of createDebug.names) {
-        if (matchesTemplate(name, ns)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    function coerce(val) {
-      if (val instanceof Error) {
-        return val.stack || val.message;
-      }
-      return val;
-    }
-    function destroy() {
-      console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
-    }
-    createDebug.enable(createDebug.load());
-    return createDebug;
-  }
-  module2.exports = setup;
-});
-
-// node_modules/debug/src/browser.js
-var require_browser = __commonJS((exports2, module2) => {
-  exports2.formatArgs = formatArgs;
-  exports2.save = save;
-  exports2.load = load;
-  exports2.useColors = useColors;
-  exports2.storage = localstorage();
-  exports2.destroy = (() => {
-    let warned = false;
-    return () => {
-      if (!warned) {
-        warned = true;
-        console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
-      }
-    };
-  })();
-  exports2.colors = [
-    "#0000CC",
-    "#0000FF",
-    "#0033CC",
-    "#0033FF",
-    "#0066CC",
-    "#0066FF",
-    "#0099CC",
-    "#0099FF",
-    "#00CC00",
-    "#00CC33",
-    "#00CC66",
-    "#00CC99",
-    "#00CCCC",
-    "#00CCFF",
-    "#3300CC",
-    "#3300FF",
-    "#3333CC",
-    "#3333FF",
-    "#3366CC",
-    "#3366FF",
-    "#3399CC",
-    "#3399FF",
-    "#33CC00",
-    "#33CC33",
-    "#33CC66",
-    "#33CC99",
-    "#33CCCC",
-    "#33CCFF",
-    "#6600CC",
-    "#6600FF",
-    "#6633CC",
-    "#6633FF",
-    "#66CC00",
-    "#66CC33",
-    "#9900CC",
-    "#9900FF",
-    "#9933CC",
-    "#9933FF",
-    "#99CC00",
-    "#99CC33",
-    "#CC0000",
-    "#CC0033",
-    "#CC0066",
-    "#CC0099",
-    "#CC00CC",
-    "#CC00FF",
-    "#CC3300",
-    "#CC3333",
-    "#CC3366",
-    "#CC3399",
-    "#CC33CC",
-    "#CC33FF",
-    "#CC6600",
-    "#CC6633",
-    "#CC9900",
-    "#CC9933",
-    "#CCCC00",
-    "#CCCC33",
-    "#FF0000",
-    "#FF0033",
-    "#FF0066",
-    "#FF0099",
-    "#FF00CC",
-    "#FF00FF",
-    "#FF3300",
-    "#FF3333",
-    "#FF3366",
-    "#FF3399",
-    "#FF33CC",
-    "#FF33FF",
-    "#FF6600",
-    "#FF6633",
-    "#FF9900",
-    "#FF9933",
-    "#FFCC00",
-    "#FFCC33"
-  ];
-  function useColors() {
-    if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
-      return true;
-    }
-    if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-      return false;
-    }
-    let m;
-    return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && (m = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m[1], 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
-  }
-  function formatArgs(args) {
-    args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module2.exports.humanize(this.diff);
-    if (!this.useColors) {
-      return;
-    }
-    const c = "color: " + this.color;
-    args.splice(1, 0, c, "color: inherit");
-    let index = 0;
-    let lastC = 0;
-    args[0].replace(/%[a-zA-Z%]/g, (match) => {
-      if (match === "%%") {
-        return;
-      }
-      index++;
-      if (match === "%c") {
-        lastC = index;
-      }
-    });
-    args.splice(lastC, 0, c);
-  }
-  exports2.log = console.debug || console.log || (() => {});
-  function save(namespaces2) {
-    try {
-      if (namespaces2) {
-        exports2.storage.setItem("debug", namespaces2);
-      } else {
-        exports2.storage.removeItem("debug");
-      }
-    } catch (error) {}
-  }
-  function load() {
-    let r;
-    try {
-      r = exports2.storage.getItem("debug") || exports2.storage.getItem("DEBUG");
-    } catch (error) {}
-    if (!r && typeof process !== "undefined" && "env" in process) {
-      r = process.env.DEBUG;
-    }
-    return r;
-  }
-  function localstorage() {
-    try {
-      return localStorage;
-    } catch (error) {}
-  }
-  module2.exports = require_common2()(exports2);
-  var { formatters } = module2.exports;
-  formatters.j = function(v) {
-    try {
-      return JSON.stringify(v);
-    } catch (error) {
-      return "[UnexpectedJSONParseError]: " + error.message;
-    }
-  };
-});
-
-// node_modules/has-flag/index.js
-var require_has_flag = __commonJS((exports2, module2) => {
-  module2.exports = (flag, argv = process.argv) => {
-    const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
-    const position = argv.indexOf(prefix + flag);
-    const terminatorPosition = argv.indexOf("--");
-    return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
-  };
-});
-
-// node_modules/supports-color/index.js
-var require_supports_color = __commonJS((exports2, module2) => {
-  var os = require("os");
-  var tty = require("tty");
-  var hasFlag = require_has_flag();
-  var { env } = process;
-  var forceColor;
-  if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || hasFlag("color=never")) {
-    forceColor = 0;
-  } else if (hasFlag("color") || hasFlag("colors") || hasFlag("color=true") || hasFlag("color=always")) {
-    forceColor = 1;
-  }
-  if ("FORCE_COLOR" in env) {
-    if (env.FORCE_COLOR === "true") {
-      forceColor = 1;
-    } else if (env.FORCE_COLOR === "false") {
-      forceColor = 0;
-    } else {
-      forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
-    }
-  }
-  function translateLevel(level) {
-    if (level === 0) {
-      return false;
-    }
-    return {
-      level,
-      hasBasic: true,
-      has256: level >= 2,
-      has16m: level >= 3
-    };
-  }
-  function supportsColor(haveStream, streamIsTTY) {
-    if (forceColor === 0) {
-      return 0;
-    }
-    if (hasFlag("color=16m") || hasFlag("color=full") || hasFlag("color=truecolor")) {
-      return 3;
-    }
-    if (hasFlag("color=256")) {
-      return 2;
-    }
-    if (haveStream && !streamIsTTY && forceColor === undefined) {
-      return 0;
-    }
-    const min = forceColor || 0;
-    if (env.TERM === "dumb") {
-      return min;
-    }
-    if (process.platform === "win32") {
-      const osRelease = os.release().split(".");
-      if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
-        return Number(osRelease[2]) >= 14931 ? 3 : 2;
-      }
-      return 1;
-    }
-    if ("CI" in env) {
-      if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => (sign in env)) || env.CI_NAME === "codeship") {
-        return 1;
-      }
-      return min;
-    }
-    if ("TEAMCITY_VERSION" in env) {
-      return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
-    }
-    if (env.COLORTERM === "truecolor") {
-      return 3;
-    }
-    if ("TERM_PROGRAM" in env) {
-      const version = parseInt((env.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
-      switch (env.TERM_PROGRAM) {
-        case "iTerm.app":
-          return version >= 3 ? 3 : 2;
-        case "Apple_Terminal":
-          return 2;
-      }
-    }
-    if (/-256(color)?$/i.test(env.TERM)) {
-      return 2;
-    }
-    if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
-      return 1;
-    }
-    if ("COLORTERM" in env) {
-      return 1;
-    }
-    return min;
-  }
-  function getSupportLevel(stream) {
-    const level = supportsColor(stream, stream && stream.isTTY);
-    return translateLevel(level);
-  }
-  module2.exports = {
-    supportsColor: getSupportLevel,
-    stdout: translateLevel(supportsColor(true, tty.isatty(1))),
-    stderr: translateLevel(supportsColor(true, tty.isatty(2)))
-  };
-});
-
-// node_modules/debug/src/node.js
-var require_node3 = __commonJS((exports2, module2) => {
-  var tty = require("tty");
-  var util = require("util");
-  exports2.init = init;
-  exports2.log = log;
-  exports2.formatArgs = formatArgs;
-  exports2.save = save;
-  exports2.load = load;
-  exports2.useColors = useColors;
-  exports2.destroy = util.deprecate(() => {}, "Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
-  exports2.colors = [6, 2, 3, 4, 5, 1];
-  try {
-    const supportsColor = require_supports_color();
-    if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
-      exports2.colors = [
-        20,
-        21,
-        26,
-        27,
-        32,
-        33,
-        38,
-        39,
-        40,
-        41,
-        42,
-        43,
-        44,
-        45,
-        56,
-        57,
-        62,
-        63,
-        68,
-        69,
-        74,
-        75,
-        76,
-        77,
-        78,
-        79,
-        80,
-        81,
-        92,
-        93,
-        98,
-        99,
-        112,
-        113,
-        128,
-        129,
-        134,
-        135,
-        148,
-        149,
-        160,
-        161,
-        162,
-        163,
-        164,
-        165,
-        166,
-        167,
-        168,
-        169,
-        170,
-        171,
-        172,
-        173,
-        178,
-        179,
-        184,
-        185,
-        196,
-        197,
-        198,
-        199,
-        200,
-        201,
-        202,
-        203,
-        204,
-        205,
-        206,
-        207,
-        208,
-        209,
-        214,
-        215,
-        220,
-        221
-      ];
-    }
-  } catch (error) {}
-  exports2.inspectOpts = Object.keys(process.env).filter((key) => {
-    return /^debug_/i.test(key);
-  }).reduce((obj, key) => {
-    const prop = key.substring(6).toLowerCase().replace(/_([a-z])/g, (_, k) => {
-      return k.toUpperCase();
-    });
-    let val = process.env[key];
-    if (/^(yes|on|true|enabled)$/i.test(val)) {
-      val = true;
-    } else if (/^(no|off|false|disabled)$/i.test(val)) {
-      val = false;
-    } else if (val === "null") {
-      val = null;
-    } else {
-      val = Number(val);
-    }
-    obj[prop] = val;
-    return obj;
-  }, {});
-  function useColors() {
-    return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty.isatty(process.stderr.fd);
-  }
-  function formatArgs(args) {
-    const { namespace: name, useColors: useColors2 } = this;
-    if (useColors2) {
-      const c = this.color;
-      const colorCode = "\x1B[3" + (c < 8 ? c : "8;5;" + c);
-      const prefix = `  ${colorCode};1m${name} \x1B[0m`;
-      args[0] = prefix + args[0].split(`
-`).join(`
-` + prefix);
-      args.push(colorCode + "m+" + module2.exports.humanize(this.diff) + "\x1B[0m");
-    } else {
-      args[0] = getDate() + name + " " + args[0];
-    }
-  }
-  function getDate() {
-    if (exports2.inspectOpts.hideDate) {
-      return "";
-    }
-    return new Date().toISOString() + " ";
-  }
-  function log(...args) {
-    return process.stderr.write(util.formatWithOptions(exports2.inspectOpts, ...args) + `
-`);
-  }
-  function save(namespaces2) {
-    if (namespaces2) {
-      process.env.DEBUG = namespaces2;
-    } else {
-      delete process.env.DEBUG;
-    }
-  }
-  function load() {
-    return process.env.DEBUG;
-  }
-  function init(debug) {
-    debug.inspectOpts = {};
-    const keys = Object.keys(exports2.inspectOpts);
-    for (let i2 = 0;i2 < keys.length; i2++) {
-      debug.inspectOpts[keys[i2]] = exports2.inspectOpts[keys[i2]];
-    }
-  }
-  module2.exports = require_common2()(exports2);
-  var { formatters } = module2.exports;
-  formatters.o = function(v) {
-    this.inspectOpts.colors = this.useColors;
-    return util.inspect(v, this.inspectOpts).split(`
-`).map((str) => str.trim()).join(" ");
-  };
-  formatters.O = function(v) {
-    this.inspectOpts.colors = this.useColors;
-    return util.inspect(v, this.inspectOpts);
-  };
-});
-
-// node_modules/debug/src/index.js
-var require_src = __commonJS((exports2, module2) => {
-  if (typeof process === "undefined" || process.type === "renderer" || false || process.__nwjs) {
-    module2.exports = require_browser();
-  } else {
-    module2.exports = require_node3();
-  }
-});
+// node_modules/@tokenizer/inflate/lib/index.js
+var import_debug = __toESM(require_src());
 
 // node_modules/@tokenizer/inflate/lib/ZipToken.js
-var Signature, DataDescriptor, LocalFileHeaderToken, EndOfCentralDirectoryRecordToken, FileHeader;
-var init_ZipToken = __esm(() => {
-  init_lib3();
-  Signature = {
-    LocalFileHeader: 67324752,
-    DataDescriptor: 134695760,
-    CentralFileHeader: 33639248,
-    EndOfCentralDirectory: 101010256
-  };
-  DataDescriptor = {
-    get(array) {
-      const flags = UINT16_LE.get(array, 6);
-      return {
-        signature: UINT32_LE.get(array, 0),
-        compressedSize: UINT32_LE.get(array, 8),
-        uncompressedSize: UINT32_LE.get(array, 12)
-      };
-    },
-    len: 16
-  };
-  LocalFileHeaderToken = {
-    get(array) {
-      const flags = UINT16_LE.get(array, 6);
-      return {
-        signature: UINT32_LE.get(array, 0),
-        minVersion: UINT16_LE.get(array, 4),
-        dataDescriptor: !!(flags & 8),
-        compressedMethod: UINT16_LE.get(array, 8),
-        compressedSize: UINT32_LE.get(array, 18),
-        uncompressedSize: UINT32_LE.get(array, 22),
-        filenameLength: UINT16_LE.get(array, 26),
-        extraFieldLength: UINT16_LE.get(array, 28),
-        filename: null
-      };
-    },
-    len: 30
-  };
-  EndOfCentralDirectoryRecordToken = {
-    get(array) {
-      return {
-        signature: UINT32_LE.get(array, 0),
-        nrOfThisDisk: UINT16_LE.get(array, 4),
-        nrOfThisDiskWithTheStart: UINT16_LE.get(array, 6),
-        nrOfEntriesOnThisDisk: UINT16_LE.get(array, 8),
-        nrOfEntriesOfSize: UINT16_LE.get(array, 10),
-        sizeOfCd: UINT32_LE.get(array, 12),
-        offsetOfStartOfCd: UINT32_LE.get(array, 16),
-        zipFileCommentLength: UINT16_LE.get(array, 20)
-      };
-    },
-    len: 22
-  };
-  FileHeader = {
-    get(array) {
-      const flags = UINT16_LE.get(array, 8);
-      return {
-        signature: UINT32_LE.get(array, 0),
-        minVersion: UINT16_LE.get(array, 6),
-        dataDescriptor: !!(flags & 8),
-        compressedMethod: UINT16_LE.get(array, 10),
-        compressedSize: UINT32_LE.get(array, 20),
-        uncompressedSize: UINT32_LE.get(array, 24),
-        filenameLength: UINT16_LE.get(array, 28),
-        extraFieldLength: UINT16_LE.get(array, 30),
-        fileCommentLength: UINT16_LE.get(array, 32),
-        relativeOffsetOfLocalHeader: UINT32_LE.get(array, 42),
-        filename: null
-      };
-    },
-    len: 46
-  };
-});
+var Signature = {
+  LocalFileHeader: 67324752,
+  DataDescriptor: 134695760,
+  CentralFileHeader: 33639248,
+  EndOfCentralDirectory: 101010256
+};
+var DataDescriptor = {
+  get(array) {
+    const flags = UINT16_LE.get(array, 6);
+    return {
+      signature: UINT32_LE.get(array, 0),
+      compressedSize: UINT32_LE.get(array, 8),
+      uncompressedSize: UINT32_LE.get(array, 12)
+    };
+  },
+  len: 16
+};
+var LocalFileHeaderToken = {
+  get(array) {
+    const flags = UINT16_LE.get(array, 6);
+    return {
+      signature: UINT32_LE.get(array, 0),
+      minVersion: UINT16_LE.get(array, 4),
+      dataDescriptor: !!(flags & 8),
+      compressedMethod: UINT16_LE.get(array, 8),
+      compressedSize: UINT32_LE.get(array, 18),
+      uncompressedSize: UINT32_LE.get(array, 22),
+      filenameLength: UINT16_LE.get(array, 26),
+      extraFieldLength: UINT16_LE.get(array, 28),
+      filename: null
+    };
+  },
+  len: 30
+};
+var EndOfCentralDirectoryRecordToken = {
+  get(array) {
+    return {
+      signature: UINT32_LE.get(array, 0),
+      nrOfThisDisk: UINT16_LE.get(array, 4),
+      nrOfThisDiskWithTheStart: UINT16_LE.get(array, 6),
+      nrOfEntriesOnThisDisk: UINT16_LE.get(array, 8),
+      nrOfEntriesOfSize: UINT16_LE.get(array, 10),
+      sizeOfCd: UINT32_LE.get(array, 12),
+      offsetOfStartOfCd: UINT32_LE.get(array, 16),
+      zipFileCommentLength: UINT16_LE.get(array, 20)
+    };
+  },
+  len: 22
+};
+var FileHeader = {
+  get(array) {
+    const flags = UINT16_LE.get(array, 8);
+    return {
+      signature: UINT32_LE.get(array, 0),
+      minVersion: UINT16_LE.get(array, 6),
+      dataDescriptor: !!(flags & 8),
+      compressedMethod: UINT16_LE.get(array, 10),
+      compressedSize: UINT32_LE.get(array, 20),
+      uncompressedSize: UINT32_LE.get(array, 24),
+      filenameLength: UINT16_LE.get(array, 28),
+      extraFieldLength: UINT16_LE.get(array, 30),
+      fileCommentLength: UINT16_LE.get(array, 32),
+      relativeOffsetOfLocalHeader: UINT32_LE.get(array, 42),
+      filename: null
+    };
+  },
+  len: 46
+};
 
 // node_modules/@tokenizer/inflate/lib/index.js
 function signatureToArray(signature) {
@@ -55890,6 +55949,10 @@ function signatureToArray(signature) {
   UINT32_LE.put(signatureBytes, 0, signature);
   return signatureBytes;
 }
+var debug = import_debug.default("tokenizer:inflate");
+var syncBufferSize = 256 * 1024;
+var ddSignatureArray = signatureToArray(Signature.DataDescriptor);
+var eocdSignatureBytes = signatureToArray(Signature.EndOfCentralDirectory);
 
 class ZipHandler {
   constructor(tokenizer) {
@@ -56068,19 +56131,13 @@ function mergeArrays(chunks) {
   }
   return mergedArray;
 }
-var import_debug, debug, syncBufferSize, ddSignatureArray, eocdSignatureBytes;
-var init_lib4 = __esm(() => {
-  init_lib3();
-  init_esm();
-  import_debug = __toESM(require_src());
-  init_ZipToken();
-  debug = import_debug.default("tokenizer:inflate");
-  syncBufferSize = 256 * 1024;
-  ddSignatureArray = signatureToArray(Signature.DataDescriptor);
-  eocdSignatureBytes = signatureToArray(Signature.EndOfCentralDirectory);
-});
 
 // node_modules/uint8array-extras/index.js
+var cachedDecoders = {
+  utf8: new globalThis.TextDecoder("utf8")
+};
+var cachedEncoder = new globalThis.TextEncoder;
+var byteToHexLookupTable = Array.from({ length: 256 }, (_, index) => index.toString(16).padStart(2, "0"));
 function getUintBE(view) {
   const { byteLength } = view;
   if (byteLength === 6) {
@@ -56129,14 +56186,6 @@ function indexOf2(array, value) {
 function includes(array, value) {
   return indexOf2(array, value) !== -1;
 }
-var cachedDecoders, cachedEncoder, byteToHexLookupTable;
-var init_uint8array_extras = __esm(() => {
-  cachedDecoders = {
-    utf8: new globalThis.TextDecoder("utf8")
-  };
-  cachedEncoder = new globalThis.TextEncoder;
-  byteToHexLookupTable = Array.from({ length: 256 }, (_, index) => index.toString(16).padStart(2, "0"));
-});
 
 // node_modules/file-type/util.js
 function stringToBytes(string) {
@@ -56156,369 +56205,360 @@ function tarHeaderChecksumMatches(arrayBuffer, offset = 0) {
   }
   return readSum === sum;
 }
-var uint32SyncSafeToken;
-var init_util = __esm(() => {
-  init_lib3();
-  uint32SyncSafeToken = {
-    get: (buffer, offset) => buffer[offset + 3] & 127 | buffer[offset + 2] << 7 | buffer[offset + 1] << 14 | buffer[offset] << 21,
-    len: 4
-  };
-});
+var uint32SyncSafeToken = {
+  get: (buffer, offset) => buffer[offset + 3] & 127 | buffer[offset + 2] << 7 | buffer[offset + 1] << 14 | buffer[offset] << 21,
+  len: 4
+};
 
 // node_modules/file-type/supported.js
-var extensions, mimeTypes;
-var init_supported = __esm(() => {
-  extensions = [
-    "jpg",
-    "png",
-    "apng",
-    "gif",
-    "webp",
-    "flif",
-    "xcf",
-    "cr2",
-    "cr3",
-    "orf",
-    "arw",
-    "dng",
-    "nef",
-    "rw2",
-    "raf",
-    "tif",
-    "bmp",
-    "icns",
-    "jxr",
-    "psd",
-    "indd",
-    "zip",
-    "tar",
-    "rar",
-    "gz",
-    "bz2",
-    "7z",
-    "dmg",
-    "mp4",
-    "mid",
-    "mkv",
-    "webm",
-    "mov",
-    "avi",
-    "mpg",
-    "mp2",
-    "mp3",
-    "m4a",
-    "oga",
-    "ogg",
-    "ogv",
-    "opus",
-    "flac",
-    "wav",
-    "spx",
-    "amr",
-    "pdf",
-    "epub",
-    "elf",
-    "macho",
-    "exe",
-    "swf",
-    "rtf",
-    "wasm",
-    "woff",
-    "woff2",
-    "eot",
-    "ttf",
-    "otf",
-    "ico",
-    "flv",
-    "ps",
-    "xz",
-    "sqlite",
-    "nes",
-    "crx",
-    "xpi",
-    "cab",
-    "deb",
-    "ar",
-    "rpm",
-    "Z",
-    "lz",
-    "cfb",
-    "mxf",
-    "mts",
-    "blend",
-    "bpg",
-    "docx",
-    "pptx",
-    "xlsx",
-    "3gp",
-    "3g2",
-    "j2c",
-    "jp2",
-    "jpm",
-    "jpx",
-    "mj2",
-    "aif",
-    "qcp",
-    "odt",
-    "ods",
-    "odp",
-    "xml",
-    "mobi",
-    "heic",
-    "cur",
-    "ktx",
-    "ape",
-    "wv",
-    "dcm",
-    "ics",
-    "glb",
-    "pcap",
-    "dsf",
-    "lnk",
-    "alias",
-    "voc",
-    "ac3",
-    "m4v",
-    "m4p",
-    "m4b",
-    "f4v",
-    "f4p",
-    "f4b",
-    "f4a",
-    "mie",
-    "asf",
-    "ogm",
-    "ogx",
-    "mpc",
-    "arrow",
-    "shp",
-    "aac",
-    "mp1",
-    "it",
-    "s3m",
-    "xm",
-    "ai",
-    "skp",
-    "avif",
-    "eps",
-    "lzh",
-    "pgp",
-    "asar",
-    "stl",
-    "chm",
-    "3mf",
-    "zst",
-    "jxl",
-    "vcf",
-    "jls",
-    "pst",
-    "dwg",
-    "parquet",
-    "class",
-    "arj",
-    "cpio",
-    "ace",
-    "avro",
-    "icc",
-    "fbx",
-    "vsdx",
-    "vtt",
-    "apk",
-    "drc",
-    "lz4",
-    "potx",
-    "xltx",
-    "dotx",
-    "xltm",
-    "ott",
-    "ots",
-    "otp",
-    "odg",
-    "otg",
-    "xlsm",
-    "docm",
-    "dotm",
-    "potm",
-    "pptm",
-    "jar"
-  ];
-  mimeTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-    "image/flif",
-    "image/x-xcf",
-    "image/x-canon-cr2",
-    "image/x-canon-cr3",
-    "image/tiff",
-    "image/bmp",
-    "image/vnd.ms-photo",
-    "image/vnd.adobe.photoshop",
-    "application/x-indesign",
-    "application/epub+zip",
-    "application/x-xpinstall",
-    "application/vnd.oasis.opendocument.text",
-    "application/vnd.oasis.opendocument.spreadsheet",
-    "application/vnd.oasis.opendocument.presentation",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/zip",
-    "application/x-tar",
-    "application/x-rar-compressed",
-    "application/gzip",
-    "application/x-bzip2",
-    "application/x-7z-compressed",
-    "application/x-apple-diskimage",
-    "application/x-apache-arrow",
-    "video/mp4",
-    "audio/midi",
-    "video/x-matroska",
-    "video/webm",
-    "video/quicktime",
-    "video/vnd.avi",
-    "audio/wav",
-    "audio/qcelp",
-    "audio/x-ms-asf",
-    "video/x-ms-asf",
-    "application/vnd.ms-asf",
-    "video/mpeg",
-    "video/3gpp",
-    "audio/mpeg",
-    "audio/mp4",
-    "video/ogg",
-    "audio/ogg",
-    "audio/ogg; codecs=opus",
-    "application/ogg",
-    "audio/x-flac",
-    "audio/ape",
-    "audio/wavpack",
-    "audio/amr",
-    "application/pdf",
-    "application/x-elf",
-    "application/x-mach-binary",
-    "application/x-msdownload",
-    "application/x-shockwave-flash",
-    "application/rtf",
-    "application/wasm",
-    "font/woff",
-    "font/woff2",
-    "application/vnd.ms-fontobject",
-    "font/ttf",
-    "font/otf",
-    "image/x-icon",
-    "video/x-flv",
-    "application/postscript",
-    "application/eps",
-    "application/x-xz",
-    "application/x-sqlite3",
-    "application/x-nintendo-nes-rom",
-    "application/x-google-chrome-extension",
-    "application/vnd.ms-cab-compressed",
-    "application/x-deb",
-    "application/x-unix-archive",
-    "application/x-rpm",
-    "application/x-compress",
-    "application/x-lzip",
-    "application/x-cfb",
-    "application/x-mie",
-    "application/mxf",
-    "video/mp2t",
-    "application/x-blender",
-    "image/bpg",
-    "image/j2c",
-    "image/jp2",
-    "image/jpx",
-    "image/jpm",
-    "image/mj2",
-    "audio/aiff",
-    "application/xml",
-    "application/x-mobipocket-ebook",
-    "image/heif",
-    "image/heif-sequence",
-    "image/heic",
-    "image/heic-sequence",
-    "image/icns",
-    "image/ktx",
-    "application/dicom",
-    "audio/x-musepack",
-    "text/calendar",
-    "text/vcard",
-    "text/vtt",
-    "model/gltf-binary",
-    "application/vnd.tcpdump.pcap",
-    "audio/x-dsf",
-    "application/x.ms.shortcut",
-    "application/x.apple.alias",
-    "audio/x-voc",
-    "audio/vnd.dolby.dd-raw",
-    "audio/x-m4a",
-    "image/apng",
-    "image/x-olympus-orf",
-    "image/x-sony-arw",
-    "image/x-adobe-dng",
-    "image/x-nikon-nef",
-    "image/x-panasonic-rw2",
-    "image/x-fujifilm-raf",
-    "video/x-m4v",
-    "video/3gpp2",
-    "application/x-esri-shape",
-    "audio/aac",
-    "audio/x-it",
-    "audio/x-s3m",
-    "audio/x-xm",
-    "video/MP1S",
-    "video/MP2P",
-    "application/vnd.sketchup.skp",
-    "image/avif",
-    "application/x-lzh-compressed",
-    "application/pgp-encrypted",
-    "application/x-asar",
-    "model/stl",
-    "application/vnd.ms-htmlhelp",
-    "model/3mf",
-    "image/jxl",
-    "application/zstd",
-    "image/jls",
-    "application/vnd.ms-outlook",
-    "image/vnd.dwg",
-    "application/x-parquet",
-    "application/java-vm",
-    "application/x-arj",
-    "application/x-cpio",
-    "application/x-ace-compressed",
-    "application/avro",
-    "application/vnd.iccprofile",
-    "application/x.autodesk.fbx",
-    "application/vnd.visio",
-    "application/vnd.android.package-archive",
-    "application/vnd.google.draco",
-    "application/x-lz4",
-    "application/vnd.openxmlformats-officedocument.presentationml.template",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-    "application/vnd.ms-excel.template.macroenabled.12",
-    "application/vnd.oasis.opendocument.text-template",
-    "application/vnd.oasis.opendocument.spreadsheet-template",
-    "application/vnd.oasis.opendocument.presentation-template",
-    "application/vnd.oasis.opendocument.graphics",
-    "application/vnd.oasis.opendocument.graphics-template",
-    "application/vnd.ms-excel.sheet.macroEnabled.12",
-    "application/vnd.ms-word.document.macroEnabled.12",
-    "application/vnd.ms-word.template.macroEnabled.12",
-    "application/vnd.ms-powerpoint.template.macroEnabled.12",
-    "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
-    "application/java-archive"
-  ];
-});
+var extensions = [
+  "jpg",
+  "png",
+  "apng",
+  "gif",
+  "webp",
+  "flif",
+  "xcf",
+  "cr2",
+  "cr3",
+  "orf",
+  "arw",
+  "dng",
+  "nef",
+  "rw2",
+  "raf",
+  "tif",
+  "bmp",
+  "icns",
+  "jxr",
+  "psd",
+  "indd",
+  "zip",
+  "tar",
+  "rar",
+  "gz",
+  "bz2",
+  "7z",
+  "dmg",
+  "mp4",
+  "mid",
+  "mkv",
+  "webm",
+  "mov",
+  "avi",
+  "mpg",
+  "mp2",
+  "mp3",
+  "m4a",
+  "oga",
+  "ogg",
+  "ogv",
+  "opus",
+  "flac",
+  "wav",
+  "spx",
+  "amr",
+  "pdf",
+  "epub",
+  "elf",
+  "macho",
+  "exe",
+  "swf",
+  "rtf",
+  "wasm",
+  "woff",
+  "woff2",
+  "eot",
+  "ttf",
+  "otf",
+  "ico",
+  "flv",
+  "ps",
+  "xz",
+  "sqlite",
+  "nes",
+  "crx",
+  "xpi",
+  "cab",
+  "deb",
+  "ar",
+  "rpm",
+  "Z",
+  "lz",
+  "cfb",
+  "mxf",
+  "mts",
+  "blend",
+  "bpg",
+  "docx",
+  "pptx",
+  "xlsx",
+  "3gp",
+  "3g2",
+  "j2c",
+  "jp2",
+  "jpm",
+  "jpx",
+  "mj2",
+  "aif",
+  "qcp",
+  "odt",
+  "ods",
+  "odp",
+  "xml",
+  "mobi",
+  "heic",
+  "cur",
+  "ktx",
+  "ape",
+  "wv",
+  "dcm",
+  "ics",
+  "glb",
+  "pcap",
+  "dsf",
+  "lnk",
+  "alias",
+  "voc",
+  "ac3",
+  "m4v",
+  "m4p",
+  "m4b",
+  "f4v",
+  "f4p",
+  "f4b",
+  "f4a",
+  "mie",
+  "asf",
+  "ogm",
+  "ogx",
+  "mpc",
+  "arrow",
+  "shp",
+  "aac",
+  "mp1",
+  "it",
+  "s3m",
+  "xm",
+  "ai",
+  "skp",
+  "avif",
+  "eps",
+  "lzh",
+  "pgp",
+  "asar",
+  "stl",
+  "chm",
+  "3mf",
+  "zst",
+  "jxl",
+  "vcf",
+  "jls",
+  "pst",
+  "dwg",
+  "parquet",
+  "class",
+  "arj",
+  "cpio",
+  "ace",
+  "avro",
+  "icc",
+  "fbx",
+  "vsdx",
+  "vtt",
+  "apk",
+  "drc",
+  "lz4",
+  "potx",
+  "xltx",
+  "dotx",
+  "xltm",
+  "ott",
+  "ots",
+  "otp",
+  "odg",
+  "otg",
+  "xlsm",
+  "docm",
+  "dotm",
+  "potm",
+  "pptm",
+  "jar"
+];
+var mimeTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/flif",
+  "image/x-xcf",
+  "image/x-canon-cr2",
+  "image/x-canon-cr3",
+  "image/tiff",
+  "image/bmp",
+  "image/vnd.ms-photo",
+  "image/vnd.adobe.photoshop",
+  "application/x-indesign",
+  "application/epub+zip",
+  "application/x-xpinstall",
+  "application/vnd.oasis.opendocument.text",
+  "application/vnd.oasis.opendocument.spreadsheet",
+  "application/vnd.oasis.opendocument.presentation",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/zip",
+  "application/x-tar",
+  "application/x-rar-compressed",
+  "application/gzip",
+  "application/x-bzip2",
+  "application/x-7z-compressed",
+  "application/x-apple-diskimage",
+  "application/x-apache-arrow",
+  "video/mp4",
+  "audio/midi",
+  "video/x-matroska",
+  "video/webm",
+  "video/quicktime",
+  "video/vnd.avi",
+  "audio/wav",
+  "audio/qcelp",
+  "audio/x-ms-asf",
+  "video/x-ms-asf",
+  "application/vnd.ms-asf",
+  "video/mpeg",
+  "video/3gpp",
+  "audio/mpeg",
+  "audio/mp4",
+  "video/ogg",
+  "audio/ogg",
+  "audio/ogg; codecs=opus",
+  "application/ogg",
+  "audio/x-flac",
+  "audio/ape",
+  "audio/wavpack",
+  "audio/amr",
+  "application/pdf",
+  "application/x-elf",
+  "application/x-mach-binary",
+  "application/x-msdownload",
+  "application/x-shockwave-flash",
+  "application/rtf",
+  "application/wasm",
+  "font/woff",
+  "font/woff2",
+  "application/vnd.ms-fontobject",
+  "font/ttf",
+  "font/otf",
+  "image/x-icon",
+  "video/x-flv",
+  "application/postscript",
+  "application/eps",
+  "application/x-xz",
+  "application/x-sqlite3",
+  "application/x-nintendo-nes-rom",
+  "application/x-google-chrome-extension",
+  "application/vnd.ms-cab-compressed",
+  "application/x-deb",
+  "application/x-unix-archive",
+  "application/x-rpm",
+  "application/x-compress",
+  "application/x-lzip",
+  "application/x-cfb",
+  "application/x-mie",
+  "application/mxf",
+  "video/mp2t",
+  "application/x-blender",
+  "image/bpg",
+  "image/j2c",
+  "image/jp2",
+  "image/jpx",
+  "image/jpm",
+  "image/mj2",
+  "audio/aiff",
+  "application/xml",
+  "application/x-mobipocket-ebook",
+  "image/heif",
+  "image/heif-sequence",
+  "image/heic",
+  "image/heic-sequence",
+  "image/icns",
+  "image/ktx",
+  "application/dicom",
+  "audio/x-musepack",
+  "text/calendar",
+  "text/vcard",
+  "text/vtt",
+  "model/gltf-binary",
+  "application/vnd.tcpdump.pcap",
+  "audio/x-dsf",
+  "application/x.ms.shortcut",
+  "application/x.apple.alias",
+  "audio/x-voc",
+  "audio/vnd.dolby.dd-raw",
+  "audio/x-m4a",
+  "image/apng",
+  "image/x-olympus-orf",
+  "image/x-sony-arw",
+  "image/x-adobe-dng",
+  "image/x-nikon-nef",
+  "image/x-panasonic-rw2",
+  "image/x-fujifilm-raf",
+  "video/x-m4v",
+  "video/3gpp2",
+  "application/x-esri-shape",
+  "audio/aac",
+  "audio/x-it",
+  "audio/x-s3m",
+  "audio/x-xm",
+  "video/MP1S",
+  "video/MP2P",
+  "application/vnd.sketchup.skp",
+  "image/avif",
+  "application/x-lzh-compressed",
+  "application/pgp-encrypted",
+  "application/x-asar",
+  "model/stl",
+  "application/vnd.ms-htmlhelp",
+  "model/3mf",
+  "image/jxl",
+  "application/zstd",
+  "image/jls",
+  "application/vnd.ms-outlook",
+  "image/vnd.dwg",
+  "application/x-parquet",
+  "application/java-vm",
+  "application/x-arj",
+  "application/x-cpio",
+  "application/x-ace-compressed",
+  "application/avro",
+  "application/vnd.iccprofile",
+  "application/x.autodesk.fbx",
+  "application/vnd.visio",
+  "application/vnd.android.package-archive",
+  "application/vnd.google.draco",
+  "application/x-lz4",
+  "application/vnd.openxmlformats-officedocument.presentationml.template",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+  "application/vnd.ms-excel.template.macroenabled.12",
+  "application/vnd.oasis.opendocument.text-template",
+  "application/vnd.oasis.opendocument.spreadsheet-template",
+  "application/vnd.oasis.opendocument.presentation-template",
+  "application/vnd.oasis.opendocument.graphics",
+  "application/vnd.oasis.opendocument.graphics-template",
+  "application/vnd.ms-excel.sheet.macroEnabled.12",
+  "application/vnd.ms-word.document.macroEnabled.12",
+  "application/vnd.ms-word.template.macroEnabled.12",
+  "application/vnd.ms-powerpoint.template.macroEnabled.12",
+  "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+  "application/java-archive"
+];
 
 // node_modules/file-type/core.js
+var reasonableDetectionSizeInBytes = 4100;
 async function fileTypeFromBuffer(input) {
   return new FileTypeParser().fromBuffer(input);
-}
-async function fileTypeFromBlob(blob) {
-  return new FileTypeParser().fromBlob(blob);
 }
 function getFileTypeFromMimeType(mimeType) {
   switch (mimeType) {
@@ -56656,10 +56696,6 @@ function _check(buffer, headers, options) {
   }
   return true;
 }
-async function fileTypeFromTokenizer(tokenizer) {
-  return new FileTypeParser().fromTokenizer(tokenizer);
-}
-
 class FileTypeParser {
   constructor(options) {
     this.detectors = [
@@ -57918,311 +57954,8 @@ class FileTypeParser {
     }
   }
 }
-var reasonableDetectionSizeInBytes = 4100, supportedExtensions, supportedMimeTypes;
-var init_core2 = __esm(() => {
-  init_lib3();
-  init_core();
-  init_lib4();
-  init_uint8array_extras();
-  init_util();
-  init_supported();
-  supportedExtensions = new Set(extensions);
-  supportedMimeTypes = new Set(mimeTypes);
-});
-
-// node_modules/file-type/index.js
-var exports_file_type = {};
-__export(exports_file_type, {
-  supportedMimeTypes: () => supportedMimeTypes,
-  supportedExtensions: () => supportedExtensions,
-  fileTypeStream: () => fileTypeStream,
-  fileTypeFromTokenizer: () => fileTypeFromTokenizer,
-  fileTypeFromStream: () => fileTypeFromStream,
-  fileTypeFromFile: () => fileTypeFromFile,
-  fileTypeFromBuffer: () => fileTypeFromBuffer,
-  fileTypeFromBlob: () => fileTypeFromBlob,
-  FileTypeParser: () => FileTypeParser2
-});
-async function fileTypeFromFile(path, fileTypeOptions) {
-  return new FileTypeParser2(fileTypeOptions).fromFile(path, fileTypeOptions);
-}
-async function fileTypeFromStream(stream, fileTypeOptions) {
-  return new FileTypeParser2(fileTypeOptions).fromStream(stream);
-}
-async function fileTypeStream(readableStream, options = {}) {
-  return new FileTypeParser2(options).toDetectionStream(readableStream, options);
-}
-var import_web, import_node_stream, FileTypeParser2;
-var init_file_type = __esm(() => {
-  import_web = require("node:stream/web");
-  import_node_stream = require("node:stream");
-  init_lib2();
-  init_core2();
-  init_core2();
-  FileTypeParser2 = class FileTypeParser2 extends FileTypeParser {
-    async fromStream(stream) {
-      const tokenizer = await (stream instanceof import_web.ReadableStream ? fromWebStream(stream, this.tokenizerOptions) : fromStream2(stream, this.tokenizerOptions));
-      try {
-        return await super.fromTokenizer(tokenizer);
-      } finally {
-        await tokenizer.close();
-      }
-    }
-    async fromFile(path) {
-      const tokenizer = await fromFile(path);
-      try {
-        return await super.fromTokenizer(tokenizer);
-      } finally {
-        await tokenizer.close();
-      }
-    }
-    async toDetectionStream(readableStream, options = {}) {
-      if (!(readableStream instanceof import_node_stream.Readable)) {
-        return super.toDetectionStream(readableStream, options);
-      }
-      const { sampleSize = reasonableDetectionSizeInBytes } = options;
-      return new Promise((resolve, reject) => {
-        readableStream.on("error", reject);
-        readableStream.once("readable", () => {
-          (async () => {
-            try {
-              const pass = new import_node_stream.PassThrough;
-              const outputStream = import_node_stream.pipeline ? import_node_stream.pipeline(readableStream, pass, () => {}) : readableStream.pipe(pass);
-              const chunk = readableStream.read(sampleSize) ?? readableStream.read() ?? new Uint8Array(0);
-              try {
-                pass.fileType = await this.fromBuffer(chunk);
-              } catch (error) {
-                if (error instanceof EndOfStreamError) {
-                  pass.fileType = undefined;
-                } else {
-                  reject(error);
-                }
-              }
-              resolve(outputStream);
-            } catch (error) {
-              reject(error);
-            }
-          })();
-        });
-      });
-    }
-  };
-});
-
-// index.ts
-var exports_html_to_docx = {};
-__export(exports_html_to_docx, {
-  default: () => generateContainer
-});
-module.exports = __toCommonJS(exports_html_to_docx);
-var import_jszip = __toESM(require_lib3());
-
-// src/html-to-docx.ts
-var import_html_entities = __toESM(require_lib4());
-var import_html_to_vdom2 = __toESM(require_html_to_vdom2());
-var import_vnode5 = __toESM(require_vnode());
-var import_vtext3 = __toESM(require_vtext());
-var import_xmlbuilder24 = __toESM(require_lib12());
-
-// src/constants.ts
-var import_lodash = __toESM(require_lodash());
-var applicationName = "html-to-docx";
-var defaultOrientation = "portrait";
-var landscapeWidth = 15840;
-var landscapeHeight = 12240;
-var landscapeMargins = {
-  top: 1800,
-  right: 1440,
-  bottom: 1800,
-  left: 1440,
-  header: 720,
-  footer: 720,
-  gutter: 0
-};
-var portraitMargins = {
-  top: 1440,
-  right: 1800,
-  bottom: 1440,
-  left: 1800,
-  header: 720,
-  footer: 720,
-  gutter: 0
-};
-var defaultFont = "Times New Roman";
-var defaultFontSize = 22;
-var defaultLang = "en-US";
-var defaultDocumentOptions = {
-  orientation: defaultOrientation,
-  margins: import_lodash.default.cloneDeep(portraitMargins),
-  creator: applicationName,
-  keywords: [applicationName],
-  lastModifiedBy: applicationName,
-  font: defaultFont,
-  fontSize: defaultFontSize,
-  complexScriptFontSize: defaultFontSize,
-  pageSize: {
-    width: landscapeHeight,
-    height: landscapeWidth
-  },
-  defaultLang
-};
-var defaultHTMLString = "<p></p>";
-var relsFolderName = "_rels";
-var headerFileName = "header1";
-var footerFileName = "footer1";
-var themeFileName = "theme1";
-var documentFileName = "document";
-var headerType = "header";
-var footerType = "footer";
-var themeType = "theme";
-var hyperlinkType = "hyperlink";
-var imageType = "image";
-var internalRelationship = "Internal";
-var wordFolder = "word";
-var themeFolder = "theme";
-var paragraphBordersObject = {
-  top: {
-    size: 0,
-    spacing: 3,
-    color: "FFFFFF"
-  },
-  left: {
-    size: 0,
-    spacing: 3,
-    color: "FFFFFF"
-  },
-  bottom: {
-    size: 0,
-    spacing: 3,
-    color: "FFFFFF"
-  },
-  right: {
-    size: 0,
-    spacing: 3,
-    color: "FFFFFF"
-  }
-};
-var colorlessColors = ["transparent", "auto"];
-var verticalAlignValues = ["top", "middle", "bottom"];
-var htmlInlineElements = [
-  "a",
-  "abbr",
-  "acronym",
-  "b",
-  "bdo",
-  "big",
-  "br",
-  "button",
-  "cite",
-  "code",
-  "dfn",
-  "em",
-  "i",
-  "img",
-  "input",
-  "kbd",
-  "label",
-  "map",
-  "object",
-  "output",
-  "q",
-  "samp",
-  "script",
-  "select",
-  "small",
-  "span",
-  "strong",
-  "sub",
-  "sup",
-  "textarea",
-  "time",
-  "tt",
-  "var"
-];
-var htmlHeadings = ["h1", "h2", "h3", "h4", "h5", "h6"];
-
-// node_modules/nanoid/index.js
-var import_node_crypto = require("node:crypto");
-
-// node_modules/nanoid/url-alphabet/index.js
-var urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
-
-// node_modules/nanoid/index.js
-var POOL_SIZE_MULTIPLIER = 128;
-var pool;
-var poolOffset;
-function fillPool(bytes) {
-  if (!pool || pool.length < bytes) {
-    pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
-    import_node_crypto.webcrypto.getRandomValues(pool);
-    poolOffset = 0;
-  } else if (poolOffset + bytes > pool.length) {
-    import_node_crypto.webcrypto.getRandomValues(pool);
-    poolOffset = 0;
-  }
-  poolOffset += bytes;
-}
-function nanoid(size = 21) {
-  fillPool(size |= 0);
-  let id = "";
-  for (let i = poolOffset - size;i < poolOffset; i++) {
-    id += urlAlphabet[pool[i] & 63];
-  }
-  return id;
-}
-
-// src/docx-document.ts
-var import_node_crypto2 = require("node:crypto");
-var import_xmlbuilder23 = __toESM(require_lib12());
-
-// src/helpers/render-document-file.ts
-var import_html_to_vdom = __toESM(require_html_to_vdom2());
-var import_image_size2 = __toESM(require_dist());
-var import_is_vnode2 = __toESM(require_is_vnode());
-var import_is_vtext2 = __toESM(require_is_vtext());
-var import_vnode3 = __toESM(require_vnode());
-var import_vtext2 = __toESM(require_vtext());
-var import_xmlbuilder22 = __toESM(require_lib12());
-
-// src/namespaces.ts
-var namespaces = {
-  a: "http://schemas.openxmlformats.org/drawingml/2006/main",
-  b: "http://schemas.openxmlformats.org/officeDocument/2006/bibliography",
-  cdr: "http://schemas.openxmlformats.org/drawingml/2006/chartDrawing",
-  dc: "http://purl.org/dc/elements/1.1/",
-  dcmitype: "http://purl.org/dc/dcmitype/",
-  dcterms: "http://purl.org/dc/terms/",
-  o: "urn:schemas-microsoft-com:office:office",
-  pic: "http://schemas.openxmlformats.org/drawingml/2006/picture",
-  r: "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
-  v: "urn:schemas-microsoft-com:vml",
-  ve: "http://schemas.openxmlformats.org/markup-compatibility/2006",
-  vt: "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes",
-  w: "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
-  w10: "urn:schemas-microsoft-com:office:word",
-  wp: "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing",
-  wne: "http://schemas.microsoft.com/office/word/2006/wordml",
-  xsd: "http://www.w3.org/2001/XMLSchema",
-  xsi: "http://www.w3.org/2001/XMLSchema-instance",
-  numbering: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering",
-  fontTable: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable",
-  hyperlinks: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-  images: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
-  styles: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles",
-  headers: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/header",
-  footers: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer",
-  themes: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",
-  coreProperties: "http://schemas.openxmlformats.org/package/2006/metadata/core-properties",
-  officeDocumentRelation: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
-  corePropertiesRelation: "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",
-  settingsRelation: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings",
-  webSettingsRelation: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings",
-  sl: "http://schemas.openxmlformats.org/schemaLibrary/2006/main",
-  contentTypes: "http://schemas.openxmlformats.org/package/2006/content-types",
-  relationship: "http://schemas.openxmlformats.org/package/2006/relationships"
-};
-var namespaces_default = namespaces;
-
+var supportedExtensions = new Set(extensions);
+var supportedMimeTypes = new Set(mimeTypes);
 // src/utils/base64.ts
 var import_mime_types = __toESM(require_mime_types());
 async function fetchImageToDataUrl(imageUrlStr) {
@@ -58241,14 +57974,13 @@ async function fetchImageToDataUrl(imageUrlStr) {
     } else {
       let mimeType = import_mime_types.default.lookup(imageUrl.pathname);
       if (!mimeType) {
-        const { fileTypeFromBuffer: fileTypeFromBuffer2 } = await Promise.resolve().then(() => (init_file_type(), exports_file_type));
-        const fileType = await fileTypeFromBuffer2(imgArrayBuff);
+        const fileType = await fileTypeFromBuffer(imgArrayBuff);
         mimeType = fileType?.mime || false;
       }
       return `data:${mimeType || "png"};base64,${base64String}`;
     }
   } catch (error) {
-    console.warn(`WARNING: Image download failed for "${imageUrlStr}" with following error:`, error);
+    console.warn("WARNING: " + `Image download failed for "${imageUrlStr}" with following error:`, error);
     return emptyPngDataURL;
   }
 }
@@ -58272,7 +58004,7 @@ function extractBase64Data(src) {
     base64Content: src.substring(idxComma + 1).trim()
   };
 }
-var emptyPngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=";
+var emptyPngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAA" + "AAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=";
 var emptyPngDataURL = "data:image/png;base64," + emptyPngBase64;
 
 // src/utils/unit-conversion.ts
