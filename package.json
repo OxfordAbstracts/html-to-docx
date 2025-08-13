@@ -10,7 +10,7 @@
     "office",
     "word"
   ],
-  "main": "dist/index-cjs.js",
+  "main": "dist/index-esm.js",
   "type": "module",
   "bin": {
     "html-to-docx": "./bin/html-to-docx.mjs"
