@@ -71,11 +71,15 @@ function minifyHTMLString(htmlString: string) {
     "mark",
   ]
 
+  // Combined pattern: preserve spaces between inline elements
+  // (with or without attributes)
   const inlinePattern = new RegExp(
-    `</(${inlineElements.join("|")})>__SPACE__<(${inlineElements.join("|")})>`,
+    `</(${inlineElements.join("|")})>__SPACE__<(${
+      inlineElements.join("|")
+    })(\\s[^>]*)?>`,
     "gi",
   )
-  minifiedHTMLString = minifiedHTMLString.replace(inlinePattern, "</$1> <$2>")
+  minifiedHTMLString = minifiedHTMLString.replace(inlinePattern, "</$1> <$2$3>")
 
   // Remove remaining placeholder spaces
   minifiedHTMLString = minifiedHTMLString.replace(/__SPACE__/g, "")

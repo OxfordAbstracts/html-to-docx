@@ -89,12 +89,18 @@
         <w:t xml:space="preserve">This text should be large</w:t>
       </w:r>
       <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
         <w:rPr>
           <w:sz w:val="40"/>
           <w:szCs w:val="40"/>
           <w:b/>
         </w:rPr>
         <w:t xml:space="preserve">This text should be large and bold</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:rPr>

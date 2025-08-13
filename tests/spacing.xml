@@ -60,6 +60,18 @@
       <w:r>
         <w:t xml:space="preserve">one space</w:t>
       </w:r>
+      <w:r>
+        <w:br w:type="textWrapping"/>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Even when</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">they have classes</w:t>
+      </w:r>
     </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>

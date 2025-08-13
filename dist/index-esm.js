@@ -62001,8 +62001,8 @@ function minifyHTMLString(htmlString) {
     "strike",
     "mark"
   ];
-  const inlinePattern = new RegExp(`</(${inlineElements.join("|")})>__SPACE__<(${inlineElements.join("|")})>`, "gi");
-  minifiedHTMLString = minifiedHTMLString.replace(inlinePattern, "</$1> <$2>");
+  const inlinePattern = new RegExp(`</(${inlineElements.join("|")})>__SPACE__<(${inlineElements.join("|")})(\\s[^>]*)?>`, "gi");
+  minifiedHTMLString = minifiedHTMLString.replace(inlinePattern, "</$1> <$2$3>");
   minifiedHTMLString = minifiedHTMLString.replace(/__SPACE__/g, "");
   preContentMap.forEach((originalContent, placeholder) => {
     minifiedHTMLString = minifiedHTMLString.replace(placeholder, originalContent);
