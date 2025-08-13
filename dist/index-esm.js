@@ -55192,7 +55192,7 @@ var require_common2 = __commonJS((exports, module) => {
       createDebug.namespaces = namespaces2;
       createDebug.names = [];
       createDebug.skips = [];
-      const split = (typeof namespaces2 === "string" ? namespaces2 : "").trim().replace(" ", ",").split(",").filter(Boolean);
+      const split = (typeof namespaces2 === "string" ? namespaces2 : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
       for (const ns of split) {
         if (ns[0] === "-") {
           createDebug.skips.push(ns.slice(1));
@@ -55402,7 +55402,7 @@ var require_browser = __commonJS((exports, module) => {
   function load() {
     let r;
     try {
-      r = exports.storage.getItem("debug");
+      r = exports.storage.getItem("debug") || exports.storage.getItem("DEBUG");
     } catch (error) {}
     if (!r && typeof process !== "undefined" && "env" in process) {
       r = process.env.DEBUG;
@@ -57919,8 +57919,8 @@ var import_jszip = __toESM(require_lib3(), 1);
 // src/html-to-docx.ts
 var import_html_entities = __toESM(require_lib4(), 1);
 var import_html_to_vdom2 = __toESM(require_html_to_vdom2(), 1);
-var import_vnode4 = __toESM(require_vnode(), 1);
-var import_vtext2 = __toESM(require_vtext(), 1);
+var import_vnode5 = __toESM(require_vnode(), 1);
+var import_vtext3 = __toESM(require_vtext(), 1);
 var import_xmlbuilder24 = __toESM(require_lib12(), 1);
 
 // src/constants.ts
@@ -58079,8 +58079,8 @@ var import_html_to_vdom = __toESM(require_html_to_vdom2(), 1);
 var import_image_size2 = __toESM(require_dist(), 1);
 var import_is_vnode2 = __toESM(require_is_vnode(), 1);
 var import_is_vtext2 = __toESM(require_is_vtext(), 1);
-var import_vnode2 = __toESM(require_vnode(), 1);
-var import_vtext = __toESM(require_vtext(), 1);
+var import_vnode3 = __toESM(require_vnode(), 1);
+var import_vtext2 = __toESM(require_vtext(), 1);
 var import_xmlbuilder22 = __toESM(require_lib12(), 1);
 
 // src/namespaces.ts
@@ -58408,6 +58408,8 @@ var import_image_size = __toESM(require_dist(), 1);
 var import_lodash2 = __toESM(require_lodash(), 1);
 var import_is_vnode = __toESM(require_is_vnode(), 1);
 var import_is_vtext = __toESM(require_is_vtext(), 1);
+var import_vtext = __toESM(require_vtext(), 1);
+var import_vnode = __toESM(require_vnode(), 1);
 var import_xmlbuilder2 = __toESM(require_lib12(), 1);
 
 // src/utils/color-conversion.ts
@@ -58538,8 +58540,121 @@ function buildBorder(borderSide = "top", borderSize = 0, borderSpacing = 0, bord
   return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", borderSide).att("@w", "val", borderStroke).att("@w", "sz", String(borderSize)).att("@w", "space", String(borderSpacing)).att("@w", "color", borderColor).up();
 }
 function buildTextElement(text, preserveWhitespace = false) {
-  const normalizedText = preserveWhitespace ? text : text.replace(/[\t\r\n]+/g, " ").replace(/\s{2,}/g, " ");
+  const normalizedText = preserveWhitespace ? text : (() => {
+    let t = text.replace(/\r\n?/g, `
+`);
+    t = t.replace(/[ \t]+\n/g, `
+`);
+    t = t.replace(/\n[ \t]+/g, `
+`);
+    t = t.replace(/\n/g, " ");
+    t = t.replace(/ {2,}/g, " ");
+    if (/^ {2,}/.test(text)) {
+      t = t.replace(/^ +/, "");
+      t = t.replace(/ +$/, "");
+    }
+    if (text.includes(`
+`)) {
+      if (/^\n\s+/.test(text)) {
+        t = t.replace(/^ /, "");
+      }
+      if (/\s+\n$/.test(text)) {
+        t = t.replace(/ $/, "");
+      }
+    }
+    return t;
+  })();
   return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "t").att("@xml", "space", "preserve").txt(normalizedText).up();
+}
+function buildTextElementsWithSpaceSeparation(text, preserveWhitespace = false, attributes = {}) {
+  if (preserveWhitespace) {
+    const runFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
+    const runPropertiesFragment = buildRunProperties(attributes);
+    if (runPropertiesFragment) {
+      runFragment.import(runPropertiesFragment);
+    }
+    const textFragment = buildTextElement(text, preserveWhitespace);
+    runFragment.import(textFragment);
+    return [runFragment];
+  }
+  const normalizedText = (() => {
+    let t = text.replace(/\r\n?/g, `
+`);
+    t = t.replace(/[ \t]+\n/g, `
+`);
+    t = t.replace(/\n[ \t]+/g, `
+`);
+    const startsWithNewlineAndContent = /^\n\S/.test(t);
+    t = t.replace(/\n/g, " ");
+    t = t.replace(/ {2,}/g, " ");
+    if (/^ {2,}/.test(text)) {
+      t = t.replace(/^ +/, "");
+      t = t.replace(/ +$/, "");
+    }
+    if (text.includes(`
+`)) {
+      if (/^\n/.test(text)) {
+        t = t.replace(/^ +/, "");
+      }
+      if (/\s+\n$/.test(text)) {
+        t = t.replace(/ +$/, "");
+      }
+    }
+    if (/^ [A-Z]/.test(t) && !startsWithNewlineAndContent) {
+      if (!/^ {2}/.test(t)) {
+        t = t.replace(/^ /, "");
+      }
+    }
+    if (startsWithNewlineAndContent) {
+      t = t.replace(/^ /, "");
+    }
+    return t;
+  })();
+  const leadingSpace = normalizedText.match(/^(\s+)/);
+  const trailingSpace = normalizedText.match(/(\s+)$/);
+  const trimmedText = normalizedText.trim();
+  const runs = [];
+  if (leadingSpace) {
+    const spaceRunFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
+    const runPropertiesFragment = buildRunProperties(attributes);
+    if (runPropertiesFragment) {
+      spaceRunFragment.import(runPropertiesFragment);
+    }
+    const spaceTextFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "t").att("@xml", "space", "preserve").txt(leadingSpace[1]).up();
+    spaceRunFragment.import(spaceTextFragment);
+    runs.push(spaceRunFragment);
+  }
+  if (trimmedText) {
+    const mainRunFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
+    const runPropertiesFragment = buildRunProperties(attributes);
+    if (runPropertiesFragment) {
+      mainRunFragment.import(runPropertiesFragment);
+    }
+    const mainTextFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "t").att("@xml", "space", "preserve").txt(trimmedText).up();
+    mainRunFragment.import(mainTextFragment);
+    runs.push(mainRunFragment);
+  }
+  if (trailingSpace && (!leadingSpace || trailingSpace[1] !== leadingSpace[1] || trimmedText)) {
+    const spaceRunFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
+    const runPropertiesFragment = buildRunProperties(attributes);
+    if (runPropertiesFragment) {
+      spaceRunFragment.import(runPropertiesFragment);
+    }
+    const spaceTextFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "t").att("@xml", "space", "preserve").txt(trailingSpace[1]).up();
+    spaceRunFragment.import(spaceTextFragment);
+    runs.push(spaceRunFragment);
+  }
+  if (runs.length === 0) {
+    const emptyRunFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
+    const runPropertiesFragment = buildRunProperties(attributes);
+    if (runPropertiesFragment) {
+      emptyRunFragment.import(runPropertiesFragment);
+    }
+    const textFragment = buildTextElement(normalizedText, preserveWhitespace);
+    emptyRunFragment.import(textFragment);
+    runs.push(emptyRunFragment);
+  }
+  return runs;
 }
 function fixupLineHeight(lineHeight, fontSize) {
   if (Number.isFinite(lineHeight)) {
@@ -58800,29 +58915,21 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
     "sub",
     "sup",
     "mark",
-    "blockquote",
     "code",
     "pre"
   ].includes(vNode.tagName)) {
     const runFragmentsArray = [];
     let vNodes = [vNode];
     let tempAttributes = import_lodash2.default.cloneDeep(attributes);
-    let tempRunFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
     while (vNodes.length) {
       const tempVNode = vNodes.shift();
       if (import_is_vtext.default(tempVNode)) {
-        const textFragment = buildTextElement(tempVNode.text, preserveWhitespace);
-        const tempRunPropertiesFragment = buildRunProperties({
+        const textRuns = buildTextElementsWithSpaceSeparation(tempVNode.text, preserveWhitespace, {
           ...attributes,
           ...tempAttributes
         });
-        if (tempRunPropertiesFragment) {
-          tempRunFragment.import(tempRunPropertiesFragment);
-        }
-        tempRunFragment.import(textFragment);
-        runFragmentsArray.push(tempRunFragment);
+        runFragmentsArray.push(...textRuns);
         tempAttributes = import_lodash2.default.cloneDeep(attributes);
-        tempRunFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
       } else if (import_is_vnode.default(tempVNode)) {
         if ([
           "strong",
@@ -58891,6 +58998,12 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
     runFragment.import(runPropertiesFragment);
   }
   if (import_is_vtext.default(vNode)) {
+    const textRuns = buildTextElementsWithSpaceSeparation(vNode.text, preserveWhitespace, attributes);
+    if (textRuns.length > 1) {
+      return textRuns;
+    } else if (textRuns.length === 1) {
+      return textRuns[0];
+    }
     const textFragment = buildTextElement(vNode.text, preserveWhitespace);
     runFragment.import(textFragment);
   } else if (attributes && attributes.type === "picture") {
@@ -58918,6 +59031,24 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
   } else if (import_is_vnode.default(vNode) && vNode.tagName === "br") {
     const lineBreakFragment = buildLineBreak();
     runFragment.import(lineBreakFragment);
+  } else if (import_is_vnode.default(vNode) && vNodeHasChildren(vNode)) {
+    let extractTextFromChildren = function(children) {
+      return children.map((child) => {
+        if (import_is_vtext.default(child)) {
+          return child.text;
+        } else if (import_is_vnode.default(child) && child.children) {
+          return extractTextFromChildren(child.children);
+        }
+        return "";
+      }).join("");
+    };
+    const textContent = extractTextFromChildren(vNode.children);
+    if (textContent.trim()) {
+      const textFragment = buildTextElement(textContent, preserveWhitespace);
+      runFragment.import(textFragment);
+    }
+  } else if (import_is_vnode.default(vNode) && vNode.tagName === "img") {
+    return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } });
   }
   runFragment.up();
   return runFragment;
@@ -58950,6 +59081,9 @@ async function buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveW
   }
 }
 async function buildRunOrHyperLink(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
+  if (import_is_vnode.default(vNode) && vNode.tagName === "input") {
+    return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } });
+  }
   if (import_is_vnode.default(vNode) && vNode.tagName === "a") {
     const relationshipId = docxDocumentInstance.createDocumentRelationships(docxDocumentInstance.relationshipFilename, hyperlinkType, vNode.properties && vNode.properties.href ? vNode.properties.href : "");
     const hyperlinkFragment = import_xmlbuilder2.fragment({
@@ -59031,18 +59165,20 @@ function buildParagraphBorder() {
   paragraphBorderFragment.up();
   return paragraphBorderFragment;
 }
-function buildParagraphProperties(attributes) {
+function buildParagraphProperties(attributes, forceEmpty = false) {
   const keys = Object.keys(attributes);
+  let hasProperties = false;
+  const paragraphPropertiesFragment = import_xmlbuilder2.fragment({
+    namespaceAlias: { w: namespaces_default.w }
+  }).ele("@w", "pPr");
   if (keys.length) {
-    const paragraphPropertiesFragment = import_xmlbuilder2.fragment({
-      namespaceAlias: { w: namespaces_default.w }
-    }).ele("@w", "pPr");
     keys.forEach((key) => {
       switch (key) {
         case "numbering": {
           if (attributes.numbering?.levelId && attributes.numbering?.numberingId) {
             const numberingPropertiesFragment = buildNumberingProperties(attributes.numbering.levelId, attributes.numbering.numberingId);
             paragraphPropertiesFragment.import(numberingPropertiesFragment);
+            hasProperties = true;
             delete attributes.numbering;
           }
           break;
@@ -59051,6 +59187,7 @@ function buildParagraphProperties(attributes) {
           if (attributes.textAlign) {
             const horizontalAlignmentFragment = buildHorizontalAlignment(attributes.textAlign);
             paragraphPropertiesFragment.import(horizontalAlignmentFragment);
+            hasProperties = true;
             delete attributes.textAlign;
           }
           break;
@@ -59061,13 +59198,17 @@ function buildParagraphProperties(attributes) {
             paragraphPropertiesFragment.import(shadingFragment);
             const paragraphBorderFragment = buildParagraphBorder();
             paragraphPropertiesFragment.import(paragraphBorderFragment);
+            hasProperties = true;
             delete attributes.backgroundColor;
           }
           break;
         case "paragraphStyle": {
-          const pStyleFragment = buildPStyle(attributes.paragraphStyle);
-          paragraphPropertiesFragment.import(pStyleFragment);
-          delete attributes.paragraphStyle;
+          if (attributes.paragraphStyle) {
+            const pStyleFragment = buildPStyle(attributes.paragraphStyle);
+            paragraphPropertiesFragment.import(pStyleFragment);
+            hasProperties = true;
+            delete attributes.paragraphStyle;
+          }
           break;
         }
         case "indentation": {
@@ -59075,6 +59216,7 @@ function buildParagraphProperties(attributes) {
             const indentationFragment = buildIndentation(attributes.indentation);
             if (indentationFragment) {
               paragraphPropertiesFragment.import(indentationFragment);
+              hasProperties = true;
             }
             delete attributes.indentation;
           }
@@ -59084,15 +59226,20 @@ function buildParagraphProperties(attributes) {
           break;
       }
     });
-    const spacingFragment = buildSpacing(attributes.lineHeight, attributes.beforeSpacing, attributes.afterSpacing);
-    delete attributes.lineHeight;
-    delete attributes.beforeSpacing;
-    delete attributes.afterSpacing;
-    if (spacingFragment) {
-      paragraphPropertiesFragment.import(spacingFragment);
-    }
+  }
+  const spacingFragment = buildSpacing(attributes.lineHeight, attributes.beforeSpacing, attributes.afterSpacing);
+  delete attributes.lineHeight;
+  delete attributes.beforeSpacing;
+  delete attributes.afterSpacing;
+  if (spacingFragment) {
+    paragraphPropertiesFragment.import(spacingFragment);
+    hasProperties = true;
+  }
+  if (hasProperties || forceEmpty) {
     paragraphPropertiesFragment.up();
     return paragraphPropertiesFragment;
+  } else {
+    return null;
   }
 }
 function computeImageDimensions(vNode, attributes) {
@@ -59173,12 +59320,76 @@ function computeImageDimensions(vNode, attributes) {
   attributes.width = modifiedWidth;
   attributes.height = modifiedHeight;
 }
+function preprocessParagraphChildren(children) {
+  if (children.length === 0)
+    return children;
+  const processedChildren = [];
+  for (let i2 = 0;i2 < children.length; i2++) {
+    const current = children[i2];
+    const next = i2 < children.length - 1 ? children[i2 + 1] : null;
+    if (import_is_vtext.default(current)) {
+      const text = current.text;
+      const trimmedText = text.trim();
+      if (trimmedText) {
+        const leadingSpaces = text.match(/^(\s+)/)?.[1] || "";
+        const trailingSpaces = text.match(/(\s+)$/)?.[1] || "";
+        if (leadingSpaces && i2 > 0) {
+          const prevInProcessed = processedChildren[processedChildren.length - 1];
+          const prevEndsWithSpace = prevInProcessed && import_is_vtext.default(prevInProcessed) && prevInProcessed.text.endsWith(" ");
+          if (!prevEndsWithSpace) {
+            processedChildren.push(new import_vtext.default(" "));
+          }
+        }
+        processedChildren.push(new import_vtext.default(trimmedText));
+        if (trailingSpaces && i2 < children.length - 1) {
+          processedChildren.push(new import_vtext.default(" "));
+        }
+      } else if (text.match(/^\s+$/)) {
+        const prevInProcessed = processedChildren[processedChildren.length - 1];
+        const shouldAddSpace = i2 > 0 && i2 < children.length - 1 && !(prevInProcessed && import_is_vtext.default(prevInProcessed) && prevInProcessed.text === " ");
+        if (shouldAddSpace) {
+          processedChildren.push(new import_vtext.default(" "));
+        }
+      }
+    } else if (import_is_vnode.default(current)) {
+      const vNodeCurrent = current;
+      if (vNodeCurrent.children && vNodeCurrent.children.length === 1 && import_is_vtext.default(vNodeCurrent.children[0])) {
+        const childText = vNodeCurrent.children[0].text;
+        const trimmedChildText = childText.trim();
+        if (trimmedChildText) {
+          const leadingSpaces = childText.match(/^(\s+)/)?.[1] || "";
+          const trailingSpaces = childText.match(/(\s+)$/)?.[1] || "";
+          if (leadingSpaces && i2 > 0) {
+            const prevInProcessed = processedChildren[processedChildren.length - 1];
+            const prevEndsWithSpace = prevInProcessed && import_is_vtext.default(prevInProcessed) && prevInProcessed.text.endsWith(" ");
+            if (!prevEndsWithSpace) {
+              processedChildren.push(new import_vtext.default(" "));
+            }
+          }
+          const modifiedElement = new import_vnode.default(vNodeCurrent.tagName, vNodeCurrent.properties, [new import_vtext.default(trimmedChildText)]);
+          processedChildren.push(modifiedElement);
+          const nextIsWhitespaceOnly = next && import_is_vtext.default(next) && next.text.match(/^\s+$/);
+          if (trailingSpaces && i2 < children.length - 1 && !nextIsWhitespaceOnly) {
+            processedChildren.push(new import_vtext.default(" "));
+          }
+        } else {
+          processedChildren.push(new import_vtext.default(" "));
+        }
+      } else {
+        processedChildren.push(current);
+      }
+    } else {
+      processedChildren.push(current);
+    }
+  }
+  return processedChildren;
+}
 async function buildParagraph(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
   const paragraphFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "p");
   const modifiedAttributes = modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes, {
     isParagraph: true
   });
-  const paragraphPropertiesFragment = buildParagraphProperties(modifiedAttributes);
+  const paragraphPropertiesFragment = buildParagraphProperties(modifiedAttributes, false);
   if (paragraphPropertiesFragment) {
     paragraphFragment.import(paragraphPropertiesFragment);
   }
@@ -59211,18 +59422,10 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance, preserveW
       } else {
         paragraphFragment.import(runOrHyperlinkFragments);
       }
-    } else if (vNode.tagName === "blockquote") {
-      const runFragmentOrFragments = await buildRun(vNode, attributes, docxDocumentInstance, preserveWhitespace);
-      if (Array.isArray(runFragmentOrFragments)) {
-        for (let index = 0;index < runFragmentOrFragments.length; index++) {
-          paragraphFragment.import(runFragmentOrFragments[index]);
-        }
-      } else {
-        paragraphFragment.import(runFragmentOrFragments);
-      }
     } else {
-      for (let index = 0;index < vNode.children.length; index++) {
-        const childVNode = vNode.children[index];
+      const processedChildren = preserveWhitespace ? vNode.children : preprocessParagraphChildren(vNode.children);
+      for (let index = 0;index < processedChildren.length; index++) {
+        const childVNode = processedChildren[index];
         if (import_is_vnode.default(childVNode) && childVNode.tagName === "img") {
           if (isValidUrl(childVNode.properties.src)) {
             childVNode.properties.src = await fetchImageToDataUrl(childVNode.properties.src);
@@ -59250,20 +59453,7 @@ async function buildParagraph(vNode, attributes, docxDocumentInstance, preserveW
         }
       }
     }
-  } else {
-    if (vNode && import_is_vnode.default(vNode) && vNode.tagName === "img") {
-      const imageSource = vNode.properties.src;
-      if (isValidUrl(vNode.properties.src)) {
-        vNode.properties.src = await fetchImageToDataUrl(vNode.properties.src);
-      }
-      const base64String = extractBase64Data(imageSource)?.base64Content;
-      const imageBuffer = Buffer.from(decodeURIComponent(base64String || ""), "base64");
-      const imageProperties = import_image_size.imageSize(imageBuffer);
-      modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth || docxDocumentInstance.availableDocumentSpace;
-      modifiedAttributes.originalWidth = imageProperties.width;
-      modifiedAttributes.originalHeight = imageProperties.height;
-      computeImageDimensions(vNode, modifiedAttributes);
-    }
+  } else if (!vNode) {} else {
     const runFragments = await buildRunOrRuns(vNode, modifiedAttributes, docxDocumentInstance, preserveWhitespace);
     if (Array.isArray(runFragments)) {
       for (let index = 0;index < runFragments.length; index++) {
@@ -60107,8 +60297,8 @@ function buildDrawing(attributes) {
 
 // src/helpers/render-document-file.ts
 var convertHTML = import_html_to_vdom.default({
-  VNode: import_vnode2.default,
-  VText: import_vtext.default
+  VNode: import_vnode3.default,
+  VText: import_vtext2.default
 });
 async function buildImage(docxDocumentInstance, vNode, maximumWidth) {
   let response = null;
@@ -60227,7 +60417,7 @@ async function buildList(vNode, docxDocumentInstance, xmlFragment) {
           if (accumulator.length > 0 && import_is_vnode2.default(accumulator[accumulator.length - 1].node) && accumulator[accumulator.length - 1].node.tagName.toLowerCase() === "p") {
             accumulator[accumulator.length - 1].node.children.push(childVNode);
           } else {
-            const paragraphVNode = new import_vnode2.default("p", null, import_is_vtext2.default(childVNode) ? [childVNode] : import_is_vnode2.default(childVNode) ? childVNode.tagName.toLowerCase() === "li" ? [...childVNode.children] : [childVNode] : []);
+            const paragraphVNode = new import_vnode3.default("p", null, import_is_vtext2.default(childVNode) ? [childVNode] : import_is_vnode2.default(childVNode) ? childVNode.tagName.toLowerCase() === "li" ? [...childVNode.children] : [childVNode] : []);
             accumulator.push({
               node: import_is_vnode2.default(childVNode) ? childVNode.tagName.toLowerCase() === "li" ? childVNode : childVNode.tagName.toLowerCase() !== "p" ? paragraphVNode : childVNode : paragraphVNode,
               level: tempVNodeObject.level,
@@ -60283,6 +60473,10 @@ function collectParentAttributes(docxDocumentInstance, vNode, existingAttributes
       });
     }
   }
+  if (vNode.tagName === "blockquote") {
+    parentAttributes.indentation = { left: 284, right: 0 };
+    parentAttributes.textAlign = "justify";
+  }
   return parentAttributes;
 }
 async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, parentAttributes = {}) {
@@ -60308,8 +60502,6 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
             rowCantSplit: docxDocumentInstance.tableRowCantSplit
           }, docxDocumentInstance);
           xmlFragment.import(tableFragment);
-          const emptyParagraphFragment = await buildParagraph(null, {}, docxDocumentInstance);
-          xmlFragment.import(emptyParagraphFragment);
         } else if (childVNode.tagName === "img") {
           const imageFragment = await buildImage(docxDocumentInstance, childVNode, docxDocumentInstance.availableDocumentSpace);
           if (imageFragment) {
@@ -60329,8 +60521,6 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
       rowCantSplit: docxDocumentInstance.tableRowCantSplit
     }, docxDocumentInstance);
     xmlFragment.import(tableFragment);
-    const emptyParagraphFragment = await buildParagraph(null, {}, docxDocumentInstance);
-    xmlFragment.import(emptyParagraphFragment);
     return;
   } else if (["ol", "ul"].includes(vNode.tagName)) {
     await buildList(vNode, docxDocumentInstance, xmlFragment);
@@ -60338,7 +60528,7 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
   } else if (vNode.tagName === "img") {
     const imageRunFragment = await buildImage(docxDocumentInstance, vNode, docxDocumentInstance.availableDocumentSpace);
     if (imageRunFragment) {
-      const imageParagraphFragment = await buildParagraph(vNode, {}, docxDocumentInstance);
+      const imageParagraphFragment = await buildParagraph(null, {}, docxDocumentInstance);
       if (Array.isArray(imageRunFragment)) {
         imageRunFragment.forEach((frag) => imageParagraphFragment.import(frag));
       } else {
@@ -60349,7 +60539,6 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
     return;
   } else if ([
     "a",
-    "blockquote",
     "p",
     "pre"
   ].includes(vNode.tagName)) {
@@ -60377,6 +60566,51 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
     return;
   } else if (vNode.tagName === "head") {
     return;
+  } else if (vNode.tagName === "input") {
+    return;
+  } else if (vNode.tagName === "blockquote" && vNodeHasChildren(vNode)) {
+    const childParentAttributes = collectParentAttributes(docxDocumentInstance, vNode, parentAttributes);
+    const paragraphNodes = [];
+    const inlineElements = [];
+    const citeElements = [];
+    for (const childVNode of vNode.children) {
+      if (import_is_vnode2.default(childVNode) && childVNode.tagName === "p") {
+        paragraphNodes.push(childVNode);
+      } else if (import_is_vnode2.default(childVNode) && childVNode.tagName === "cite") {
+        citeElements.push(childVNode);
+      } else if (import_is_vnode2.default(childVNode) && htmlInlineElements.includes(childVNode.tagName)) {
+        inlineElements.push(childVNode);
+      } else if (import_is_vtext2.default(childVNode)) {
+        const text = childVNode.text.trim();
+        if (text) {
+          inlineElements.push(childVNode);
+        }
+      }
+    }
+    for (let i2 = 0;i2 < paragraphNodes.length; i2++) {
+      const pNode = paragraphNodes[i2];
+      const paragraphFragment = await buildParagraph(pNode, childParentAttributes, docxDocumentInstance, false);
+      if (i2 === paragraphNodes.length - 1) {
+        for (const inlineElement of inlineElements) {
+          if (import_is_vnode2.default(inlineElement) && htmlInlineElements.includes(inlineElement.tagName)) {
+            const runFragment = await buildRun(inlineElement, childParentAttributes, docxDocumentInstance);
+            if (Array.isArray(runFragment)) {
+              for (const frag of runFragment) {
+                paragraphFragment.import(frag);
+              }
+            } else {
+              paragraphFragment.import(runFragment);
+            }
+          }
+        }
+      }
+      xmlFragment.import(paragraphFragment);
+    }
+    for (const citeElement of citeElements) {
+      const citeParagraphFragment = await buildParagraph(citeElement, childParentAttributes, docxDocumentInstance, false);
+      xmlFragment.import(citeParagraphFragment);
+    }
+    return;
   }
   if (vNodeHasChildren(vNode)) {
     const childParentAttributes = collectParentAttributes(docxDocumentInstance, vNode, parentAttributes);
@@ -60399,7 +60633,21 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
       "sup",
       "u"
     ];
-    for (const childVNode of vNode.children) {
+    const needsSpaceExtraction = vNode.children.length > 2 && vNode.children.every((child, index) => {
+      if (import_is_vtext2.default(child)) {
+        const text = child.text;
+        return text.trim() === "";
+      }
+      if (import_is_vnode2.default(child) && inlineTags.includes(child.tagName)) {
+        if (child.children && child.children.length === 1 && import_is_vtext2.default(child.children[0])) {
+          const childText = child.children[0].text;
+          return index === vNode.children.length - 1 || childText.match(/\s+$/);
+        }
+      }
+      return false;
+    });
+    const childrenToProcess = needsSpaceExtraction ? preprocessParagraphChildren(vNode.children) : vNode.children;
+    for (const childVNode of childrenToProcess) {
       if (childVNode.tagName === "img") {
         const imageRunFragment = await buildImage(docxDocumentInstance, childVNode, docxDocumentInstance.availableDocumentSpace);
         if (imageRunFragment) {
@@ -61549,8 +61797,8 @@ class DocxDocument {
 
 // src/html-to-docx.ts
 var convertHTML2 = import_html_to_vdom2.default({
-  VNode: import_vnode4.default,
-  VText: import_vtext2.default
+  VNode: import_vnode5.default,
+  VText: import_vtext3.default
 });
 function mergeOptions(options, patch) {
   return { ...options, ...patch };
@@ -61712,6 +61960,7 @@ function minifyHTMLString(htmlString) {
     return `<pre${attributes || ""}>${placeholder}</pre>`;
   });
   let minifiedHTMLString = protectedHTMLString.replace(/\n/g, " ").replace(/\r/g, " ").replace(/\r\n/g, " ").replace(/[\t]+</g, "<").replace(/>[\t ]+$/g, ">");
+  minifiedHTMLString = minifiedHTMLString.replace(/<!--.*?-->/g, "");
   minifiedHTMLString = minifiedHTMLString.replace(/>\s+</g, ">__SPACE__<");
   const inlineElements = [
     "a",

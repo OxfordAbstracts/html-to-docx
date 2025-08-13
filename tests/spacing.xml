@@ -3,10 +3,19 @@
   <w:body>
     <w:p>
       <w:r>
+        <w:t xml:space="preserve">Unindented text does not start with a space.</w:t>
+      </w:r>
+      <w:r>
+        <w:br w:type="textWrapping"/>
+      </w:r>
+      <w:r>
         <w:t xml:space="preserve">This sentence</w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve"> must be on a single line.</w:t>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">must be on a single line.</w:t>
       </w:r>
       <w:r>
         <w:br w:type="textWrapping"/>

@@ -296,6 +296,156 @@ function buildTextElement(text: string, preserveWhitespace: boolean = false) {
     .up()
 }
 
+function buildTextElementsWithSpaceSeparation(
+  text: string,
+  preserveWhitespace: boolean = false,
+  attributes: Attributes = {},
+): XMLBuilder[] {
+  if (preserveWhitespace) {
+    // If preserving whitespace, create single run
+    const runFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "r")
+    const runPropertiesFragment = buildRunProperties(attributes)
+    if (runPropertiesFragment) {
+      runFragment.import(runPropertiesFragment)
+    }
+    const textFragment = buildTextElement(text, preserveWhitespace)
+    runFragment.import(textFragment)
+    return [runFragment]
+  }
+
+  // Apply text normalization first
+  const normalizedText = (() => {
+    let t = text.replace(/\r\n?/g, "\n")
+    t = t.replace(/[ \t]+\n/g, "\n")
+    t = t.replace(/\n[ \t]+/g, "\n")
+
+    // Check if original text starts with newline + content
+    // (HTML formatting whitespace)
+    // BEFORE converting newlines to spaces
+    const startsWithNewlineAndContent = /^\n\S/.test(t)
+
+    t = t.replace(/\n/g, " ")
+    t = t.replace(/ {2,}/g, " ")
+
+    if (/^ {2,}/.test(text)) {
+      t = t.replace(/^ +/, "")
+      t = t.replace(/ +$/, "")
+    }
+
+    if (text.includes("\n")) {
+      // If text originally started with newline, remove the leading space
+      // For when HTML formatting adds newlines before content
+      if (/^\n/.test(text)) {
+        t = t.replace(/^ +/, "")
+      }
+      if (/\s+\n$/.test(text)) {
+        t = t.replace(/ +$/, "")
+      }
+    }
+
+    // Handle HTML formatting whitespace at document/paragraph start.
+    // If text starts with a single space followed by uppercase letter,
+    // it's likely from HTML formatting (like newlines between tags)
+    // at document start and should be removed for proper document flow.
+    // Be very specific to avoid removing legitimate spaces between elements
+    if (/^ [A-Z]/.test(t) && !startsWithNewlineAndContent) {
+      // Only remove if it's a single space, not multiple spaces
+      // (which might be intentional)
+      if (!/^ {2}/.test(t)) {
+        t = t.replace(/^ /, "")
+      }
+    }
+
+    // Also handle the newline case
+    if (startsWithNewlineAndContent) {
+      t = t.replace(/^ /, "")
+    }
+
+    return t
+  })()
+
+  // Check for leading and trailing spaces in normalized text
+  const leadingSpace = normalizedText.match(/^(\s+)/)
+  const trailingSpace = normalizedText.match(/(\s+)$/)
+  const trimmedText = normalizedText.trim()
+
+  const runs: XMLBuilder[] = []
+
+  // Add leading space run if exists
+  if (leadingSpace) {
+    const spaceRunFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "r")
+    const runPropertiesFragment = buildRunProperties(attributes)
+    if (runPropertiesFragment) {
+      spaceRunFragment.import(runPropertiesFragment)
+    }
+    const spaceTextFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "t")
+      .att("@xml", "space", "preserve")
+      .txt(leadingSpace[1])
+      .up()
+    spaceRunFragment.import(spaceTextFragment)
+    runs.push(spaceRunFragment)
+  }
+
+  // Add main text run if exists
+  if (trimmedText) {
+    const mainRunFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "r")
+    const runPropertiesFragment = buildRunProperties(attributes)
+    if (runPropertiesFragment) {
+      mainRunFragment.import(runPropertiesFragment)
+    }
+    const mainTextFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "t")
+      .att("@xml", "space", "preserve")
+      .txt(trimmedText)
+      .up()
+    mainRunFragment.import(mainTextFragment)
+    runs.push(mainRunFragment)
+  }
+
+  // Add trailing space run if exists and different from leading space
+  if (
+    trailingSpace &&
+    (!leadingSpace || trailingSpace[1] !== leadingSpace[1] || trimmedText)
+  ) {
+    const spaceRunFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "r")
+    const runPropertiesFragment = buildRunProperties(attributes)
+    if (runPropertiesFragment) {
+      spaceRunFragment.import(runPropertiesFragment)
+    }
+    const spaceTextFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "t")
+      .att("@xml", "space", "preserve")
+      .txt(trailingSpace[1])
+      .up()
+    spaceRunFragment.import(spaceTextFragment)
+    runs.push(spaceRunFragment)
+  }
+
+  // If no runs were created, but we have text (even if all whitespace),
+  // create a run with the original text behavior
+  if (runs.length === 0) {
+    const emptyRunFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+      .ele("@w", "r")
+    const runPropertiesFragment = buildRunProperties(attributes)
+    if (runPropertiesFragment) {
+      emptyRunFragment.import(runPropertiesFragment)
+    }
+
+    // Use original text handling for empty/whitespace-only cases
+    const textFragment = buildTextElement(normalizedText, preserveWhitespace)
+    emptyRunFragment.import(textFragment)
+
+    runs.push(emptyRunFragment)
+  }
+
+  return runs
+}
+
 function fixupLineHeight(lineHeight?: number, fontSize?: number): number {
   if (Number.isFinite(lineHeight)) {
     if (Number.isFinite(fontSize)) {
@@ -781,29 +931,24 @@ async function buildRun(
     let vNodes = [vNode]
     // create temp run fragments to split the paragraph into different runs
     let tempAttributes = lodash.cloneDeep(attributes)
-    let tempRunFragment = fragment({ namespaceAlias: { w: namespaces.w } })
-      .ele("@w", "r")
     while (vNodes.length) {
       const tempVNode = vNodes.shift()
       if (isVText(tempVNode)) {
-        const textFragment = buildTextElement(
+        // Use space separation logic to create multiple runs if needed
+        const textRuns = buildTextElementsWithSpaceSeparation(
           (tempVNode as VText).text,
           preserveWhitespace,
+          {
+            ...attributes,
+            ...tempAttributes,
+          },
         )
-        const tempRunPropertiesFragment = buildRunProperties({
-          ...attributes,
-          ...tempAttributes,
-        })
-        if (tempRunPropertiesFragment) {
-          tempRunFragment.import(tempRunPropertiesFragment)
-        }
-        tempRunFragment.import(textFragment)
-        runFragmentsArray.push(tempRunFragment)
+
+        // Add all generated runs to the array
+        runFragmentsArray.push(...textRuns)
 
         // re initialize temp run fragments with new fragment
         tempAttributes = lodash.cloneDeep(attributes)
-        tempRunFragment = fragment({ namespaceAlias: { w: namespaces.w } })
-          .ele("@w", "r")
       }
       else if (isVNode(tempVNode)) {
         if (
@@ -901,6 +1046,22 @@ async function buildRun(
     runFragment.import(runPropertiesFragment)
   }
   if (isVText(vNode)) {
+    // Use space separation logic to create multiple runs if needed
+    const textRuns = buildTextElementsWithSpaceSeparation(
+      (vNode as VText).text,
+      preserveWhitespace,
+      attributes,
+    )
+
+    // If multiple runs are created, return them as array
+    if (textRuns.length > 1) {
+      return textRuns
+    }
+    else if (textRuns.length === 1) {
+      // If only one run, return it directly
+      return textRuns[0]
+    }
+    // If no runs (empty case), continue with original logic
     const textFragment = buildTextElement(
       (vNode as VText).text,
       preserveWhitespace,
@@ -3176,6 +3337,7 @@ export {
   buildRun,
   buildTable,
   buildTextElement,
+  buildTextElementsWithSpaceSeparation,
   buildUnderline,
   fixupLineHeight,
 }
