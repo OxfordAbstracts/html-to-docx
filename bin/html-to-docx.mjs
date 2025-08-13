@@ -2,9 +2,7 @@
 
 import fs from "node:fs/promises"
 import path from "node:path"
-import lib from "../dist/index-cjs.js"
-
-const htmlToDocx = lib.default || lib
+import htmlToDocx from "../dist/index-esm.js"
 
 async function main () {
   const [src, dst] = process.argv.slice(2)
