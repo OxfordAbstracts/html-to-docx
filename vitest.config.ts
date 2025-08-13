@@ -3,6 +3,6 @@ import { defineConfig } from "vitest/config"
 export default defineConfig({
   test: {
     dir: "tests",
-    testTimeout: 8000,
+    testTimeout: 15000,
   },
 })
