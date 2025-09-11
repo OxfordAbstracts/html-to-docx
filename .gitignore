@@ -51,8 +51,6 @@ typings/
 .storybook-out
 
 # Temporary folders and files
-tmp/
-temp/
 tests/**/*_tmp_*
 dist/*
 

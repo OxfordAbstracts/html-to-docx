@@ -1406,8 +1406,8 @@ function buildParagraphProperties(
       switch (key) {
         case "numbering": {
           if (
-            attributes.numbering?.levelId &&
-            attributes.numbering?.numberingId
+            attributes.numbering?.levelId !== undefined &&
+            attributes.numbering?.numberingId !== undefined
           ) {
             const numberingPropertiesFragment = buildNumberingProperties(
               attributes.numbering.levelId,

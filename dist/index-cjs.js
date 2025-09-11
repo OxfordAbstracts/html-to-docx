@@ -59008,7 +59008,7 @@ function buildParagraphProperties(attributes, forceEmpty = false) {
     keys.forEach((key) => {
       switch (key) {
         case "numbering": {
-          if (attributes.numbering?.levelId && attributes.numbering?.numberingId) {
+          if (attributes.numbering?.levelId !== undefined && attributes.numbering?.numberingId !== undefined) {
             const numberingPropertiesFragment = buildNumberingProperties(attributes.numbering.levelId, attributes.numbering.numberingId);
             paragraphPropertiesFragment.import(numberingPropertiesFragment);
             hasProperties = true;

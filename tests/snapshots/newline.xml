@@ -3,26 +3,30 @@
   <w:body>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve"/>
-      </w:r>
-    </w:p>
-    <w:p>
-      <w:r>
         <w:t xml:space="preserve">First</w:t>
       </w:r>
-    </w:p>
-    <w:p>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
       <w:r>
         <w:t xml:space="preserve">Second</w:t>
       </w:r>
-    </w:p>
-    <w:p>
       <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+        </w:rPr>
         <w:t xml:space="preserve">Third</w:t>
       </w:r>
-    </w:p>
-    <w:p>
       <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">Fourth</w:t>
       </w:r>
     </w:p>

@@ -9,10 +9,11 @@ const createdAt = new Date("2025-01-01")
 
 for (const fileName of await fs.readdir("tests/snapshots")) {
   if (fileName.endsWith(".xml")) {
+    const htmlFileName = fileName.replace('.xml', '.html')
     test(`Snapshot test for ${fileName}`, async ({ expect }) => {
-      const largeHTML = await fs.readFile(`tests/snapshots/${fileName}`, "utf8")
+      const htmlContent = await fs.readFile(`tests/snapshots/${htmlFileName}`, "utf8")
       const docxContent = await htmlToDocx(
-        largeHTML,
+        htmlContent,
         null,
         {
           createdAt,

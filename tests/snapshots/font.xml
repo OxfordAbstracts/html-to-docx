@@ -3,36 +3,51 @@
   <w:body>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve"/>
-      </w:r>
-    </w:p>
-    <w:p>
-      <w:r>
         <w:t xml:space="preserve">This sentence</w:t>
       </w:r>
-    </w:p>
-    <w:p>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
       <w:r>
         <w:t xml:space="preserve">must be on a single line.</w:t>
       </w:r>
+      <w:r>
+        <w:br w:type="textWrapping"/>
+      </w:r>
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">Just a simple bold sentence</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:b/>
+        </w:rPr>
         <w:t xml:space="preserve">Just a simple bold sentence inside a div</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
+        </w:rPr>
         <w:t xml:space="preserve">Just a simple monospace sentence</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:sz w:val="30"/>
+          <w:szCs w:val="30"/>
+          <w:b/>
+          <w:i/>
+          <w:rFonts w:ascii="Helvetica" w:hAnsi="Helvetica" w:eastAsia="Helvetica" w:cs="Helvetica"/>
+        </w:rPr>
         <w:t xml:space="preserve">Just a simple sentence with combined styles</w:t>
       </w:r>
     </w:p>
@@ -48,16 +63,27 @@
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:sz w:val="15"/>
+          <w:szCs w:val="15"/>
+        </w:rPr>
         <w:t xml:space="preserve">Child overwrites parent CSS and leads to a small font</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
+        </w:rPr>
         <w:t xml:space="preserve">This should be monospace</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Courier" w:hAnsi="Courier" w:eastAsia="Courier" w:cs="Courier"/>
+          <w:u w:val="single"/>
+        </w:rPr>
         <w:t xml:space="preserve">Underlined monospace text</w:t>
       </w:r>
     </w:p>
