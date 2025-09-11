@@ -54823,36 +54823,6 @@ var htmlInlineElements = [
 ];
 var htmlHeadings = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
-// node_modules/nanoid/index.js
-import { webcrypto as crypto } from "node:crypto";
-
-// node_modules/nanoid/url-alphabet/index.js
-var urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
-
-// node_modules/nanoid/index.js
-var POOL_SIZE_MULTIPLIER = 128;
-var pool;
-var poolOffset;
-function fillPool(bytes) {
-  if (!pool || pool.length < bytes) {
-    pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
-    crypto.getRandomValues(pool);
-    poolOffset = 0;
-  } else if (poolOffset + bytes > pool.length) {
-    crypto.getRandomValues(pool);
-    poolOffset = 0;
-  }
-  poolOffset += bytes;
-}
-function nanoid(size = 21) {
-  fillPool(size |= 0);
-  let id = "";
-  for (let i = poolOffset - size;i < poolOffset; i++) {
-    id += urlAlphabet[pool[i] & 63];
-  }
-  return id;
-}
-
 // src/docx-document.ts
 var import_xmlbuilder23 = __toESM(require_lib12(), 1);
 import { createHash } from "node:crypto";
@@ -60103,23 +60073,28 @@ async function buildImage(docxDocumentInstance, vNode, maximumWidth) {
 }
 async function buildList(vNode, docxDocumentInstance, xmlFragment) {
   const listElements = [];
+  const parentAttributes = collectParentAttributes(docxDocumentInstance, vNode);
   let vNodeObjects = [
     {
       node: vNode,
       level: 0,
       type: vNode.tagName,
-      numberingId: docxDocumentInstance.createNumbering(vNode.tagName, vNode.properties)
+      numberingId: docxDocumentInstance.createNumbering(vNode.tagName, vNode.properties),
+      originalListItem: null
     }
   ];
   while (vNodeObjects.length) {
     const tempVNodeObject = vNodeObjects.shift();
     if (tempVNodeObject) {
       if (import_is_vtext2.default(tempVNodeObject.node) || import_is_vnode2.default(tempVNodeObject.node) && !["ul", "ol", "li"].includes(tempVNodeObject.node.tagName)) {
+        const nodeForAttributes = tempVNodeObject.originalListItem || tempVNodeObject.node;
+        const listItemAttributes = collectParentAttributes(docxDocumentInstance, nodeForAttributes, parentAttributes);
         const paragraphFragment = await buildParagraph(tempVNodeObject.node, {
           numbering: {
             levelId: tempVNodeObject.level,
             numberingId: tempVNodeObject.numberingId
-          }
+          },
+          ...listItemAttributes
         }, docxDocumentInstance);
         xmlFragment.import(paragraphFragment);
       }
@@ -60131,18 +60106,21 @@ async function buildList(vNode, docxDocumentInstance, xmlFragment) {
             node: childVNode,
             level: tempVNodeObject.level + 1,
             type: childVNode.tagName,
-            numberingId: docxDocumentInstance.createNumbering(childVNode.tagName, childVNode.properties)
+            numberingId: docxDocumentInstance.createNumbering(childVNode.tagName, childVNode.properties),
+            originalListItem: null
           });
         } else {
           if (accumulator.length > 0 && import_is_vnode2.default(accumulator[accumulator.length - 1].node) && accumulator[accumulator.length - 1].node.tagName.toLowerCase() === "p") {
             accumulator[accumulator.length - 1].node.children.push(childVNode);
           } else {
-            const paragraphVNode = new import_vnode3.default("p", null, import_is_vtext2.default(childVNode) ? [childVNode] : import_is_vnode2.default(childVNode) ? childVNode.tagName.toLowerCase() === "li" ? [...childVNode.children] : [childVNode] : []);
+            const paragraphVNode = new import_vnode3.default("p", import_is_vnode2.default(childVNode) && childVNode.tagName.toLowerCase() === "li" ? childVNode.properties : null, import_is_vtext2.default(childVNode) ? [childVNode] : import_is_vnode2.default(childVNode) ? childVNode.tagName.toLowerCase() === "li" ? [...childVNode.children] : [childVNode] : []);
+            const isListItem = import_is_vnode2.default(childVNode) && childVNode.tagName.toLowerCase() === "li";
             accumulator.push({
               node: import_is_vnode2.default(childVNode) ? childVNode.tagName.toLowerCase() === "li" ? childVNode : childVNode.tagName.toLowerCase() !== "p" ? paragraphVNode : childVNode : paragraphVNode,
               level: tempVNodeObject.level,
               type: tempVNodeObject.type,
-              numberingId: tempVNodeObject.numberingId
+              numberingId: tempVNodeObject.numberingId,
+              originalListItem: isListItem ? childVNode : tempVNodeObject.originalListItem
             });
           }
         }
@@ -61459,9 +61437,8 @@ class DocxDocument {
       throw new Error("Invalid data URL");
     }
     const fileExtension = fileData.extension === "octet-stream" ? "png" : fileData.extension;
-    const randId = nanoid(8);
     const contentHash = sha1(fileData.base64Content);
-    const fileNameWithExtension = `image-${randId}-${contentHash}.${fileExtension}`;
+    const fileNameWithExtension = `image-${contentHash}.${fileExtension}`;
     this.lastMediaId += 1;
     return {
       id: this.lastMediaId,

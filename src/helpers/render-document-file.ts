@@ -205,6 +205,9 @@ export async function buildList(
     numberingId: number
   }[] = []
 
+  // Collect parent attributes from the list element to inherit styles
+  const parentAttributes = collectParentAttributes(docxDocumentInstance, vNode)
+
   let vNodeObjects = [
     {
       node: vNode,
@@ -214,6 +217,7 @@ export async function buildList(
         vNode.tagName,
         vNode.properties,
       ),
+      originalListItem: null as VNode | null,
     },
   ]
   while (vNodeObjects.length) {
@@ -224,6 +228,15 @@ export async function buildList(
         (isVNode(tempVNodeObject.node) &&
           !["ul", "ol", "li"].includes(tempVNodeObject.node.tagName))
       ) {
+        // Collect attributes from the list item itself and merge with parent
+        // If this content came from an <li> element, use its properties for inheritance
+        const nodeForAttributes = tempVNodeObject.originalListItem || tempVNodeObject.node
+        const listItemAttributes = collectParentAttributes(
+          docxDocumentInstance,
+          nodeForAttributes,
+          parentAttributes,
+        )
+
         const paragraphFragment = await xmlBuilder.buildParagraph(
           tempVNodeObject.node,
           {
@@ -231,6 +244,7 @@ export async function buildList(
               levelId: tempVNodeObject.level,
               numberingId: tempVNodeObject.numberingId,
             },
+            ...listItemAttributes,
           },
           docxDocumentInstance,
         )
@@ -251,6 +265,7 @@ export async function buildList(
             level: number
             type: string
             numberingId: number
+            originalListItem: VNode | null
           }[],
           childVNode: VNode,
         ) => {
@@ -263,6 +278,7 @@ export async function buildList(
                 childVNode.tagName,
                 childVNode.properties,
               ),
+              originalListItem: null,
             })
           }
           else {
@@ -279,7 +295,10 @@ export async function buildList(
             else {
               const paragraphVNode = new VNode(
                 "p",
-                null,
+                // Preserve li element properties in the paragraph node for inheritance
+                isVNode(childVNode) && childVNode.tagName.toLowerCase() === "li"
+                  ? childVNode.properties
+                  : null,
                 isVText(childVNode)
                   ? [childVNode]
                   : isVNode(childVNode)
@@ -288,6 +307,8 @@ export async function buildList(
                       : [childVNode]
                     : [],
               )
+              const isListItem = isVNode(childVNode) && childVNode.tagName.toLowerCase() === "li"
+              
               accumulator.push({
                 node: isVNode(childVNode)
                   ? childVNode.tagName.toLowerCase() === "li"
@@ -299,6 +320,7 @@ export async function buildList(
                 level: tempVNodeObject.level,
                 type: tempVNodeObject.type,
                 numberingId: tempVNodeObject.numberingId,
+                originalListItem: isListItem ? childVNode : tempVNodeObject.originalListItem,
               })
             }
           }
