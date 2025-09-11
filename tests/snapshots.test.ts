@@ -8,10 +8,10 @@ import writeFile from "./write-file.ts"
 const createdAt = new Date("2025-01-01")
 
 for (const fileName of await fs.readdir("tests/snapshots")) {
-  if (fileName.endsWith(".xml")) {
-    const htmlFileName = fileName.replace('.xml', '.html')
+  if (fileName.endsWith(".html")) {
+    const xmlFileName = fileName.replace('.html', '.xml')
     test(`Snapshot test for ${fileName}`, async ({ expect }) => {
-      const htmlContent = await fs.readFile(`tests/snapshots/${htmlFileName}`, "utf8")
+      const htmlContent = await fs.readFile(`tests/snapshots/${fileName}`, "utf8")
       const docxContent = await htmlToDocx(
         htmlContent,
         null,
@@ -21,7 +21,7 @@ for (const fileName of await fs.readdir("tests/snapshots")) {
         },
         null,
       )
-      await writeFile(docxContent, `tests/snapshots/${fileName}_tmp_.docx`)
+      await writeFile(docxContent, `tests/snapshots/${xmlFileName}_tmp_.docx`)
 
       const zip = new JSZip()
       const zipContent = await zip.loadAsync(docxContent)
@@ -32,7 +32,7 @@ for (const fileName of await fs.readdir("tests/snapshots")) {
         ?.async("string") || "")
         .trim()
 
-      await expect(docXml).toMatchFileSnapshot(`snapshots/${fileName}`)
+      await expect(docXml).toMatchFileSnapshot(`snapshots/${xmlFileName}`)
     })
   }
 }

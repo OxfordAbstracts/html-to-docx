@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:cdr="http://schemas.openxmlformats.org/drawingml/2006/chartDrawing" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">
+  <w:body>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve"/>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Embedded content</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Images</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading3"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Plain</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;img&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">element</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:drawing>
+          <wp:inline distB="0" distL="0" distR="0" distT="0">
+            <wp:extent cx="9525" cy="9525"/>
+            <wp:effectExtent b="0" l="0" r="0" t="0"/>
+            <wp:docPr id="1" name="image-babe065c1de4a3e33de21a28579cafb89b1515fe.png"/>
+            <a:graphic>
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic>
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="1" name="image-babe065c1de4a3e33de21a28579cafb89b1515fe.png" descr="Photo of a kitten"/>
+                    <pic:cNvPicPr/>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId6" cstate="print"/>
+                    <a:srcRect b="0" l="0" r="0" t="0"/>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="9525" cy="9525"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect"/>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading3"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">&lt;figure&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">element with</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;img&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">element</w:t>
+      </w:r>
+    </w:p>
+    <w:r>
+      <w:drawing>
+        <wp:inline distB="0" distL="0" distR="0" distT="0">
+          <wp:extent cx="4000500" cy="4000500"/>
+          <wp:effectExtent b="0" l="0" r="0" t="0"/>
+          <wp:docPr id="3" name="image-3bc6133e8999e3cc847c12e8773a5a65984a170e.webp"/>
+          <a:graphic>
+            <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+              <pic:pic>
+                <pic:nvPicPr>
+                  <pic:cNvPr id="3" name="image-3bc6133e8999e3cc847c12e8773a5a65984a170e.webp" descr="Photo of a kitten"/>
+                  <pic:cNvPicPr/>
+                </pic:nvPicPr>
+                <pic:blipFill>
+                  <a:blip r:embed="rId8" cstate="print"/>
+                  <a:srcRect b="0" l="0" r="0" t="0"/>
+                  <a:stretch>
+                    <a:fillRect/>
+                  </a:stretch>
+                </pic:blipFill>
+                <pic:spPr>
+                  <a:xfrm>
+                    <a:off x="0" y="0"/>
+                    <a:ext cx="4000500" cy="4000500"/>
+                  </a:xfrm>
+                  <a:prstGeom prst="rect"/>
+                </pic:spPr>
+              </pic:pic>
+            </a:graphicData>
+          </a:graphic>
+        </wp:inline>
+      </w:drawing>
+    </w:r>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading3"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">&lt;figure&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">element with</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;img&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">and</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;figcaption&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">elements</w:t>
+      </w:r>
+    </w:p>
+    <w:r>
+      <w:drawing>
+        <wp:inline distB="0" distL="0" distR="0" distT="0">
+          <wp:extent cx="4000500" cy="4000500"/>
+          <wp:effectExtent b="0" l="0" r="0" t="0"/>
+          <wp:docPr id="5" name="image-3bc6133e8999e3cc847c12e8773a5a65984a170e.webp"/>
+          <a:graphic>
+            <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+              <pic:pic>
+                <pic:nvPicPr>
+                  <pic:cNvPr id="5" name="image-3bc6133e8999e3cc847c12e8773a5a65984a170e.webp" descr="Photo of a kitten"/>
+                  <pic:cNvPicPr/>
+                </pic:nvPicPr>
+                <pic:blipFill>
+                  <a:blip r:embed="rId10" cstate="print"/>
+                  <a:srcRect b="0" l="0" r="0" t="0"/>
+                  <a:stretch>
+                    <a:fillRect/>
+                  </a:stretch>
+                </pic:blipFill>
+                <pic:spPr>
+                  <a:xfrm>
+                    <a:off x="0" y="0"/>
+                    <a:ext cx="4000500" cy="4000500"/>
+                  </a:xfrm>
+                  <a:prstGeom prst="rect"/>
+                </pic:spPr>
+              </pic:pic>
+            </a:graphicData>
+          </a:graphic>
+        </wp:inline>
+      </w:drawing>
+    </w:r>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading3"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">&lt;figure&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">element with a</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">&lt;picture&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">element</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId11">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Background images</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId12">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Audio</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">audio</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId13">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Video</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">video</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId14">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Canvas</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">canvas</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId15">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Meter</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">2 out of 10</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId16">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Progress</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">progress</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId17">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Inline SVG</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId18">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">IFrame</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId19">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Embed</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:hyperlink r:id="rId20">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Object</w:t>
+      </w:r>
+    </w:p>
+    <w:r/>
+    <w:p>
+      <w:hyperlink r:id="rId21">
+        <w:r>
+          <w:rPr>
+            <w:rStyle w:val="Hyperlink"/>
+          </w:rPr>
+          <w:t xml:space="preserve">[Top]</w:t>
+        </w:r>
+      </w:hyperlink>
+    </w:p>
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
+      <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="720" w:footer="720" w:gutter="0"/>
+    </w:sectPr>
+  </w:body>
+</w:document>
