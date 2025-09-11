@@ -8,37 +8,22 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:drawing>
-          <wp:inline distB="0" distL="0" distR="0" distT="0">
-            <wp:extent cx="2438400" cy="2438400"/>
-            <wp:effectExtent b="0" l="0" r="0" t="0"/>
-            <wp:docPr id="2" name="image.png"/>
-            <a:graphic>
-              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-                <pic:pic>
-                  <pic:nvPicPr>
-                    <pic:cNvPr id="2" name="image.png" descr="test image"/>
-                    <pic:cNvPicPr/>
-                  </pic:nvPicPr>
-                  <pic:blipFill>
-                    <a:blip r:embed="rId7" cstate="print"/>
-                    <a:srcRect b="0" l="0" r="0" t="0"/>
-                    <a:stretch>
-                      <a:fillRect/>
-                    </a:stretch>
-                  </pic:blipFill>
-                  <pic:spPr>
-                    <a:xfrm>
-                      <a:off x="0" y="0"/>
-                      <a:ext cx="2438400" cy="2438400"/>
-                    </a:xfrm>
-                    <a:prstGeom prst="rect"/>
-                  </pic:spPr>
-                </pic:pic>
-              </a:graphicData>
-            </a:graphic>
-          </wp:inline>
-        </w:drawing>
+        <w:t xml:space="preserve">First</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Second</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Third</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:t xml:space="preserve">Fourth</w:t>
       </w:r>
     </w:p>
     <w:sectPr>

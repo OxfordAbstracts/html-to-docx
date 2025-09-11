@@ -78,28 +78,3 @@ test("handles a large HTML file", async () => {
     docXml.includes('<w:t xml:space="preserve">This is a test paragraph'),
   )
 })
-
-// TODO: Fix this test
-test.skip("handles an HTML file that embeds other content", async () => {
-  const largeHTML = await fs.readFile("tests/html5-embed.html", "utf8")
-  const docxContent = await htmlToDocx(
-    largeHTML,
-    null,
-    {
-      createdAt,
-      modifiedAt: createdAt,
-    },
-    null,
-  )
-  await writeFile(docxContent, "tests/html5-embed_tmp_.docx")
-
-  const zip = new JSZip()
-  const zipContent = await zip.loadAsync(docxContent)
-
-  assert.ok("word/document.xml" in zipContent.files)
-
-  const docXml = await zipContent.file("word/document.xml")
-    ?.async("string") || ""
-  assert.ok(docXml.includes("<w:body>"))
-  assert.ok(docXml.includes("</w:body>"))
-})

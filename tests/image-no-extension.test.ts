@@ -32,7 +32,7 @@ test("gets mime type of image without extension from its content", async () => {
     .replaceAll(imgRegex, '"image.')
 
   const expectedDocXml = (await fs
-    .readFile("tests/image-no-extension-document.xml", "utf8"))
+    .readFile("tests/image-no-extension.xml", "utf8"))
     .replaceAll(imgRegex, '"image.')
     .trim()
 

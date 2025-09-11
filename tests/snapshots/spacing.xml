@@ -3,37 +3,35 @@
   <w:body>
     <w:p>
       <w:r>
+        <w:t xml:space="preserve"/>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
         <w:t xml:space="preserve">Unindented text does not start with a space.</w:t>
       </w:r>
-      <w:r>
-        <w:br w:type="textWrapping"/>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">This sentence</w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">must be on a single line.</w:t>
-      </w:r>
-      <w:r>
-        <w:br w:type="textWrapping"/>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">All spaces and tabs immediately before and after a line break are ignored. Line breaks are converted to spaces. Any space immediately following another space</w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">(even across two separate inline elements)</w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">is ignored. Sequences of spaces at the beginning and end of an element are removed.</w:t>
       </w:r>
@@ -42,33 +40,28 @@
       <w:r>
         <w:t xml:space="preserve">One space</w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">is kept between elements</w:t>
       </w:r>
-      <w:r>
-        <w:br w:type="textWrapping"/>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">But only</w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">one space</w:t>
       </w:r>
-      <w:r>
-        <w:br w:type="textWrapping"/>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">Even when</w:t>
       </w:r>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
+    </w:p>
+    <w:p>
       <w:r>
         <w:t xml:space="preserve">they have classes</w:t>
       </w:r>

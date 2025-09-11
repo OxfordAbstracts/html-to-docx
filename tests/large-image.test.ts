@@ -69,7 +69,7 @@ test("handles HTML file with an image", async () => {
     .replaceAll(imgRegex, '"image.')
     .trim()
   const expectedDocXml = (await fs
-    .readFile("tests/large-image-document.xml", "utf8"))
+    .readFile("tests/large-image.xml", "utf8"))
     .replaceAll(imgRegex, '"image.')
     .trim()
   assert.strictEqual(docXml, expectedDocXml)

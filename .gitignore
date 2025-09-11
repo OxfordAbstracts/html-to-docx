@@ -53,7 +53,7 @@ typings/
 # Temporary folders and files
 tmp/
 temp/
-tests/*_tmp_*
+tests/**/*_tmp_*
 dist/*
 
 # Aider cache

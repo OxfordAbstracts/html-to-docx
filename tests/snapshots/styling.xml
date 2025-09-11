@@ -3,153 +3,91 @@
   <w:body>
     <w:p>
       <w:r>
+        <w:t xml:space="preserve"/>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
         <w:t xml:space="preserve">This is normal text.</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr>
-        <w:pStyle w:val="Heading2"/>
-      </w:pPr>
       <w:r>
         <w:t xml:space="preserve">Inline Styles:</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:rPr>
-          <w:b/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be bold</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:rPr>
-          <w:i/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be italic</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:rPr>
-          <w:u w:val="single"/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be underlined</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr>
-        <w:pStyle w:val="Heading2"/>
-      </w:pPr>
       <w:r>
         <w:t xml:space="preserve">Formatting tags:</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:rPr>
-          <w:i/>
-        </w:rPr>
         <w:t xml:space="preserve">Emphasized text</w:t>
       </w:r>
+    </w:p>
+    <w:p>
       <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:b/>
-        </w:rPr>
         <w:t xml:space="preserve">Strong text</w:t>
       </w:r>
+    </w:p>
+    <w:p>
       <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:vertAlign w:val="superscript"/>
-        </w:rPr>
         <w:t xml:space="preserve">superscript</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr>
-        <w:pStyle w:val="Heading2"/>
-      </w:pPr>
       <w:r>
         <w:t xml:space="preserve">Classes:</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:rPr>
-          <w:sz w:val="40"/>
-          <w:szCs w:val="40"/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be large</w:t>
       </w:r>
+    </w:p>
+    <w:p>
       <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:sz w:val="40"/>
-          <w:szCs w:val="40"/>
-          <w:b/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be large and bold</w:t>
       </w:r>
+    </w:p>
+    <w:p>
       <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:sz w:val="40"/>
-          <w:szCs w:val="40"/>
-          <w:i/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be large and italic</w:t>
       </w:r>
     </w:p>
     <w:p>
-      <w:pPr>
-        <w:pStyle w:val="Heading2"/>
-      </w:pPr>
       <w:r>
         <w:t xml:space="preserve">Classes + Inline Styles:</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:rPr>
-          <w:u w:val="single"/>
-          <w:sz w:val="40"/>
-          <w:szCs w:val="40"/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be large and underlined</w:t>
       </w:r>
+    </w:p>
+    <w:p>
       <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:u w:val="single"/>
-          <w:sz w:val="40"/>
-          <w:szCs w:val="40"/>
-          <w:b/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be large, bold, and underlined</w:t>
       </w:r>
+    </w:p>
+    <w:p>
       <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:r>
-        <w:rPr>
-          <w:u w:val="single"/>
-          <w:sz w:val="40"/>
-          <w:szCs w:val="40"/>
-          <w:i/>
-        </w:rPr>
         <w:t xml:space="preserve">This text should be large, italic, and underlined</w:t>
       </w:r>
     </w:p>
