@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid"
 import { createHash } from "node:crypto"
 import { create, fragment } from "xmlbuilder2"
 
@@ -799,10 +798,8 @@ export default class DocxDocument {
       ? "png"
       : fileData.extension
 
-    const randId = nanoid(8)
     const contentHash = sha1(fileData.base64Content)
-    const fileNameWithExtension =
-      `image-${randId}-${contentHash}.${fileExtension}`
+    const fileNameWithExtension = `image-${contentHash}.${fileExtension}`
 
     this.lastMediaId += 1
 

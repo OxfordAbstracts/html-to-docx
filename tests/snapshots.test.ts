@@ -32,7 +32,7 @@ for (const fileName of await fs.readdir("tests/snapshots")) {
         ?.async("string") || "")
         .trim()
 
-      expect(docXml).toMatchFileSnapshot(`snapshots/${fileName}`)
+      await expect(docXml).toMatchFileSnapshot(`snapshots/${fileName}`)
     })
   }
 }

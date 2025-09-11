@@ -71,7 +71,6 @@
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
-    "nanoid": "^5.0.9",
     "virtual-dom": "^2.1.1",
     "xmlbuilder2": "2.1.2"
   },
