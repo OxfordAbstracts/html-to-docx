@@ -7,7 +7,7 @@ import writeFile from "./write-file.ts"
 
 const createdAt = new Date("2025-01-01")
 
-test("Blockquote", async () => {
+test("Blockquote", async ({ expect }) => {
   const largeHTML = await fs.readFile("tests/blockquote.html", "utf8")
   const docxContent = await htmlToDocx(
     largeHTML,
@@ -29,9 +29,5 @@ test("Blockquote", async () => {
     ?.async("string") || "")
     .trim()
 
-  const expectedDocXml = (await fs
-    .readFile("tests/blockquote.xml", "utf8"))
-    .trim()
-
-  assert.strictEqual(docXml, expectedDocXml)
+  expect(docXml).toMatchFileSnapshot("./blockquote.xml")
 })

@@ -7,7 +7,7 @@ import writeFile from "./write-file.ts"
 
 const createdAt = new Date("2025-01-01")
 
-test("keeps spans on the same line", async () => {
+test("keeps spans on the same line", async ({ expect }) => {
   const largeHTML = await fs.readFile("tests/newline.html", "utf8")
   const docxContent = await htmlToDocx(
     largeHTML,
@@ -28,9 +28,5 @@ test("keeps spans on the same line", async () => {
   const docXml = await zipContent.file("word/document.xml")
     ?.async("string") || ""
 
-  const expectedDocXml = (await fs
-    .readFile("tests/newline.xml", "utf8"))
-    .trim()
-
-  assert.strictEqual(docXml, expectedDocXml)
+  expect(docXml).toMatchFileSnapshot("./newline.xml")
 })

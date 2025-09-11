@@ -1969,12 +1969,18 @@
         <w:t xml:space="preserve">Select</w:t>
       </w:r>
       <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
         <w:t xml:space="preserve">Option OneOption TwoOption Three</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Select (multiple)</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:t xml:space="preserve">Option OneOption TwoOption Three</w:t>
@@ -1997,17 +2003,17 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Choice A</w:t>
+        <w:t xml:space="preserve"> Choice A</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Choice B</w:t>
+        <w:t xml:space="preserve"> Choice B</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Choice C</w:t>
+        <w:t xml:space="preserve"> Choice C</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -2027,17 +2033,17 @@
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Option 1</w:t>
+        <w:t xml:space="preserve"> Option 1</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Option 2</w:t>
+        <w:t xml:space="preserve"> Option 2</w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
-        <w:t xml:space="preserve">Option 3</w:t>
+        <w:t xml:space="preserve"> Option 3</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -2059,6 +2065,10 @@
       <w:r>
         <w:t xml:space="preserve">Textarea</w:t>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId53">
@@ -2079,46 +2089,74 @@
       <w:r>
         <w:t xml:space="preserve">Color input</w:t>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Number input</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Range input</w:t>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Date input</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Month input</w:t>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Week input</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Datetime input</w:t>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Datetime-local input</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
     </w:p>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">Datalist</w:t>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r/>
     </w:p>
     <w:p>
       <w:hyperlink r:id="rId54">
@@ -2135,15 +2173,25 @@
         <w:t xml:space="preserve">Action buttons</w:t>
       </w:r>
     </w:p>
+    <w:p/>
     <w:p>
       <w:r>
         <w:t xml:space="preserve">&lt;button type=submit&gt;</w:t>
       </w:r>
       <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
         <w:t xml:space="preserve">&lt;button type=button&gt;</w:t>
       </w:r>
       <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+      <w:r>
         <w:t xml:space="preserve">&lt;button type=reset&gt;</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
         <w:t xml:space="preserve">&lt;button disabled&gt;</w:t>

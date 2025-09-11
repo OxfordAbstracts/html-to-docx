@@ -7,7 +7,7 @@ import writeFile from "./write-file.ts"
 
 const createdAt = new Date("2025-01-01")
 
-test("spacing", async () => {
+test("spacing", async ({ expect }) => {
   const largeHTML = await fs.readFile("tests/spacing.html", "utf8")
   const docxContent = await htmlToDocx(
     largeHTML,
@@ -29,9 +29,5 @@ test("spacing", async () => {
     ?.async("string") || "")
     .trim()
 
-  const expectedDocXml = (await fs
-    .readFile("tests/spacing.xml", "utf8"))
-    .trim()
-
-  assert.strictEqual(docXml, expectedDocXml)
+  expect(docXml).toMatchFileSnapshot("./spacing.xml")
 })
