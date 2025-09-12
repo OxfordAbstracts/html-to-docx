@@ -9,9 +9,12 @@ const createdAt = new Date("2025-01-01")
 
 for (const fileName of await fs.readdir("tests/snapshots")) {
   if (fileName.endsWith(".html")) {
-    const xmlFileName = fileName.replace('.html', '.xml')
+    const xmlFileName = fileName.replace(".html", ".xml")
     test(`Snapshot test for ${fileName}`, async ({ expect }) => {
-      const htmlContent = await fs.readFile(`tests/snapshots/${fileName}`, "utf8")
+      const htmlContent = await fs.readFile(
+        `tests/snapshots/${fileName}`,
+        "utf8",
+      )
       const docxContent = await htmlToDocx(
         htmlContent,
         null,
@@ -32,7 +35,8 @@ for (const fileName of await fs.readdir("tests/snapshots")) {
         ?.async("string") || "")
         .trim()
 
-      await expect(docXml).toMatchFileSnapshot(`snapshots/${xmlFileName}`)
+      await expect(docXml)
+        .toMatchFileSnapshot(`snapshots/${xmlFileName}`)
     })
   }
 }

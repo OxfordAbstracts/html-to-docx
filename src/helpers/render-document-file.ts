@@ -216,6 +216,7 @@ export async function buildList(
       numberingId: docxDocumentInstance.createNumbering(
         vNode.tagName,
         vNode.properties,
+        vNode,
       ),
       originalListItem: null as VNode | null,
     },
@@ -228,9 +229,11 @@ export async function buildList(
         (isVNode(tempVNodeObject.node) &&
           !["ul", "ol", "li"].includes(tempVNodeObject.node.tagName))
       ) {
-        // Collect attributes from the list item itself and merge with parent
-        // If this content came from an <li> element, use its properties for inheritance
-        const nodeForAttributes = tempVNodeObject.originalListItem || tempVNodeObject.node
+        // Collect attributes from the list item itself and merge with parent.
+        // If this content came from an <li> element,
+        // use its properties for inheritance.
+        const nodeForAttributes = tempVNodeObject.originalListItem ||
+          tempVNodeObject.node
         const listItemAttributes = collectParentAttributes(
           docxDocumentInstance,
           nodeForAttributes,
@@ -277,6 +280,7 @@ export async function buildList(
               numberingId: docxDocumentInstance.createNumbering(
                 childVNode.tagName,
                 childVNode.properties,
+                childVNode,
               ),
               originalListItem: null,
             })
@@ -295,7 +299,8 @@ export async function buildList(
             else {
               const paragraphVNode = new VNode(
                 "p",
-                // Preserve li element properties in the paragraph node for inheritance
+                // Preserve <li> element properties
+                // in the paragraph node for inheritance.
                 isVNode(childVNode) && childVNode.tagName.toLowerCase() === "li"
                   ? childVNode.properties
                   : null,
@@ -307,8 +312,9 @@ export async function buildList(
                       : [childVNode]
                     : [],
               )
-              const isListItem = isVNode(childVNode) && childVNode.tagName.toLowerCase() === "li"
-              
+              const isListItem = isVNode(childVNode) &&
+                childVNode.tagName.toLowerCase() === "li"
+
               accumulator.push({
                 node: isVNode(childVNode)
                   ? childVNode.tagName.toLowerCase() === "li"
@@ -320,7 +326,9 @@ export async function buildList(
                 level: tempVNodeObject.level,
                 type: tempVNodeObject.type,
                 numberingId: tempVNodeObject.numberingId,
-                originalListItem: isListItem ? childVNode : tempVNodeObject.originalListItem,
+                originalListItem: isListItem
+                  ? childVNode
+                  : tempVNodeObject.originalListItem,
               })
             }
           }
@@ -392,6 +400,12 @@ function collectParentAttributes(
             if (clsStyles["font-size"]) {
               parentAttributes.fontSize = xmlBuilder.fixupFontSize(
                 String(clsStyles["font-size"]),
+              )
+            }
+            if (clsStyles.color) {
+              // Normalize to 6-digit hex without '#'
+              parentAttributes.color = xmlBuilder.fixupColorCode(
+                String(clsStyles.color),
               )
             }
           }

@@ -1,5 +1,4 @@
 import JSZip from "jszip"
-import fs from "node:fs/promises"
 import { assert, test } from "vitest"
 
 import htmlToDocx from "../index.ts"

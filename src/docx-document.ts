@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto"
 import { create, fragment } from "xmlbuilder2"
 
+import { default as colorNames } from "color-name"
 import JSZip from "jszip"
 import type { VTree } from "virtual-dom"
 import type { XMLBuilder } from "xmlbuilder2/lib/interfaces.d.ts"
@@ -39,7 +40,17 @@ import {
 } from "./schemas/index.ts"
 import type { ListType, Margins } from "./types.ts"
 import { extractBase64Data } from "./utils/base64.ts"
+import {
+  hex3Regex,
+  hex3ToHex,
+  hexRegex,
+  hslRegex,
+  hslToHex,
+  rgbRegex,
+  rgbToHex,
+} from "./utils/color-conversion.ts"
 import { fontFamilyToTableObject } from "./utils/font-family-conversion.ts"
+import fontSizeToHIP from "./utils/font-size.ts"
 import ListStyleBuilder from "./utils/list.ts"
 
 function extractCssClassStyles(html: string) {
@@ -123,6 +134,59 @@ function generateSectionReferenceXML(
       .last()
     sectPr.import(xmlFragment)
   }
+}
+
+// Normalize any valid CSS color string to a 6-digit uppercase hex without '#'.
+// Mirrors the logic used elsewhere in the code for consistent color handling.
+function fixupColorCode(colorCodeString: string): string {
+  const input = colorCodeString?.trim() || ""
+
+  // Named CSS colors
+  if (Object.prototype.hasOwnProperty.call(colorNames, input.toLowerCase())) {
+    const [red, green, blue]: [number, number, number] =
+      colorNames[input.toLowerCase() as keyof typeof colorNames]
+    return rgbToHex(red, green, blue)
+      .toUpperCase()
+  }
+
+  // rgb(r, g, b)
+  if (rgbRegex.test(input)) {
+    const matchedParts = input.match(rgbRegex)
+    const red = matchedParts?.[1]
+    const green = matchedParts?.[2]
+    const blue = matchedParts?.[3]
+    return rgbToHex(red, green, blue)
+      .toUpperCase()
+  }
+
+  // hsl(h, s%, l%)
+  if (hslRegex.test(input)) {
+    const matchedParts = input.match(hslRegex)
+    const hue = Number(matchedParts?.[1])
+    const saturation = Number(matchedParts?.[2])
+    const luminosity = Number(matchedParts?.[3])
+    return hslToHex(hue, saturation, luminosity)
+      .toUpperCase()
+  }
+
+  // #RRGGBB
+  if (hexRegex.test(input)) {
+    const matchedParts = input.match(hexRegex)
+    return (matchedParts?.[1] || "000000").toUpperCase()
+  }
+
+  // #RGB
+  if (hex3Regex.test(input)) {
+    const matchedParts = input.match(hex3Regex)
+    const red = String(matchedParts?.[1] || 0)
+    const green = String(matchedParts?.[2] || 0)
+    const blue = String(matchedParts?.[3] || 0)
+    return hex3ToHex(red, green, blue)
+      .toUpperCase()
+  }
+
+  // Fallback to black
+  return "000000"
 }
 
 function generateXMLString(xmlString: string) {
@@ -670,8 +734,12 @@ export default class DocxDocument {
                 properties.style || { "list-style-type": "decimal" },
                 level,
               )
-              : "",
+              : "•",
           )
+          .up()
+          // Ensure a tab is inserted after the bullet/number so text aligns
+          .ele("@w", "suff")
+          .att("@w", "val", "tab")
           .up()
           .ele("@w", "lvlJc")
           .att("@w", "val", "left")
@@ -691,17 +759,167 @@ export default class DocxDocument {
           .up()
 
         if (type === "ul") {
+          // For unordered lists, always use Symbol for the bullet glyph,
+          // but also respect resolved styling (e.g. color) for the bullet
+          // itself.
+          const rPrFragment = fragment({ namespaceAlias: { w: namespaces.w } })
+            .ele("@w", "rPr")
+
+          rPrFragment
+            .ele("@w", "rFonts")
+            .att("@w", "ascii", "Symbol")
+            .att("@w", "hAnsi", "Symbol")
+            .att("@w", "hint", "default")
+            .up()
+
+          // Get resolved styling from properties to format the bullet
+          const resolvedStyling = (properties as Record<string, unknown>)
+            ?.resolvedStyling as Record<string, string>
+
+          if (resolvedStyling) {
+            // Color
+            if (resolvedStyling.color) {
+              const colorValue = fixupColorCode(resolvedStyling.color)
+              if (colorValue && colorValue.length === 6) {
+                rPrFragment.ele("@w", "color")
+                  .att("@w", "val", colorValue)
+                  .up()
+              }
+            }
+
+            // Font size (match the list text size)
+            if (resolvedStyling.fontSize) {
+              const fontSizeValue = fontSizeToHIP(resolvedStyling.fontSize)
+              if (Number.isFinite(fontSizeValue) && fontSizeValue > 0) {
+                rPrFragment.ele("@w", "sz")
+                  .att(
+                    "@w",
+                    "val",
+                    String(fontSizeValue),
+                  )
+                  .up()
+                rPrFragment.ele("@w", "szCs")
+                  .att(
+                    "@w",
+                    "val",
+                    String(fontSizeValue),
+                  )
+                  .up()
+              }
+            }
+
+            // Bold/Italic (if applied via classes/styles)
+            if (resolvedStyling.fontWeight === "bold") {
+              rPrFragment.ele("@w", "b")
+                .up()
+              rPrFragment.ele("@w", "bCs")
+                .up()
+            }
+            if (resolvedStyling.fontStyle === "italic") {
+              rPrFragment.ele("@w", "i")
+                .up()
+              rPrFragment.ele("@w", "iCs")
+                .up()
+            }
+          }
+
           levelFragment.last()
-            .import(
-              fragment({ namespaceAlias: { w: namespaces.w } })
-                .ele("@w", "rPr")
+            .import(rPrFragment.up())
+        }
+        else if (type === "ol") {
+          // Get resolved styling from properties
+          const resolvedStyling = (properties as Record<string, unknown>)
+            ?.resolvedStyling as Record<string, string>
+
+          if (resolvedStyling && Object.keys(resolvedStyling).length > 0) {
+            const rPrFragment = fragment({
+              namespaceAlias: { w: namespaces.w },
+            })
+              .ele("@w", "rPr")
+
+            // Apply font family
+            if (resolvedStyling.fontFamily) {
+              // Parse font family - use the first specific font name, fall back
+              // to generic
+              const fonts = resolvedStyling.fontFamily.split(",")
+                .map(f =>
+                  f.trim()
+                    .replace(/['"]/g, ""),
+                )
+              let fontName = fonts[0] // Use the first font by default
+
+              // Only use generic fallbacks if no specific font is provided
+              for (const font of fonts) {
+                if (
+                  font &&
+                  !["serif", "sans-serif", "monospace", "cursive", "fantasy"]
+                    .includes(font.toLowerCase())
+                ) {
+                  fontName = font
+                  break
+                }
+              }
+
+              rPrFragment
                 .ele("@w", "rFonts")
-                .att("@w", "ascii", "Symbol")
-                .att("@w", "hAnsi", "Symbol")
+                .att("@w", "ascii", fontName)
+                .att("@w", "hAnsi", fontName)
+                .att("@w", "eastAsia", fontName)
+                .att("@w", "cs", fontName)
                 .att("@w", "hint", "default")
                 .up()
-                .up(),
-            )
+            }
+
+            // Apply font size - convert CSS font-size to Word half-points (HIP)
+            if (resolvedStyling.fontSize) {
+              const fontSizeValue = fontSizeToHIP(resolvedStyling.fontSize)
+              if (Number.isFinite(fontSizeValue) && fontSizeValue > 0) {
+                rPrFragment.ele("@w", "sz")
+                  .att(
+                    "@w",
+                    "val",
+                    String(fontSizeValue),
+                  )
+                  .up()
+                rPrFragment.ele("@w", "szCs")
+                  .att(
+                    "@w",
+                    "val",
+                    String(fontSizeValue),
+                  )
+                  .up()
+              }
+            }
+
+            // Apply bold
+            if (resolvedStyling.fontWeight === "bold") {
+              rPrFragment.ele("@w", "b")
+                .up()
+              rPrFragment.ele("@w", "bCs")
+                .up()
+            }
+
+            // Apply italic
+            if (resolvedStyling.fontStyle === "italic") {
+              rPrFragment.ele("@w", "i")
+                .up()
+              rPrFragment.ele("@w", "iCs")
+                .up()
+            }
+
+            // Apply color using full CSS color support (named, hex, rgb, hsl)
+            if (resolvedStyling.color) {
+              const colorValue = fixupColorCode(resolvedStyling.color)
+              if (colorValue && colorValue.length === 6) {
+                rPrFragment.ele("@w", "color")
+                  .att("@w", "val", colorValue)
+                  .up()
+              }
+            }
+
+            levelFragment.last()
+              .import(rPrFragment.up())
+          }
         }
         abstractNumberingFragment.import(levelFragment)
       })
@@ -773,11 +991,96 @@ export default class DocxDocument {
   createNumbering(
     type: string,
     properties: { attributes: { "data-start": number } },
+    vNode?: { children?: Array<{ tagName: string; properties: unknown }> },
   ) {
     this.lastNumberingId += 1
-    this.numberingObjects.push(
-      { numberingId: this.lastNumberingId, type, properties },
-    )
+
+    // Resolve styling information from inline styles and CSS classes
+
+    // Helper function to extract all styling properties from properties
+    const extractStyling = (props: Record<string, unknown>) => {
+      const styling: Record<string, string> = {}
+
+      // Check inline styles first
+      const styleProps = props?.style as Record<string, string>
+      if (styleProps) {
+        if (styleProps["font-family"] || styleProps.fontFamily) {
+          styling.fontFamily = styleProps["font-family"] ||
+            styleProps.fontFamily
+        }
+        if (styleProps["font-size"] || styleProps.fontSize) {
+          styling.fontSize = styleProps["font-size"] || styleProps.fontSize
+        }
+        if (styleProps["font-weight"]) {
+          styling.fontWeight = styleProps["font-weight"]
+        }
+        if (styleProps["font-style"]) {
+          styling.fontStyle = styleProps["font-style"]
+        }
+        if (styleProps.color) {
+          styling.color = styleProps.color
+        }
+      }
+
+      // Check CSS classes if no inline styles found
+      const classAttr = props?.className ||
+        props?.class ||
+        (props?.attributes as Record<string, unknown>)?.class
+
+      if (classAttr && this.cssClassStyles) {
+        const classNames = classAttr.toString()
+          .trim()
+          .split(/\s+/)
+        for (const className of classNames) {
+          const classStyles = this.cssClassStyles[className]
+          if (classStyles) {
+            if (!styling.fontFamily && classStyles["font-family"]) {
+              styling.fontFamily = classStyles["font-family"]
+            }
+            if (!styling.fontSize && classStyles["font-size"]) {
+              styling.fontSize = classStyles["font-size"]
+            }
+            if (!styling.fontWeight && classStyles["font-weight"]) {
+              styling.fontWeight = classStyles["font-weight"]
+            }
+            if (!styling.fontStyle && classStyles["font-style"]) {
+              styling.fontStyle = classStyles["font-style"]
+            }
+            if (!styling.color && classStyles.color) {
+              styling.color = classStyles.color
+            }
+          }
+        }
+      }
+
+      return styling
+    }
+
+    const propsWithStyle = properties as Record<string, unknown>
+    let resolvedStyling = extractStyling(propsWithStyle)
+
+    // If no styling found at the list level and we have child nodes,
+    // check the first li element for styling
+    if (Object.keys(resolvedStyling).length === 0 && vNode?.children) {
+      for (const child of vNode.children) {
+        if (child.tagName === "li") {
+          const childProps = child.properties as Record<string, unknown>
+          resolvedStyling = extractStyling(childProps)
+          if (Object.keys(resolvedStyling).length > 0) {
+            break
+          }
+        }
+      }
+    }
+
+    this.numberingObjects.push({
+      numberingId: this.lastNumberingId,
+      type,
+      properties: {
+        ...properties,
+        resolvedStyling,
+      } as typeof properties & { resolvedStyling: Record<string, string> },
+    })
 
     return this.lastNumberingId
   }

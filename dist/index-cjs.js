@@ -54942,6 +54942,158 @@ var htmlHeadings = ["h1", "h2", "h3", "h4", "h5", "h6"];
 var import_node_crypto = require("node:crypto");
 var import_xmlbuilder23 = __toESM(require_lib12());
 
+// node_modules/color-name/index.js
+var color_name_default = {
+  aliceblue: [240, 248, 255],
+  antiquewhite: [250, 235, 215],
+  aqua: [0, 255, 255],
+  aquamarine: [127, 255, 212],
+  azure: [240, 255, 255],
+  beige: [245, 245, 220],
+  bisque: [255, 228, 196],
+  black: [0, 0, 0],
+  blanchedalmond: [255, 235, 205],
+  blue: [0, 0, 255],
+  blueviolet: [138, 43, 226],
+  brown: [165, 42, 42],
+  burlywood: [222, 184, 135],
+  cadetblue: [95, 158, 160],
+  chartreuse: [127, 255, 0],
+  chocolate: [210, 105, 30],
+  coral: [255, 127, 80],
+  cornflowerblue: [100, 149, 237],
+  cornsilk: [255, 248, 220],
+  crimson: [220, 20, 60],
+  cyan: [0, 255, 255],
+  darkblue: [0, 0, 139],
+  darkcyan: [0, 139, 139],
+  darkgoldenrod: [184, 134, 11],
+  darkgray: [169, 169, 169],
+  darkgreen: [0, 100, 0],
+  darkgrey: [169, 169, 169],
+  darkkhaki: [189, 183, 107],
+  darkmagenta: [139, 0, 139],
+  darkolivegreen: [85, 107, 47],
+  darkorange: [255, 140, 0],
+  darkorchid: [153, 50, 204],
+  darkred: [139, 0, 0],
+  darksalmon: [233, 150, 122],
+  darkseagreen: [143, 188, 143],
+  darkslateblue: [72, 61, 139],
+  darkslategray: [47, 79, 79],
+  darkslategrey: [47, 79, 79],
+  darkturquoise: [0, 206, 209],
+  darkviolet: [148, 0, 211],
+  deeppink: [255, 20, 147],
+  deepskyblue: [0, 191, 255],
+  dimgray: [105, 105, 105],
+  dimgrey: [105, 105, 105],
+  dodgerblue: [30, 144, 255],
+  firebrick: [178, 34, 34],
+  floralwhite: [255, 250, 240],
+  forestgreen: [34, 139, 34],
+  fuchsia: [255, 0, 255],
+  gainsboro: [220, 220, 220],
+  ghostwhite: [248, 248, 255],
+  gold: [255, 215, 0],
+  goldenrod: [218, 165, 32],
+  gray: [128, 128, 128],
+  green: [0, 128, 0],
+  greenyellow: [173, 255, 47],
+  grey: [128, 128, 128],
+  honeydew: [240, 255, 240],
+  hotpink: [255, 105, 180],
+  indianred: [205, 92, 92],
+  indigo: [75, 0, 130],
+  ivory: [255, 255, 240],
+  khaki: [240, 230, 140],
+  lavender: [230, 230, 250],
+  lavenderblush: [255, 240, 245],
+  lawngreen: [124, 252, 0],
+  lemonchiffon: [255, 250, 205],
+  lightblue: [173, 216, 230],
+  lightcoral: [240, 128, 128],
+  lightcyan: [224, 255, 255],
+  lightgoldenrodyellow: [250, 250, 210],
+  lightgray: [211, 211, 211],
+  lightgreen: [144, 238, 144],
+  lightgrey: [211, 211, 211],
+  lightpink: [255, 182, 193],
+  lightsalmon: [255, 160, 122],
+  lightseagreen: [32, 178, 170],
+  lightskyblue: [135, 206, 250],
+  lightslategray: [119, 136, 153],
+  lightslategrey: [119, 136, 153],
+  lightsteelblue: [176, 196, 222],
+  lightyellow: [255, 255, 224],
+  lime: [0, 255, 0],
+  limegreen: [50, 205, 50],
+  linen: [250, 240, 230],
+  magenta: [255, 0, 255],
+  maroon: [128, 0, 0],
+  mediumaquamarine: [102, 205, 170],
+  mediumblue: [0, 0, 205],
+  mediumorchid: [186, 85, 211],
+  mediumpurple: [147, 112, 219],
+  mediumseagreen: [60, 179, 113],
+  mediumslateblue: [123, 104, 238],
+  mediumspringgreen: [0, 250, 154],
+  mediumturquoise: [72, 209, 204],
+  mediumvioletred: [199, 21, 133],
+  midnightblue: [25, 25, 112],
+  mintcream: [245, 255, 250],
+  mistyrose: [255, 228, 225],
+  moccasin: [255, 228, 181],
+  navajowhite: [255, 222, 173],
+  navy: [0, 0, 128],
+  oldlace: [253, 245, 230],
+  olive: [128, 128, 0],
+  olivedrab: [107, 142, 35],
+  orange: [255, 165, 0],
+  orangered: [255, 69, 0],
+  orchid: [218, 112, 214],
+  palegoldenrod: [238, 232, 170],
+  palegreen: [152, 251, 152],
+  paleturquoise: [175, 238, 238],
+  palevioletred: [219, 112, 147],
+  papayawhip: [255, 239, 213],
+  peachpuff: [255, 218, 185],
+  peru: [205, 133, 63],
+  pink: [255, 192, 203],
+  plum: [221, 160, 221],
+  powderblue: [176, 224, 230],
+  purple: [128, 0, 128],
+  rebeccapurple: [102, 51, 153],
+  red: [255, 0, 0],
+  rosybrown: [188, 143, 143],
+  royalblue: [65, 105, 225],
+  saddlebrown: [139, 69, 19],
+  salmon: [250, 128, 114],
+  sandybrown: [244, 164, 96],
+  seagreen: [46, 139, 87],
+  seashell: [255, 245, 238],
+  sienna: [160, 82, 45],
+  silver: [192, 192, 192],
+  skyblue: [135, 206, 235],
+  slateblue: [106, 90, 205],
+  slategray: [112, 128, 144],
+  slategrey: [112, 128, 144],
+  snow: [255, 250, 250],
+  springgreen: [0, 255, 127],
+  steelblue: [70, 130, 180],
+  tan: [210, 180, 140],
+  teal: [0, 128, 128],
+  thistle: [216, 191, 216],
+  tomato: [255, 99, 71],
+  turquoise: [64, 224, 208],
+  violet: [238, 130, 238],
+  wheat: [245, 222, 179],
+  white: [255, 255, 255],
+  whitesmoke: [245, 245, 245],
+  yellow: [255, 255, 0],
+  yellowgreen: [154, 205, 50]
+};
+
 // src/helpers/render-document-file.ts
 var import_html_to_vdom = __toESM(require_html_to_vdom2());
 var import_image_size2 = __toESM(require_dist());
@@ -58054,158 +58206,6 @@ function vNodeHasChildren(vNode) {
   return vNode && vNode.children && Array.isArray(vNode.children) && vNode.children.length;
 }
 
-// node_modules/color-name/index.js
-var color_name_default = {
-  aliceblue: [240, 248, 255],
-  antiquewhite: [250, 235, 215],
-  aqua: [0, 255, 255],
-  aquamarine: [127, 255, 212],
-  azure: [240, 255, 255],
-  beige: [245, 245, 220],
-  bisque: [255, 228, 196],
-  black: [0, 0, 0],
-  blanchedalmond: [255, 235, 205],
-  blue: [0, 0, 255],
-  blueviolet: [138, 43, 226],
-  brown: [165, 42, 42],
-  burlywood: [222, 184, 135],
-  cadetblue: [95, 158, 160],
-  chartreuse: [127, 255, 0],
-  chocolate: [210, 105, 30],
-  coral: [255, 127, 80],
-  cornflowerblue: [100, 149, 237],
-  cornsilk: [255, 248, 220],
-  crimson: [220, 20, 60],
-  cyan: [0, 255, 255],
-  darkblue: [0, 0, 139],
-  darkcyan: [0, 139, 139],
-  darkgoldenrod: [184, 134, 11],
-  darkgray: [169, 169, 169],
-  darkgreen: [0, 100, 0],
-  darkgrey: [169, 169, 169],
-  darkkhaki: [189, 183, 107],
-  darkmagenta: [139, 0, 139],
-  darkolivegreen: [85, 107, 47],
-  darkorange: [255, 140, 0],
-  darkorchid: [153, 50, 204],
-  darkred: [139, 0, 0],
-  darksalmon: [233, 150, 122],
-  darkseagreen: [143, 188, 143],
-  darkslateblue: [72, 61, 139],
-  darkslategray: [47, 79, 79],
-  darkslategrey: [47, 79, 79],
-  darkturquoise: [0, 206, 209],
-  darkviolet: [148, 0, 211],
-  deeppink: [255, 20, 147],
-  deepskyblue: [0, 191, 255],
-  dimgray: [105, 105, 105],
-  dimgrey: [105, 105, 105],
-  dodgerblue: [30, 144, 255],
-  firebrick: [178, 34, 34],
-  floralwhite: [255, 250, 240],
-  forestgreen: [34, 139, 34],
-  fuchsia: [255, 0, 255],
-  gainsboro: [220, 220, 220],
-  ghostwhite: [248, 248, 255],
-  gold: [255, 215, 0],
-  goldenrod: [218, 165, 32],
-  gray: [128, 128, 128],
-  green: [0, 128, 0],
-  greenyellow: [173, 255, 47],
-  grey: [128, 128, 128],
-  honeydew: [240, 255, 240],
-  hotpink: [255, 105, 180],
-  indianred: [205, 92, 92],
-  indigo: [75, 0, 130],
-  ivory: [255, 255, 240],
-  khaki: [240, 230, 140],
-  lavender: [230, 230, 250],
-  lavenderblush: [255, 240, 245],
-  lawngreen: [124, 252, 0],
-  lemonchiffon: [255, 250, 205],
-  lightblue: [173, 216, 230],
-  lightcoral: [240, 128, 128],
-  lightcyan: [224, 255, 255],
-  lightgoldenrodyellow: [250, 250, 210],
-  lightgray: [211, 211, 211],
-  lightgreen: [144, 238, 144],
-  lightgrey: [211, 211, 211],
-  lightpink: [255, 182, 193],
-  lightsalmon: [255, 160, 122],
-  lightseagreen: [32, 178, 170],
-  lightskyblue: [135, 206, 250],
-  lightslategray: [119, 136, 153],
-  lightslategrey: [119, 136, 153],
-  lightsteelblue: [176, 196, 222],
-  lightyellow: [255, 255, 224],
-  lime: [0, 255, 0],
-  limegreen: [50, 205, 50],
-  linen: [250, 240, 230],
-  magenta: [255, 0, 255],
-  maroon: [128, 0, 0],
-  mediumaquamarine: [102, 205, 170],
-  mediumblue: [0, 0, 205],
-  mediumorchid: [186, 85, 211],
-  mediumpurple: [147, 112, 219],
-  mediumseagreen: [60, 179, 113],
-  mediumslateblue: [123, 104, 238],
-  mediumspringgreen: [0, 250, 154],
-  mediumturquoise: [72, 209, 204],
-  mediumvioletred: [199, 21, 133],
-  midnightblue: [25, 25, 112],
-  mintcream: [245, 255, 250],
-  mistyrose: [255, 228, 225],
-  moccasin: [255, 228, 181],
-  navajowhite: [255, 222, 173],
-  navy: [0, 0, 128],
-  oldlace: [253, 245, 230],
-  olive: [128, 128, 0],
-  olivedrab: [107, 142, 35],
-  orange: [255, 165, 0],
-  orangered: [255, 69, 0],
-  orchid: [218, 112, 214],
-  palegoldenrod: [238, 232, 170],
-  palegreen: [152, 251, 152],
-  paleturquoise: [175, 238, 238],
-  palevioletred: [219, 112, 147],
-  papayawhip: [255, 239, 213],
-  peachpuff: [255, 218, 185],
-  peru: [205, 133, 63],
-  pink: [255, 192, 203],
-  plum: [221, 160, 221],
-  powderblue: [176, 224, 230],
-  purple: [128, 0, 128],
-  rebeccapurple: [102, 51, 153],
-  red: [255, 0, 0],
-  rosybrown: [188, 143, 143],
-  royalblue: [65, 105, 225],
-  saddlebrown: [139, 69, 19],
-  salmon: [250, 128, 114],
-  sandybrown: [244, 164, 96],
-  seagreen: [46, 139, 87],
-  seashell: [255, 245, 238],
-  sienna: [160, 82, 45],
-  silver: [192, 192, 192],
-  skyblue: [135, 206, 235],
-  slateblue: [106, 90, 205],
-  slategray: [112, 128, 144],
-  slategrey: [112, 128, 144],
-  snow: [255, 250, 250],
-  springgreen: [0, 255, 127],
-  steelblue: [70, 130, 180],
-  tan: [210, 180, 140],
-  teal: [0, 128, 128],
-  thistle: [216, 191, 216],
-  tomato: [255, 99, 71],
-  turquoise: [64, 224, 208],
-  violet: [238, 130, 238],
-  wheat: [245, 222, 179],
-  white: [255, 255, 255],
-  whitesmoke: [245, 245, 245],
-  yellow: [255, 255, 0],
-  yellowgreen: [154, 205, 50]
-};
-
 // src/helpers/xml-builder.ts
 var import_image_size = __toESM(require_dist());
 var import_lodash2 = __toESM(require_lodash());
@@ -58265,6 +58265,34 @@ function hex3ToHex(red, green, blue) {
   const hexColorCode = [red, green, blue].map((color) => `${color}${color}`).join("");
   return hexColorCode;
 }
+
+// src/utils/font-size.ts
+function fixupFontSize(fontSizeString) {
+  const input = String(fontSizeString || "").trim();
+  if (pointRegex.test(input)) {
+    const m = input.match(pointRegex);
+    return pointToHIP(Number(m?.[1]));
+  }
+  if (pixelRegex.test(input)) {
+    const m = input.match(pixelRegex);
+    return pixelToHIP(Number(m?.[1]));
+  }
+  if (remRegex.test(input)) {
+    const m = input.match(remRegex);
+    const remVal = Number(m?.[1]) || 0;
+    return pixelToHIP(remVal * 16);
+  }
+  if (emRegex.test(input)) {
+    const m = input.match(emRegex);
+    const emVal = Number(m?.[1]) || 0;
+    return pixelToHIP(emVal * 16);
+  }
+  if (/^\d+(?:\.\d+)?$/.test(input)) {
+    return pointToHIP(Number(input));
+  }
+  return 24;
+}
+var font_size_default = fixupFontSize;
 
 // src/helpers/xml-builder.ts
 function fixupColorCode(colorCodeString) {
@@ -58471,17 +58499,6 @@ function fixupLineHeight(lineHeight, fontSize) {
     return 240;
   }
 }
-function fixupFontSize(fontSizeString) {
-  if (pointRegex.test(fontSizeString)) {
-    const matchedParts = fontSizeString.match(pointRegex);
-    return pointToHIP(Number(matchedParts?.[1]));
-  } else if (pixelRegex.test(fontSizeString)) {
-    const matchedParts = fontSizeString.match(pixelRegex);
-    return pixelToHIP(Number(matchedParts?.[1]));
-  } else {
-    return 24;
-  }
-}
 function fixupRowHeight(rowHeightString) {
   if (pointRegex.test(rowHeightString)) {
     const matchedParts = rowHeightString.match(pointRegex);
@@ -58585,6 +58602,12 @@ function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes,
       classAttr.toString().split(/\s+/).filter(Boolean).forEach((cls) => {
         const clsStyles = docxDocumentInstance.cssClassStyles[cls];
         if (clsStyles) {
+          if (clsStyles.color && !modifiedAttributes.color) {
+            modifiedAttributes.color = fixupColorCode(String(clsStyles.color));
+          }
+          if (clsStyles["background-color"] && !modifiedAttributes.backgroundColor) {
+            modifiedAttributes.backgroundColor = fixupColorCode(String(clsStyles["background-color"]));
+          }
           if (clsStyles["font-size"] && !modifiedAttributes.fontSize) {
             modifiedAttributes.fontSize = fixupFontSize(clsStyles["font-size"]);
           }
@@ -60192,7 +60215,7 @@ async function buildList(vNode, docxDocumentInstance, xmlFragment) {
       node: vNode,
       level: 0,
       type: vNode.tagName,
-      numberingId: docxDocumentInstance.createNumbering(vNode.tagName, vNode.properties),
+      numberingId: docxDocumentInstance.createNumbering(vNode.tagName, vNode.properties, vNode),
       originalListItem: null
     }
   ];
@@ -60219,7 +60242,7 @@ async function buildList(vNode, docxDocumentInstance, xmlFragment) {
             node: childVNode,
             level: tempVNodeObject.level + 1,
             type: childVNode.tagName,
-            numberingId: docxDocumentInstance.createNumbering(childVNode.tagName, childVNode.properties),
+            numberingId: docxDocumentInstance.createNumbering(childVNode.tagName, childVNode.properties, childVNode),
             originalListItem: null
           });
         } else {
@@ -60279,6 +60302,9 @@ function collectParentAttributes(docxDocumentInstance, vNode, existingAttributes
           }
           if (clsStyles["font-size"]) {
             parentAttributes.fontSize = fixupFontSize(String(clsStyles["font-size"]));
+          }
+          if (clsStyles.color) {
+            parentAttributes.color = fixupColorCode(String(clsStyles.color));
           }
         }
       });
@@ -61255,6 +61281,39 @@ function generateSectionReferenceXML(documentXML, documentSectionType, objects, 
     sectPr.import(xmlFragment);
   }
 }
+function fixupColorCode2(colorCodeString) {
+  const input = colorCodeString?.trim() || "";
+  if (Object.prototype.hasOwnProperty.call(color_name_default, input.toLowerCase())) {
+    const [red, green, blue] = color_name_default[input.toLowerCase()];
+    return rgbToHex(red, green, blue).toUpperCase();
+  }
+  if (rgbRegex.test(input)) {
+    const matchedParts = input.match(rgbRegex);
+    const red = matchedParts?.[1];
+    const green = matchedParts?.[2];
+    const blue = matchedParts?.[3];
+    return rgbToHex(red, green, blue).toUpperCase();
+  }
+  if (hslRegex.test(input)) {
+    const matchedParts = input.match(hslRegex);
+    const hue = Number(matchedParts?.[1]);
+    const saturation = Number(matchedParts?.[2]);
+    const luminosity = Number(matchedParts?.[3]);
+    return hslToHex(hue, saturation, luminosity).toUpperCase();
+  }
+  if (hexRegex.test(input)) {
+    const matchedParts = input.match(hexRegex);
+    return (matchedParts?.[1] || "000000").toUpperCase();
+  }
+  if (hex3Regex.test(input)) {
+    const matchedParts = input.match(hex3Regex);
+    const red = String(matchedParts?.[1] || 0);
+    const green = String(matchedParts?.[2] || 0);
+    const blue = String(matchedParts?.[3] || 0);
+    return hex3ToHex(red, green, blue).toUpperCase();
+  }
+  return "000000";
+}
 function generateXMLString(xmlString) {
   const xmlDocumentString = import_xmlbuilder23.create({ encoding: "UTF-8", standalone: true }, xmlString);
   return xmlDocumentString.toString({ prettyPrint: true });
@@ -61504,9 +61563,75 @@ class DocxDocument {
       ].forEach((level) => {
         const levelFragment = import_xmlbuilder23.fragment({
           namespaceAlias: { w: namespaces_default.w }
-        }).ele("@w", "lvl").att("@w", "ilvl", String(level)).ele("@w", "start").att("@w", "val", type === "ol" ? String(properties?.attributes?.["data-start"] || 1) : "1").up().ele("@w", "numFmt").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListStyleType(properties?.style?.["list-style-type"] || "decimal") : "bullet").up().ele("@w", "lvlText").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListPrefixSuffix(properties.style || { "list-style-type": "decimal" }, level) : "").up().ele("@w", "lvlJc").att("@w", "val", "left").up().ele("@w", "pPr").ele("@w", "tabs").ele("@w", "tab").att("@w", "val", "num").att("@w", "pos", String((level + 1) * 720)).up().up().ele("@w", "ind").att("@w", "left", String((level + 1) * 720)).att("@w", "hanging", "360").up().up().up();
+        }).ele("@w", "lvl").att("@w", "ilvl", String(level)).ele("@w", "start").att("@w", "val", type === "ol" ? String(properties?.attributes?.["data-start"] || 1) : "1").up().ele("@w", "numFmt").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListStyleType(properties?.style?.["list-style-type"] || "decimal") : "bullet").up().ele("@w", "lvlText").att("@w", "val", type === "ol" ? this.ListStyleBuilder.getListPrefixSuffix(properties.style || { "list-style-type": "decimal" }, level) : "•").up().ele("@w", "suff").att("@w", "val", "tab").up().ele("@w", "lvlJc").att("@w", "val", "left").up().ele("@w", "pPr").ele("@w", "tabs").ele("@w", "tab").att("@w", "val", "num").att("@w", "pos", String((level + 1) * 720)).up().up().ele("@w", "ind").att("@w", "left", String((level + 1) * 720)).att("@w", "hanging", "360").up().up().up();
         if (type === "ul") {
-          levelFragment.last().import(import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "rPr").ele("@w", "rFonts").att("@w", "ascii", "Symbol").att("@w", "hAnsi", "Symbol").att("@w", "hint", "default").up().up());
+          const rPrFragment = import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "rPr");
+          rPrFragment.ele("@w", "rFonts").att("@w", "ascii", "Symbol").att("@w", "hAnsi", "Symbol").att("@w", "hint", "default").up();
+          const resolvedStyling = properties?.resolvedStyling;
+          if (resolvedStyling) {
+            if (resolvedStyling.color) {
+              const colorValue = fixupColorCode2(resolvedStyling.color);
+              if (colorValue && colorValue.length === 6) {
+                rPrFragment.ele("@w", "color").att("@w", "val", colorValue).up();
+              }
+            }
+            if (resolvedStyling.fontSize) {
+              const fontSizeValue = font_size_default(resolvedStyling.fontSize);
+              if (Number.isFinite(fontSizeValue) && fontSizeValue > 0) {
+                rPrFragment.ele("@w", "sz").att("@w", "val", String(fontSizeValue)).up();
+                rPrFragment.ele("@w", "szCs").att("@w", "val", String(fontSizeValue)).up();
+              }
+            }
+            if (resolvedStyling.fontWeight === "bold") {
+              rPrFragment.ele("@w", "b").up();
+              rPrFragment.ele("@w", "bCs").up();
+            }
+            if (resolvedStyling.fontStyle === "italic") {
+              rPrFragment.ele("@w", "i").up();
+              rPrFragment.ele("@w", "iCs").up();
+            }
+          }
+          levelFragment.last().import(rPrFragment.up());
+        } else if (type === "ol") {
+          const resolvedStyling = properties?.resolvedStyling;
+          if (resolvedStyling && Object.keys(resolvedStyling).length > 0) {
+            const rPrFragment = import_xmlbuilder23.fragment({
+              namespaceAlias: { w: namespaces_default.w }
+            }).ele("@w", "rPr");
+            if (resolvedStyling.fontFamily) {
+              const fonts = resolvedStyling.fontFamily.split(",").map((f) => f.trim().replace(/['"]/g, ""));
+              let fontName = fonts[0];
+              for (const font of fonts) {
+                if (font && !["serif", "sans-serif", "monospace", "cursive", "fantasy"].includes(font.toLowerCase())) {
+                  fontName = font;
+                  break;
+                }
+              }
+              rPrFragment.ele("@w", "rFonts").att("@w", "ascii", fontName).att("@w", "hAnsi", fontName).att("@w", "eastAsia", fontName).att("@w", "cs", fontName).att("@w", "hint", "default").up();
+            }
+            if (resolvedStyling.fontSize) {
+              const fontSizeValue = font_size_default(resolvedStyling.fontSize);
+              if (Number.isFinite(fontSizeValue) && fontSizeValue > 0) {
+                rPrFragment.ele("@w", "sz").att("@w", "val", String(fontSizeValue)).up();
+                rPrFragment.ele("@w", "szCs").att("@w", "val", String(fontSizeValue)).up();
+              }
+            }
+            if (resolvedStyling.fontWeight === "bold") {
+              rPrFragment.ele("@w", "b").up();
+              rPrFragment.ele("@w", "bCs").up();
+            }
+            if (resolvedStyling.fontStyle === "italic") {
+              rPrFragment.ele("@w", "i").up();
+              rPrFragment.ele("@w", "iCs").up();
+            }
+            if (resolvedStyling.color) {
+              const colorValue = fixupColorCode2(resolvedStyling.color);
+              if (colorValue && colorValue.length === 6) {
+                rPrFragment.ele("@w", "color").att("@w", "val", colorValue).up();
+              }
+            }
+            levelFragment.last().import(rPrFragment.up());
+          }
         }
         abstractNumberingFragment.import(levelFragment);
       });
@@ -61534,9 +61659,75 @@ class DocxDocument {
     });
     return relationshipXMLStrings;
   }
-  createNumbering(type, properties) {
+  createNumbering(type, properties, vNode) {
     this.lastNumberingId += 1;
-    this.numberingObjects.push({ numberingId: this.lastNumberingId, type, properties });
+    const extractStyling = (props) => {
+      const styling = {};
+      const styleProps = props?.style;
+      if (styleProps) {
+        if (styleProps["font-family"] || styleProps.fontFamily) {
+          styling.fontFamily = styleProps["font-family"] || styleProps.fontFamily;
+        }
+        if (styleProps["font-size"] || styleProps.fontSize) {
+          styling.fontSize = styleProps["font-size"] || styleProps.fontSize;
+        }
+        if (styleProps["font-weight"]) {
+          styling.fontWeight = styleProps["font-weight"];
+        }
+        if (styleProps["font-style"]) {
+          styling.fontStyle = styleProps["font-style"];
+        }
+        if (styleProps.color) {
+          styling.color = styleProps.color;
+        }
+      }
+      const classAttr = props?.className || props?.class || props?.attributes?.class;
+      if (classAttr && this.cssClassStyles) {
+        const classNames = classAttr.toString().trim().split(/\s+/);
+        for (const className of classNames) {
+          const classStyles = this.cssClassStyles[className];
+          if (classStyles) {
+            if (!styling.fontFamily && classStyles["font-family"]) {
+              styling.fontFamily = classStyles["font-family"];
+            }
+            if (!styling.fontSize && classStyles["font-size"]) {
+              styling.fontSize = classStyles["font-size"];
+            }
+            if (!styling.fontWeight && classStyles["font-weight"]) {
+              styling.fontWeight = classStyles["font-weight"];
+            }
+            if (!styling.fontStyle && classStyles["font-style"]) {
+              styling.fontStyle = classStyles["font-style"];
+            }
+            if (!styling.color && classStyles.color) {
+              styling.color = classStyles.color;
+            }
+          }
+        }
+      }
+      return styling;
+    };
+    const propsWithStyle = properties;
+    let resolvedStyling = extractStyling(propsWithStyle);
+    if (Object.keys(resolvedStyling).length === 0 && vNode?.children) {
+      for (const child of vNode.children) {
+        if (child.tagName === "li") {
+          const childProps = child.properties;
+          resolvedStyling = extractStyling(childProps);
+          if (Object.keys(resolvedStyling).length > 0) {
+            break;
+          }
+        }
+      }
+    }
+    this.numberingObjects.push({
+      numberingId: this.lastNumberingId,
+      type,
+      properties: {
+        ...properties,
+        resolvedStyling
+      }
+    });
     return this.lastNumberingId;
   }
   createFont(fontFamily) {

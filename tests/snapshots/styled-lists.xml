@@ -4,9 +4,12 @@
     <w:p>
       <w:r>
         <w:rPr>
-          <w:rFonts w:ascii="sans-serif" w:hAnsi="sans-serif" w:eastAsia="sans-serif" w:cs="sans-serif"/>
+          <w:color w:val="087011"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
         </w:rPr>
-        <w:t xml:space="preserve">All text in this document must be sans-serif.</w:t>
+        <w:t xml:space="preserve">All text in this document must be sans-serif, green and large.</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -18,7 +21,10 @@
       </w:pPr>
       <w:r>
         <w:rPr>
-          <w:rFonts w:ascii="sans-serif" w:hAnsi="sans-serif" w:eastAsia="sans-serif" w:cs="sans-serif"/>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
         </w:rPr>
         <w:t xml:space="preserve">List item 1</w:t>
       </w:r>
@@ -32,7 +38,10 @@
       </w:pPr>
       <w:r>
         <w:rPr>
-          <w:rFonts w:ascii="sans-serif" w:hAnsi="sans-serif" w:eastAsia="sans-serif" w:cs="sans-serif"/>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
         </w:rPr>
         <w:t xml:space="preserve">List item 2</w:t>
       </w:r>
@@ -46,7 +55,10 @@
       </w:pPr>
       <w:r>
         <w:rPr>
-          <w:rFonts w:ascii="sans-serif" w:hAnsi="sans-serif" w:eastAsia="sans-serif" w:cs="sans-serif"/>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
         </w:rPr>
         <w:t xml:space="preserve">List item 1</w:t>
       </w:r>
@@ -60,7 +72,78 @@
       </w:pPr>
       <w:r>
         <w:rPr>
-          <w:rFonts w:ascii="sans-serif" w:hAnsi="sans-serif" w:eastAsia="sans-serif" w:cs="sans-serif"/>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
+        </w:rPr>
+        <w:t xml:space="preserve">List item 2</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="3"/>
+        </w:numPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
+        </w:rPr>
+        <w:t xml:space="preserve">List item 1</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="3"/>
+        </w:numPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
+        </w:rPr>
+        <w:t xml:space="preserve">List item 2</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="4"/>
+        </w:numPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
+        </w:rPr>
+        <w:t xml:space="preserve">List item 1</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="4"/>
+        </w:numPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Impact" w:hAnsi="Impact" w:eastAsia="Impact" w:cs="Impact"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+          <w:color w:val="087011"/>
         </w:rPr>
         <w:t xml:space="preserve">List item 2</w:t>
       </w:r>

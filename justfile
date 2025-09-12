@@ -35,7 +35,7 @@ test-unit: node_modules
   @grep -q 'xmlbuilder2": "2.1.2' package.json || \
     (echo "xmlbuilder2 must be version 2.1.2 due to " \
     "https://github.com/oozcitak/xmlbuilder2/issues/178" && exit 1)
-  npx vitest
+  npx vitest run
 
 
 # Run C#'s OpenXmlValidator on the test Docx files

@@ -37,6 +37,7 @@ import {
   rgbRegex,
   rgbToHex,
 } from "../utils/color-conversion.ts"
+import { fixupFontSize } from "../utils/font-size.ts"
 import {
   cmRegex,
   cmToTWIP,
@@ -49,11 +50,9 @@ import {
   pixelRegex,
   pixelToEIP,
   pixelToEMU,
-  pixelToHIP,
   pixelToTWIP,
   pointRegex,
   pointToEIP,
-  pointToHIP,
   pointToTWIP,
   remRegex,
   remToEmu,
@@ -62,8 +61,9 @@ import {
 import { isValidUrl } from "../utils/url.ts"
 import { vNodeHasChildren } from "../utils/vnode.ts"
 import { buildImage, buildList } from "./render-document-file.ts"
+export { fixupFontSize } from "../utils/font-size.ts"
 
-function fixupColorCode(colorCodeString: string): string {
+export function fixupColorCode(colorCodeString: string): string {
   if (
     Object.prototype.hasOwnProperty.call(
       colorNames,
@@ -464,23 +464,6 @@ function fixupLineHeight(lineHeight?: number, fontSize?: number): number {
   }
 }
 
-export function fixupFontSize(fontSizeString: string): number {
-  if (pointRegex.test(fontSizeString)) {
-    const matchedParts = fontSizeString.match(pointRegex)
-    // convert point to half point
-    return pointToHIP(Number(matchedParts?.[1]))
-  }
-  else if (pixelRegex.test(fontSizeString)) {
-    const matchedParts = fontSizeString.match(pixelRegex)
-    // convert pixels to half point
-    return pixelToHIP(Number(matchedParts?.[1]))
-  }
-  else {
-    // Return default font size
-    return 24
-  }
-}
-
 function fixupRowHeight(rowHeightString: string) {
   if (pointRegex.test(rowHeightString)) {
     const matchedParts = rowHeightString.match(pointRegex)
@@ -657,6 +640,21 @@ function modifiedStyleAttributesBuilder(
         .forEach((cls: string) => {
           const clsStyles = docxDocumentInstance.cssClassStyles[cls]
           if (clsStyles) {
+            // color
+            if (clsStyles.color && !modifiedAttributes.color) {
+              modifiedAttributes.color = fixupColorCode(
+                String(clsStyles.color),
+              )
+            }
+            // background-color
+            if (
+              clsStyles["background-color"] &&
+              !modifiedAttributes.backgroundColor
+            ) {
+              modifiedAttributes.backgroundColor = fixupColorCode(
+                String(clsStyles["background-color"]),
+              )
+            }
             // font-size
             if (clsStyles["font-size"] && !modifiedAttributes.fontSize) {
               modifiedAttributes.fontSize = fixupFontSize(
