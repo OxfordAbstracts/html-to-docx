@@ -1,16 +1,8 @@
-# html-to-docx
+# @oxfordabstracts/html-to-docx
 
-`html-to-docx` is a TypeScript library for converting HTML documents
-to DOCX format as supported by Microsoft Word 2007+, LibreOffice Writer,
-Google Docs, WPS Writer, etc.
-
-It was inspired by [html-docx-js] project but mitigates the problem
-of documents generated being non-compatible with word processors
-like Google Docs and LibreOffice Writer
-that doesn't support [altchunks] feature.
-
-[html-docx-js]: https://github.com/evidenceprime/html-docx-js "html-docx-js"
-[altchunks]: https://docs.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.altchunk?view=openxml-2.8.1 "altchunks"
+`@oxfordabstracts/html-to-docx` is a TypeScript library
+for converting HTML documents to DOCX format as supported by
+Microsoft Word 2007+, LibreOffice Writer, Google Docs, WPS Writer, etc.
 
 
 ## Installation
@@ -18,14 +10,14 @@ that doesn't support [altchunks] feature.
 ### CLI
 
 ```bash
-npm install -g github:OxfordAbstracts/html-to-docx
+npm install --global @oxfordabstracts/html-to-docx
 ```
 
 
 ### Library
 
 ```bash
-npm install --save github:OxfordAbstracts/html-to-docx
+npm install --save @oxfordabstracts/html-to-docx
 ```
 
 
@@ -81,12 +73,12 @@ Full fledged examples can be found in the [`example`](./example) directory.
   - `title` <?[String]> title of the document.
   - `subject` <?[String]> subject of the document.
   - `creator` <?[String]> creator of the document.
-    Defaults to `html-to-docx`
+    Defaults to `@oxfordabstracts/html-to-docx`
   - `keywords` <?[Array]<[String]>> keywords associated with the document.
-    Defaults to ['html-to-docx'].
+    Defaults to ['@oxfordabstracts/html-to-docx'].
   - `description` <?[String]> description of the document.
   - `lastModifiedBy` <?[String]> last modifier of the document.
-    Defaults to `html-to-docx`.
+    Defaults to `@oxfordabstracts/html-to-docx`.
   - `revision` <?[Number]> revision of the document.
     Defaults to `1`.
   - `createdAt` <?[Date]> time of creation of the document.

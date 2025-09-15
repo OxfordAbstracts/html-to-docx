@@ -1,7 +1,7 @@
 import lodash from "lodash"
 import { type DocumentOptions } from "./types.ts"
 
-export const applicationName = "html-to-docx"
+export const applicationName = "@oxfordabstracts/html-to-docx"
 export const defaultOrientation = "portrait"
 export const landscapeWidth = 15840
 export const landscapeHeight = 12240
