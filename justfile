@@ -62,7 +62,11 @@ build-cjs:
     index.js
 
 
-build: build-esm build-cjs
+build-declarations:
+  npx tsc --project tsconfig.build.json
+
+
+build: build-esm build-cjs build-declarations
 
 
 # Bump the version and create a new release
