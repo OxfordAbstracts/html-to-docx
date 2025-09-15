@@ -69,6 +69,7 @@ build-declarations:
 build: build-esm build-cjs build-declarations
 
 
-# Bump the version and create a new release
+# Bump the version, create a new release, and publish to npm
 release: node_modules
   npx standard-version
+  npm publish --access=public

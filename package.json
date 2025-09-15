@@ -13,7 +13,7 @@
   "main": "dist/index-cjs.js",
   "types": "dist/index-cjs.d.ts",
   "bin": {
-    "html-to-docx": "./bin/html-to-docx.mjs"
+    "html-to-docx": "bin/html-to-docx.mjs"
   },
   "scripts": {
     "start": "# ⚠️ Run `just start` instead",
