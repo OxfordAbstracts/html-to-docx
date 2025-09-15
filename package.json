@@ -1,6 +1,6 @@
 {
-  "name": "html-to-docx",
-  "version": "1.8.0",
+  "name": "@oxfordabstracts/html-to-docx",
+  "version": "2.0.0",
   "description": "HTML to DOCX converter",
   "keywords": [
     "html",
