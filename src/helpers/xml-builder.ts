@@ -686,6 +686,34 @@ function modifiedStyleAttributesBuilder(
           }
         })
     }
+
+    // Fall back to body element styles if no other font-family is set
+    if (
+      !modifiedAttributes.font &&
+      docxDocumentInstance.cssClassStyles &&
+      docxDocumentInstance.cssClassStyles["__element_body"]
+    ) {
+      const bodyStyles = docxDocumentInstance.cssClassStyles["__element_body"]
+      if (bodyStyles["font-family"]) {
+        modifiedAttributes.font = docxDocumentInstance.createFont(
+          bodyStyles["font-family"],
+        )
+      }
+    }
+
+    // Fall back to universal selector styles as the ultimate fallback
+    if (
+      !modifiedAttributes.font &&
+      docxDocumentInstance.cssClassStyles &&
+      docxDocumentInstance.cssClassStyles["__element_*"]
+    ) {
+      const universalStyles = docxDocumentInstance.cssClassStyles["__element_*"]
+      if (universalStyles["font-family"]) {
+        modifiedAttributes.font = docxDocumentInstance.createFont(
+          universalStyles["font-family"],
+        )
+      }
+    }
   }
 
   // paragraph only

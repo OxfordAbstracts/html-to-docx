@@ -62,7 +62,7 @@ function extractCssClassStyles(html: string) {
     css += m[1]
   }
 
-  // Parse only very-simple “.class { prop: value; … }” rules
+  // Parse only very-simple ".class { prop: value; … }" rules
   const classStyles: Record<string, Record<string, string>> = {}
   const ruleRegex = /\.([\w-]+)\s*\{([^}]*)\}/g
   let r: RegExpExecArray | null
@@ -77,6 +77,23 @@ function extractCssClassStyles(html: string) {
     }
     classStyles[className] = kv
   }
+
+  // Also parse element-based rules like "body { prop: value; … }" and universal selector "* { prop: value; … }"
+  const elementRuleRegex = /(body|html|p|h[1-6]|div|span|\*)\s*\{([^}]*)\}/g
+  let e: RegExpExecArray | null
+  while ((e = elementRuleRegex.exec(css)) !== null) {
+    const elementName = e[1].trim()
+    const decls = e[2].split(";")
+    const kv: Record<string, string> = {}
+    for (const d of decls) {
+      const [k, v] = d.split(":")
+        .map(s => s?.trim())
+      if (k && v) kv[k.toLowerCase()] = v
+    }
+    // Store element styles with a special prefix to distinguish from class styles
+    classStyles[`__element_${elementName}`] = kv
+  }
+
   return classStyles
 }
 
@@ -1050,6 +1067,46 @@ export default class DocxDocument {
               styling.color = classStyles.color
             }
           }
+        }
+      }
+
+      // Fall back to body element styles if no other styles found
+      if (this.cssClassStyles && this.cssClassStyles["__element_body"]) {
+        const bodyStyles = this.cssClassStyles["__element_body"]
+        if (!styling.fontFamily && bodyStyles["font-family"]) {
+          styling.fontFamily = bodyStyles["font-family"]
+        }
+        if (!styling.fontSize && bodyStyles["font-size"]) {
+          styling.fontSize = bodyStyles["font-size"]
+        }
+        if (!styling.fontWeight && bodyStyles["font-weight"]) {
+          styling.fontWeight = bodyStyles["font-weight"]
+        }
+        if (!styling.fontStyle && bodyStyles["font-style"]) {
+          styling.fontStyle = bodyStyles["font-style"]
+        }
+        if (!styling.color && bodyStyles.color) {
+          styling.color = bodyStyles.color
+        }
+      }
+
+      // Fall back to universal selector styles as the ultimate fallback
+      if (this.cssClassStyles && this.cssClassStyles["__element_*"]) {
+        const universalStyles = this.cssClassStyles["__element_*"]
+        if (!styling.fontFamily && universalStyles["font-family"]) {
+          styling.fontFamily = universalStyles["font-family"]
+        }
+        if (!styling.fontSize && universalStyles["font-size"]) {
+          styling.fontSize = universalStyles["font-size"]
+        }
+        if (!styling.fontWeight && universalStyles["font-weight"]) {
+          styling.fontWeight = universalStyles["font-weight"]
+        }
+        if (!styling.fontStyle && universalStyles["font-style"]) {
+          styling.fontStyle = universalStyles["font-style"]
+        }
+        if (!styling.color && universalStyles.color) {
+          styling.color = universalStyles.color
         }
       }
 
