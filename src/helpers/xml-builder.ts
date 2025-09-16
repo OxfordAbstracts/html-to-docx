@@ -691,9 +691,9 @@ function modifiedStyleAttributesBuilder(
     if (
       !modifiedAttributes.font &&
       docxDocumentInstance.cssClassStyles &&
-      docxDocumentInstance.cssClassStyles["__element_body"]
+      docxDocumentInstance.cssClassStyles.__element_body
     ) {
-      const bodyStyles = docxDocumentInstance.cssClassStyles["__element_body"]
+      const bodyStyles = docxDocumentInstance.cssClassStyles.__element_body
       if (bodyStyles["font-family"]) {
         modifiedAttributes.font = docxDocumentInstance.createFont(
           bodyStyles["font-family"],

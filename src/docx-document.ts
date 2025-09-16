@@ -78,7 +78,8 @@ function extractCssClassStyles(html: string) {
     classStyles[className] = kv
   }
 
-  // Also parse element-based rules like "body { prop: value; … }" and universal selector "* { prop: value; … }"
+  // Also parse element-based rules like
+  // "body { prop: value; … }" and universal selector "* { prop: value; … }"
   const elementRuleRegex = /(body|html|p|h[1-6]|div|span|\*)\s*\{([^}]*)\}/g
   let e: RegExpExecArray | null
   while ((e = elementRuleRegex.exec(css)) !== null) {
@@ -90,7 +91,8 @@ function extractCssClassStyles(html: string) {
         .map(s => s?.trim())
       if (k && v) kv[k.toLowerCase()] = v
     }
-    // Store element styles with a special prefix to distinguish from class styles
+    // Store element styles with a special prefix
+    // to distinguish from class styles
     classStyles[`__element_${elementName}`] = kv
   }
 
@@ -1071,8 +1073,8 @@ export default class DocxDocument {
       }
 
       // Fall back to body element styles if no other styles found
-      if (this.cssClassStyles && this.cssClassStyles["__element_body"]) {
-        const bodyStyles = this.cssClassStyles["__element_body"]
+      if (this.cssClassStyles && this.cssClassStyles.__element_body) {
+        const bodyStyles = this.cssClassStyles.__element_body
         if (!styling.fontFamily && bodyStyles["font-family"]) {
           styling.fontFamily = bodyStyles["font-family"]
         }

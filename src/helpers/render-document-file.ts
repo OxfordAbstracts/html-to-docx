@@ -416,9 +416,9 @@ function collectParentAttributes(
     if (
       !parentAttributes.font &&
       docxDocumentInstance.cssClassStyles &&
-      docxDocumentInstance.cssClassStyles["__element_body"]
+      docxDocumentInstance.cssClassStyles.__element_body
     ) {
-      const bodyStyles = docxDocumentInstance.cssClassStyles["__element_body"]
+      const bodyStyles = docxDocumentInstance.cssClassStyles.__element_body
       if (bodyStyles["font-family"]) {
         parentAttributes.font = docxDocumentInstance.createFont(
           bodyStyles["font-family"],
@@ -483,22 +483,25 @@ async function findXMLEquivalent(
   else if (htmlHeadings.includes(vNode.tagName)) {
     // Default spacing values matching typical browser defaults for headings
     // Converting em to twips: 1em ≈ 12pt = 240 twips
-    const headingSpacing: Record<string, { before?: number; after?: number }> = {
-      "1": { before: 160, after: 160 }, // 0.67em ≈ 160 twips (8pt) before and after
-      "2": { before: 200, after: 200 }, // 0.83em ≈ 200 twips (10pt) before and after
-      "3": { before: 240, after: 240 }, // 1.0em = 240 twips (12pt) before and after
-      "4": { before: 320, after: 320 }, // 1.33em ≈ 320 twips (16pt) before and after
-      "5": { before: 400, after: 400 }, // 1.67em ≈ 400 twips (20pt) before and after
-      "6": { before: 560, after: 560 }, // 2.33em ≈ 560 twips (28pt) before and after
-    }
+    const headingSpacing: Record<string, { before?: number; after?: number }> =
+      {
+        1: { before: 160, after: 160 }, // 0.67em ≈ 160 twips (8pt)
+        2: { before: 200, after: 200 }, // 0.83em ≈ 200 twips (10pt)
+        3: { before: 240, after: 240 }, // 1.0em = 240 twips (12pt)
+        4: { before: 320, after: 320 }, // 1.33em ≈ 320 twips (16pt)
+        5: { before: 400, after: 400 }, // 1.67em ≈ 400 twips (20pt)
+        6: { before: 560, after: 560 }, // 2.33em ≈ 560 twips (28pt)
+      }
 
     const headingLevel = vNode.tagName[1]
     const attributes: Record<string, unknown> = {
-      paragraphStyle: `Heading${headingLevel}`
+      paragraphStyle: `Heading${headingLevel}`,
     }
 
     // If the heading has inline styles, explicitly preserve the default spacing
-    if (vNode.properties?.style && Object.keys(vNode.properties.style).length > 0) {
+    if (
+      vNode.properties?.style && Object.keys(vNode.properties.style).length > 0
+    ) {
       const defaultSpacing = headingSpacing[headingLevel]
       if (defaultSpacing) {
         if (defaultSpacing.before !== undefined) {

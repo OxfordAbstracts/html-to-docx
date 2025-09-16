@@ -54708,7 +54708,7 @@ var import_xmlbuilder24 = __toESM(require_lib12(), 1);
 
 // src/constants.ts
 var import_lodash = __toESM(require_lodash(), 1);
-var applicationName = "html-to-docx";
+var applicationName = "@oxfordabstracts/html-to-docx";
 var defaultOrientation = "portrait";
 var landscapeWidth = 15840;
 var landscapeHeight = 12240;
@@ -58510,6 +58510,18 @@ function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes,
         }
       });
     }
+    if (!modifiedAttributes.font && docxDocumentInstance.cssClassStyles && docxDocumentInstance.cssClassStyles.__element_body) {
+      const bodyStyles = docxDocumentInstance.cssClassStyles.__element_body;
+      if (bodyStyles["font-family"]) {
+        modifiedAttributes.font = docxDocumentInstance.createFont(bodyStyles["font-family"]);
+      }
+    }
+    if (!modifiedAttributes.font && docxDocumentInstance.cssClassStyles && docxDocumentInstance.cssClassStyles["__element_*"]) {
+      const universalStyles = docxDocumentInstance.cssClassStyles["__element_*"];
+      if (universalStyles["font-family"]) {
+        modifiedAttributes.font = docxDocumentInstance.createFont(universalStyles["font-family"]);
+      }
+    }
   }
   if (options?.isParagraph) {
     if (vNode && import_is_vnode.default(vNode) && vNode.tagName === "blockquote") {
@@ -60196,6 +60208,18 @@ function collectParentAttributes(docxDocumentInstance, vNode, existingAttributes
         }
       });
     }
+    if (!parentAttributes.font && docxDocumentInstance.cssClassStyles && docxDocumentInstance.cssClassStyles.__element_body) {
+      const bodyStyles = docxDocumentInstance.cssClassStyles.__element_body;
+      if (bodyStyles["font-family"]) {
+        parentAttributes.font = docxDocumentInstance.createFont(bodyStyles["font-family"]);
+      }
+    }
+    if (!parentAttributes.font && docxDocumentInstance.cssClassStyles && docxDocumentInstance.cssClassStyles["__element_*"]) {
+      const universalStyles = docxDocumentInstance.cssClassStyles["__element_*"];
+      if (universalStyles["font-family"]) {
+        parentAttributes.font = docxDocumentInstance.createFont(universalStyles["font-family"]);
+      }
+    }
   }
   if (vNode.tagName === "blockquote") {
     parentAttributes.indentation = { left: 284, right: 0 };
@@ -60213,7 +60237,30 @@ async function findXMLEquivalent(docxDocumentInstance, vNode, xmlFragment, paren
     xmlFragment.import(await buildParagraph(vNode, {}, docxDocumentInstance));
     return;
   } else if (htmlHeadings.includes(vNode.tagName)) {
-    const headingFragment = await buildParagraph(vNode, { paragraphStyle: `Heading${vNode.tagName[1]}` }, docxDocumentInstance);
+    const headingSpacing = {
+      1: { before: 160, after: 160 },
+      2: { before: 200, after: 200 },
+      3: { before: 240, after: 240 },
+      4: { before: 320, after: 320 },
+      5: { before: 400, after: 400 },
+      6: { before: 560, after: 560 }
+    };
+    const headingLevel = vNode.tagName[1];
+    const attributes = {
+      paragraphStyle: `Heading${headingLevel}`
+    };
+    if (vNode.properties?.style && Object.keys(vNode.properties.style).length > 0) {
+      const defaultSpacing = headingSpacing[headingLevel];
+      if (defaultSpacing) {
+        if (defaultSpacing.before !== undefined) {
+          attributes.beforeSpacing = defaultSpacing.before;
+        }
+        if (defaultSpacing.after !== undefined) {
+          attributes.afterSpacing = defaultSpacing.after;
+        }
+      }
+    }
+    const headingFragment = await buildParagraph(vNode, attributes, docxDocumentInstance);
     xmlFragment.import(headingFragment);
     return;
   } else if (vNode.tagName === "figure") {
@@ -61140,6 +61187,19 @@ function extractCssClassStyles(html) {
     }
     classStyles[className] = kv;
   }
+  const elementRuleRegex = /(body|html|p|h[1-6]|div|span|\*)\s*\{([^}]*)\}/g;
+  let e;
+  while ((e = elementRuleRegex.exec(css)) !== null) {
+    const elementName = e[1].trim();
+    const decls = e[2].split(";");
+    const kv = {};
+    for (const d of decls) {
+      const [k, v] = d.split(":").map((s) => s?.trim());
+      if (k && v)
+        kv[k.toLowerCase()] = v;
+    }
+    classStyles[`__element_${elementName}`] = kv;
+  }
   return classStyles;
 }
 function sha1(content) {
@@ -61590,6 +61650,42 @@ class DocxDocument {
               styling.color = classStyles.color;
             }
           }
+        }
+      }
+      if (this.cssClassStyles && this.cssClassStyles.__element_body) {
+        const bodyStyles = this.cssClassStyles.__element_body;
+        if (!styling.fontFamily && bodyStyles["font-family"]) {
+          styling.fontFamily = bodyStyles["font-family"];
+        }
+        if (!styling.fontSize && bodyStyles["font-size"]) {
+          styling.fontSize = bodyStyles["font-size"];
+        }
+        if (!styling.fontWeight && bodyStyles["font-weight"]) {
+          styling.fontWeight = bodyStyles["font-weight"];
+        }
+        if (!styling.fontStyle && bodyStyles["font-style"]) {
+          styling.fontStyle = bodyStyles["font-style"];
+        }
+        if (!styling.color && bodyStyles.color) {
+          styling.color = bodyStyles.color;
+        }
+      }
+      if (this.cssClassStyles && this.cssClassStyles["__element_*"]) {
+        const universalStyles = this.cssClassStyles["__element_*"];
+        if (!styling.fontFamily && universalStyles["font-family"]) {
+          styling.fontFamily = universalStyles["font-family"];
+        }
+        if (!styling.fontSize && universalStyles["font-size"]) {
+          styling.fontSize = universalStyles["font-size"];
+        }
+        if (!styling.fontWeight && universalStyles["font-weight"]) {
+          styling.fontWeight = universalStyles["font-weight"];
+        }
+        if (!styling.fontStyle && universalStyles["font-style"]) {
+          styling.fontStyle = universalStyles["font-style"];
+        }
+        if (!styling.color && universalStyles.color) {
+          styling.color = universalStyles.color;
         }
       }
       return styling;
