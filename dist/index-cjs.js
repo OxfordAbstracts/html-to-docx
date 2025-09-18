@@ -59121,12 +59121,12 @@ function computeImageDimensions(vNode, attributes) {
       if (styleHeight !== "auto") {
         if (pixelRegex.test(styleHeight)) {
           modifiedHeight = pixelToEMU(styleHeight.match(pixelRegex)[1]);
-        } else if (emRegex.test(styleWidth)) {
-          modifiedWidth = emToEmu(styleWidth.match(emRegex)[1]);
-        } else if (remRegex.test(styleWidth)) {
-          modifiedWidth = emToEmu(styleWidth.match(remRegex)[1]);
+        } else if (emRegex.test(styleHeight)) {
+          modifiedHeight = emToEmu(styleHeight.match(emRegex)[1]);
+        } else if (remRegex.test(styleHeight)) {
+          modifiedHeight = remToEmu(styleHeight.match(remRegex)[1]);
         } else if (percentageRegex.test(styleHeight)) {
-          const percentageValue = styleWidth.match(percentageRegex)[1];
+          const percentageValue = styleHeight.match(percentageRegex)[1];
           modifiedHeight = Math.round(percentageValue / 100 * originalHeightInEMU);
           if (!modifiedWidth) {
             modifiedWidth = Math.round(modifiedHeight * aspectRatio);
@@ -59931,6 +59931,14 @@ function toEMU(v) {
   if (pixelRegex.test(v)) {
     const [, num] = v.match(pixelRegex);
     return pixelToEMU(Number(num));
+  }
+  if (emRegex.test(v)) {
+    const [, num] = v.match(emRegex);
+    return emToEmu(Number(num));
+  }
+  if (remRegex.test(v)) {
+    const [, num] = v.match(remRegex);
+    return remToEmu(Number(num));
   }
   return Number(v);
 }

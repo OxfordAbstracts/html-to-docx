@@ -40,6 +40,79 @@
           </wp:inline>
         </w:drawing>
       </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:drawing>
+          <wp:inline distB="0" distL="0" distR="0" distT="0">
+            <wp:extent cx="1905000" cy="1905000"/>
+            <wp:effectExtent b="0" l="0" r="0" t="0"/>
+            <wp:docPr id="4" name="image-d1906e70d6e0121068ea9c524a7b66dc81a48270.png"/>
+            <a:graphic>
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic>
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="4" name="image-d1906e70d6e0121068ea9c524a7b66dc81a48270.png" descr=""/>
+                    <pic:cNvPicPr/>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId9" cstate="print"/>
+                    <a:srcRect b="0" l="0" r="0" t="0"/>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="1905000" cy="1905000"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect"/>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:drawing>
+          <wp:inline distB="0" distL="0" distR="0" distT="0">
+            <wp:extent cx="762000" cy="762000"/>
+            <wp:effectExtent b="0" l="0" r="0" t="0"/>
+            <wp:docPr id="6" name="image-d1906e70d6e0121068ea9c524a7b66dc81a48270.png"/>
+            <a:graphic>
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic>
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="6" name="image-d1906e70d6e0121068ea9c524a7b66dc81a48270.png" descr=""/>
+                    <pic:cNvPicPr/>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId11" cstate="print"/>
+                    <a:srcRect b="0" l="0" r="0" t="0"/>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="762000" cy="762000"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect"/>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
     </w:p>
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>

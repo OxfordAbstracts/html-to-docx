@@ -1579,14 +1579,14 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
         if (pixelRegex.test(styleHeight)) {
           modifiedHeight = pixelToEMU(styleHeight.match(pixelRegex)[1])
         }
-        else if (emRegex.test(styleWidth)) {
-          modifiedWidth = emToEmu(styleWidth.match(emRegex)[1])
+        else if (emRegex.test(styleHeight)) {
+          modifiedHeight = emToEmu(styleHeight.match(emRegex)[1])
         }
-        else if (remRegex.test(styleWidth)) {
-          modifiedWidth = emToEmu(styleWidth.match(remRegex)[1])
+        else if (remRegex.test(styleHeight)) {
+          modifiedHeight = remToEmu(styleHeight.match(remRegex)[1])
         }
         else if (percentageRegex.test(styleHeight)) {
-          const percentageValue = styleWidth.match(percentageRegex)[1]
+          const percentageValue = styleHeight.match(percentageRegex)[1]
 
           modifiedHeight = Math.round(
             (percentageValue / 100) * originalHeightInEMU,
@@ -2957,6 +2957,14 @@ function toEMU(v?: number | string) {
   if (pixelRegex.test(v)) { // like "256px"
     const [, num] = v.match(pixelRegex) as RegExpMatchArray
     return pixelToEMU(Number(num))
+  }
+  if (emRegex.test(v)) { // like "1.5em"
+    const [, num] = v.match(emRegex) as RegExpMatchArray
+    return emToEmu(Number(num))
+  }
+  if (remRegex.test(v)) { // like "5rem"
+    const [, num] = v.match(remRegex) as RegExpMatchArray
+    return remToEmu(Number(num))
   }
   return Number(v) // fallback – numeric string
 }
