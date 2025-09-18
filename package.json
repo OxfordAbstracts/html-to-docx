@@ -21,11 +21,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/privateOmega/html-to-docx.git"
+    "url": "git+https://github.com/OxfordAbstracts/html-to-docx.git"
   },
-  "author": "privateOmega <privateOmega@protonmail.com>",
   "contributors": [
-    "amrita-syn <amrita.yadav@synapsica.com>",
+    "Adrian Sieber <html-to-docx@ad-si.com>",
     "charuthaB <charutha.bhaskar@synapsica.com>",
     "hanagejet",
     "kurukururuu <apriansyah.fajar94@gmail.com>",
@@ -40,9 +39,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/privateOmega/html-to-docx/issues"
+    "url": "https://github.com/OxfordAbstracts/html-to-docx/issues"
   },
-  "homepage": "https://github.com/privateOmega/html-to-docx#readme",
+  "homepage": "https://github.com/OxfordAbstracts/html-to-docx#readme",
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
