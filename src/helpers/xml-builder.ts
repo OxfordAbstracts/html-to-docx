@@ -1,7 +1,6 @@
 /* eslint-disable new-cap */
 
 import { default as colorNames } from "color-name"
-import { imageSize } from "image-size"
 import lodash from "lodash"
 import type { VNode, VText, VTree } from "virtual-dom"
 // @ts-expect-error  Could not find a declaration file
@@ -38,6 +37,7 @@ import {
   rgbToHex,
 } from "../utils/color-conversion.ts"
 import { fixupFontSize } from "../utils/font-size.ts"
+import { getImageDimensions } from "../utils/image-dimensions.ts"
 import {
   cmRegex,
   cmToTWIP,
@@ -60,6 +60,7 @@ import {
 } from "../utils/unit-conversion.ts"
 import { isValidUrl } from "../utils/url.ts"
 import { vNodeHasChildren } from "../utils/vnode.ts"
+import { sanitizeXmlString } from "../utils/xml-sanitizer.ts"
 import { buildImage, buildList } from "./render-document-file.ts"
 export { fixupFontSize } from "../utils/font-size.ts"
 
@@ -289,10 +290,15 @@ function buildTextElement(text: string, preserveWhitespace: boolean = false) {
 
       return t
     })()
+
+  // Sanitize text to remove invalid XML characters (e.g., 0x0B vertical tab)
+  // This is done after normalization to ensure all text going into XML is clean
+  const sanitizedText = sanitizeXmlString(normalizedText)
+
   return fragment({ namespaceAlias: { w: namespaces.w } })
     .ele("@w", "t")
     .att("@xml", "space", "preserve")
-    .txt(normalizedText)
+    .txt(sanitizedText)
     .up()
 }
 
@@ -383,7 +389,7 @@ function buildTextElementsWithSpaceSeparation(
     const spaceTextFragment = fragment({ namespaceAlias: { w: namespaces.w } })
       .ele("@w", "t")
       .att("@xml", "space", "preserve")
-      .txt(leadingSpace[1])
+      .txt(sanitizeXmlString(leadingSpace[1]))
       .up()
     spaceRunFragment.import(spaceTextFragment)
     runs.push(spaceRunFragment)
@@ -400,7 +406,7 @@ function buildTextElementsWithSpaceSeparation(
     const mainTextFragment = fragment({ namespaceAlias: { w: namespaces.w } })
       .ele("@w", "t")
       .att("@xml", "space", "preserve")
-      .txt(trimmedText)
+      .txt(sanitizeXmlString(trimmedText))
       .up()
     mainRunFragment.import(mainTextFragment)
     runs.push(mainRunFragment)
@@ -420,7 +426,7 @@ function buildTextElementsWithSpaceSeparation(
     const spaceTextFragment = fragment({ namespaceAlias: { w: namespaces.w } })
       .ele("@w", "t")
       .att("@xml", "space", "preserve")
-      .txt(trailingSpace[1])
+      .txt(sanitizeXmlString(trailingSpace[1]))
       .up()
     spaceRunFragment.import(spaceTextFragment)
     runs.push(spaceRunFragment)
@@ -1206,7 +1212,8 @@ async function buildRunOrRuns(
           decodeURIComponent(base64String || ""),
           "base64",
         )
-        const imageProperties = imageSize(imageBuffer)
+
+        const imageProperties = getImageDimensions(imageBuffer)
 
         modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
           docxDocumentInstance.availableDocumentSpace
@@ -1839,7 +1846,8 @@ async function buildParagraph(
             decodeURIComponent(base64String || ""),
             "base64",
           )
-          const imageProperties = imageSize(imageBuffer)
+
+          const imageProperties = getImageDimensions(imageBuffer)
 
           modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
             docxDocumentInstance.availableDocumentSpace
@@ -2253,12 +2261,20 @@ async function buildTableCell(
             modifiedAttributes.maximumWidth,
           )
           if (imageFragment) {
+            // Images must be wrapped in paragraphs when inside table cells
+            const paragraphFragment = fragment({
+              namespaceAlias: { w: namespaces.w },
+            })
+              .ele("@w", "p")
+
             if (Array.isArray(imageFragment)) {
-              imageFragment.forEach(frag => tableCellFragment.import(frag))
+              imageFragment.forEach(frag => paragraphFragment.import(frag))
             }
             else {
-              tableCellFragment.import(imageFragment)
+              paragraphFragment.import(imageFragment)
             }
+            paragraphFragment.up()
+            tableCellFragment.import(paragraphFragment)
           }
         }
       }
@@ -2283,12 +2299,20 @@ async function buildTableCell(
                 modifiedAttributes.maximumWidth || 0,
               )
               if (imageFragment) {
+                // Images must be wrapped in paragraphs when inside table cells
+                const paragraphFragment = fragment({
+                  namespaceAlias: { w: namespaces.w },
+                })
+                  .ele("@w", "p")
+
                 if (Array.isArray(imageFragment)) {
-                  imageFragment.forEach(frag => tableCellFragment.import(frag))
+                  imageFragment.forEach(frag => paragraphFragment.import(frag))
                 }
                 else {
-                  tableCellFragment.import(imageFragment)
+                  paragraphFragment.import(imageFragment)
                 }
+                paragraphFragment.up()
+                tableCellFragment.import(paragraphFragment)
               }
             }
           }

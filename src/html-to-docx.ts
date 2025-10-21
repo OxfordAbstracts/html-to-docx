@@ -36,6 +36,7 @@ import {
   pointRegex,
   pointToHIP,
 } from "./utils/unit-conversion.ts"
+import { sanitizeHtml } from "./utils/xml-sanitizer.ts"
 
 /* eslint-disable new-cap */
 const convertHTML = HTMLToVDOM({
@@ -164,6 +165,11 @@ export default async function addFilesToContainer(
     htmlString = decode(htmlString)
     footerHTMLString = decode(footerHTMLString)
   }
+
+  // Remove invalid XML characters to prevent errors when opening the DOCX file
+  headerHTMLString = sanitizeHtml(headerHTMLString)
+  htmlString = sanitizeHtml(htmlString)
+  footerHTMLString = sanitizeHtml(footerHTMLString)
 
   const docxDocument = new DocxDocument({
     ...documentOptions,

@@ -23,16 +23,17 @@ export async function fetchImageToDataUrl(imageUrlStr: string) {
       let mimeType = mimeTypes.lookup(imageUrl.pathname)
       if (!mimeType) {
         const fileType = await fileTypeFromBuffer(imgArrayBuff)
-        mimeType = fileType?.mime || false
+        mimeType = fileType?.mime || "png"
       }
-      return `data:${mimeType || "png"};base64,${base64String}`
+      return `data:${mimeType};base64,${base64String}`
     }
   }
   catch (error) {
+    const errorObj = error as Error & { cause?: Error }
     console.warn(
       "WARNING: " +
         `Image download failed for "${imageUrlStr}" with following error:`,
-      error,
+      (errorObj.cause ?? errorObj).message,
     )
 
     return emptyPngDataURL
@@ -41,7 +42,7 @@ export async function fetchImageToDataUrl(imageUrlStr: string) {
 
 export function extractBase64Data(src: string) {
   if (!src) {
-    console.error("ERROR: Empty base64 data URL")
+    console.warn("WARNING: Empty base64 data URL")
     return null
   }
 
@@ -49,18 +50,25 @@ export function extractBase64Data(src: string) {
   const idxSlash = src.indexOf("/")
 
   if (idxComma === -1 || idxSlash === -1 || !src.startsWith("data:")) {
-    console.error("ERROR: Invalid base64 data URL:\n", src)
+    console.warn("WARNING: Invalid base64 data URL:\n", src)
     return null
   }
 
   const idxSemi = src.indexOf(";")
   const extEnd = idxSemi === -1 ? idxComma : Math.min(idxSemi, idxComma)
 
+  const base64Content = src.substring(idxComma + 1)
+    .trim()
+
+  if (!base64Content) {
+    console.warn("WARNING: Empty base64 data URL")
+    return null
+  }
+
   return {
     type: src.substring("data:".length, idxSlash),
     extension: src.substring(idxSlash + 1, extEnd),
-    base64Content: src.substring(idxComma + 1)
-      .trim(),
+    base64Content,
   }
 }
 

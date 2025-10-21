@@ -1,7 +1,6 @@
 /* eslint-disable new-cap */
 
 import { default as HTMLToVDOM } from "html-to-vdom"
-import { imageSize } from "image-size"
 // @ts-expect-error  Could not find a declaration file
 import isVNode from "virtual-dom/vnode/is-vnode.js"
 // @ts-expect-error  Could not find a declaration file
@@ -23,6 +22,7 @@ import {
 import DocxDocument from "../docx-document.ts"
 import namespaces from "../namespaces.ts"
 import { fetchImageToDataUrl } from "../utils/base64.ts"
+import { getImageDimensions } from "../utils/image-dimensions.ts"
 import {
   emToEmu,
   pixelToEMU,
@@ -77,7 +77,7 @@ export async function buildImage(
     )
 
     const imageBuffer = Buffer.from(response.fileContent, "base64")
-    const imageProperties = imageSize(imageBuffer)
+    const imageProperties = getImageDimensions(imageBuffer)
 
     // Compute image dimensions similar to computeImageDimensions function
     const maxWidth = maximumWidth || docxDocumentInstance.availableDocumentSpace
@@ -543,12 +543,20 @@ async function findXMLEquivalent(
             docxDocumentInstance.availableDocumentSpace,
           )
           if (imageFragment) {
+            // Images must be wrapped in paragraphs
+            const paragraphFragment = fragment({
+              namespaceAlias: { w: namespaces.w },
+            })
+              .ele("@w", "p")
+
             if (Array.isArray(imageFragment)) {
-              imageFragment.forEach(frag => xmlFragment.import(frag))
+              imageFragment.forEach(frag => paragraphFragment.import(frag))
             }
             else {
-              xmlFragment.import(imageFragment)
+              paragraphFragment.import(imageFragment)
             }
+            paragraphFragment.up()
+            xmlFragment.import(paragraphFragment)
           }
         }
       }
@@ -920,12 +928,16 @@ export async function convertVTreeToXML(
     )
   }
   else if (isVText(vTree)) {
-    const paragraphFragment = await xmlBuilder.buildParagraph(
-      vTree as VText,
-      parentAttributes,
-      docxDocumentInstance,
-    )
-    xmlFragment.import(paragraphFragment)
+    // Skip whitespace-only text nodes at the document level
+    const text = (vTree as VText).text
+    if (text.trim().length > 0) {
+      const paragraphFragment = await xmlBuilder.buildParagraph(
+        vTree as VText,
+        parentAttributes,
+        docxDocumentInstance,
+      )
+      xmlFragment.import(paragraphFragment)
+    }
   }
 }
 

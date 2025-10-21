@@ -12,11 +12,6 @@
   xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
   xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">
   <w:body>
-    <w:p>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-    </w:p>
     <w:tbl>
       <w:tblPr>
         <w:tblBorders>

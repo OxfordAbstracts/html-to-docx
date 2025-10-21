@@ -24,6 +24,12 @@ export default [
     },
   },
   {
+    files: ["src/utils/xml-sanitizer.ts"],
+    rules: {
+      "no-control-regex": "off",
+    },
+  },
+  {
     ignores: ["dist/*"],
   },
 ]

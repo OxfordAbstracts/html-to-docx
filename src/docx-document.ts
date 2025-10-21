@@ -1153,7 +1153,7 @@ export default class DocxDocument {
   createMediaFile(srcString: string) {
     const fileData = extractBase64Data(srcString)
     if (!fileData) {
-      throw new Error("Invalid data URL")
+      return null
     }
 
     const fileExtension = fileData.extension === "octet-stream"
