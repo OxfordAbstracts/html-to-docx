@@ -30,11 +30,8 @@ lint:
   npx eslint --ignore-pattern=.gitignore
 
 
-# Run the unit tests and hide unhelpful warnings
+# Run the unit tests
 test-unit: node_modules
-  @grep -q 'xmlbuilder2": "2.1.2' package.json || \
-    (echo "xmlbuilder2 must be version 2.1.2 due to " \
-    "https://github.com/oozcitak/xmlbuilder2/issues/178" && exit 1)
   npx vitest run
 
 

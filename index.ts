@@ -100,7 +100,7 @@ export default async function generateContainer(
   headerHTMLString: string | null,
   documentOptions: DocumentOptions,
   footerHTMLString: string | null,
-) {
+): Promise<Buffer | Blob> {
   const zip = new JSZip()
 
   await addFilesToContainer(

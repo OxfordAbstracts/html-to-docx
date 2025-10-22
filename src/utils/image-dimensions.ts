@@ -26,7 +26,8 @@ export function getImageDimensions(imageBuffer: Buffer): ImageDimensions {
         const tmpFile = path.join(tmpDir, `temp-image-${Date.now()}.tiff`)
 
         fs.writeFileSync(tmpFile, imageBuffer)
-        const dimensions = imageSize(tmpFile) as ImageDimensions
+        const fileBuffer = new Uint8Array(fs.readFileSync(tmpFile))
+        const dimensions = imageSize(fileBuffer) as ImageDimensions
         fs.unlinkSync(tmpFile) // Clean up temp file
 
         return dimensions

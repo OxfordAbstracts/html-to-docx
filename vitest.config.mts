@@ -4,5 +4,6 @@ export default defineConfig({
   test: {
     dir: "tests",
     testTimeout: 20000,
+    pool: "threads",
   },
 })
