@@ -1213,7 +1213,7 @@ async function buildRunOrRuns(
           "base64",
         )
 
-        const imageProperties = getImageDimensions(imageBuffer)
+        const imageProperties = await getImageDimensions(imageBuffer)
 
         modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
           docxDocumentInstance.availableDocumentSpace
@@ -1847,7 +1847,7 @@ async function buildParagraph(
             "base64",
           )
 
-          const imageProperties = getImageDimensions(imageBuffer)
+          const imageProperties = await getImageDimensions(imageBuffer)
 
           modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
             docxDocumentInstance.availableDocumentSpace

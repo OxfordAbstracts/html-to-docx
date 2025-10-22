@@ -1,4 +1,4 @@
-import fs from "fs"
+import fs from "fs/promises"
 import imageSize from "image-size"
 import os from "os"
 import path from "path"
@@ -14,7 +14,7 @@ export interface ImageDimensions {
  * support TIFF buffers. Falls back to default dimensions (400x300) if
  * detection fails.
  */
-export function getImageDimensions(imageBuffer: Buffer): ImageDimensions {
+export async function getImageDimensions(imageBuffer: Buffer): Promise<ImageDimensions> {
   try {
     return imageSize(imageBuffer) as ImageDimensions
   }
@@ -25,10 +25,10 @@ export function getImageDimensions(imageBuffer: Buffer): ImageDimensions {
         const tmpDir = os.tmpdir()
         const tmpFile = path.join(tmpDir, `temp-image-${Date.now()}.tiff`)
 
-        fs.writeFileSync(tmpFile, imageBuffer)
-        const fileBuffer = new Uint8Array(fs.readFileSync(tmpFile))
+        await fs.writeFile(tmpFile, imageBuffer)
+        const fileBuffer = new Uint8Array(await fs.readFile(tmpFile))
         const dimensions = imageSize(fileBuffer) as ImageDimensions
-        fs.unlinkSync(tmpFile) // Clean up temp file
+        await fs.unlink(tmpFile) // Clean up temp file
 
         return dimensions
       }

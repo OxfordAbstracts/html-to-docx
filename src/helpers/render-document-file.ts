@@ -77,7 +77,7 @@ export async function buildImage(
     )
 
     const imageBuffer = Buffer.from(response.fileContent, "base64")
-    const imageProperties = getImageDimensions(imageBuffer)
+    const imageProperties = await getImageDimensions(imageBuffer)
 
     // Compute image dimensions similar to computeImageDimensions function
     const maxWidth = maximumWidth || docxDocumentInstance.availableDocumentSpace
