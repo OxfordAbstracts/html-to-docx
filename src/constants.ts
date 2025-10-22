@@ -99,7 +99,6 @@ export const htmlInlineElements = [
   "kbd",
   "label",
   "map",
-  "object",
   "output",
   "q",
   "samp",

@@ -662,8 +662,8 @@ async function findXMLEquivalent(
   else if (vNode.tagName === "head") {
     return
   }
-  else if (vNode.tagName === "input") {
-    // input elements should not generate any content in Docx files
+  else if (["input", "object", "iframe", "embed"].includes(vNode.tagName)) {
+    // input and embedded media elements should not generate any content in Docx files
     return
   }
   else if (vNode.tagName === "blockquote" && vNodeHasChildren(vNode)) {
