@@ -66,7 +66,8 @@ build-declarations:
 build: build-esm build-cjs build-declarations
 
 
-# Bump the version, create a new release, and publish to npm
+# Instructions on how to release a new version
 release: node_modules
-  npx standard-version
-  npm publish --access=public
+  @echo '1. npm version minor'
+  @echo '2. npm publish --access=public'
+  @echo '3. Update CHANGELOG.md'
