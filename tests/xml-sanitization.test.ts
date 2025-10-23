@@ -31,6 +31,27 @@ test("preserves normal text and spaces", () => {
     .toBe(input)
 })
 
+test("escapes XML special characters in text content", () => {
+  const input = "A&B<C>D"
+  const expected = "A&amp;B&lt;C&gt;D"
+  expect(sanitizeXmlString(input))
+    .toBe(expected)
+})
+
+test("does not escape quotes and apostrophes in text content", () => {
+  const input = "John's book \"Hello World\""
+  const expected = "John's book \"Hello World\""
+  expect(sanitizeXmlString(input))
+    .toBe(expected)
+})
+
+test("escapes ampersands in text", () => {
+  const input = "Ampersand: & and A&B"
+  const expected = "Ampersand: &amp; and A&amp;B"
+  expect(sanitizeXmlString(input))
+    .toBe(expected)
+})
+
 test("preserves Unicode characters in valid range", () => {
   const input = "Hello 世界 🌍 Привет"
   expect(sanitizeXmlString(input))
