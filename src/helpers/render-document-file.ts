@@ -21,7 +21,7 @@ import {
 } from "../constants.ts"
 import DocxDocument from "../docx-document.ts"
 import namespaces from "../namespaces.ts"
-import { fetchImageToDataUrl } from "../utils/base64.ts"
+import { fetchImageDimensionsFromUrl, fetchImageToDataUrl } from "../utils/base64.ts"
 import { getImageDimensions } from "../utils/image-dimensions.ts"
 import {
   emToEmu,
@@ -73,10 +73,18 @@ export async function buildImage(
       "External",
     )
 
-    // Use default dimensions for URL-referenced images
-    // since we can't fetch them to get actual dimensions
-    const defaultWidthInEMU = pixelToEMU(600)
-    const defaultHeightInEMU = pixelToEMU(400)
+    // Try to fetch actual dimensions from URL using partial download
+    // Fall back to defaults if fetching fails
+    let actualWidth = 600
+    let actualHeight = 400
+    const fetchedDimensions = await fetchImageDimensionsFromUrl(originalSrc)
+    if (fetchedDimensions) {
+      actualWidth = fetchedDimensions.width
+      actualHeight = fetchedDimensions.height
+    }
+
+    const defaultWidthInEMU = pixelToEMU(actualWidth)
+    const defaultHeightInEMU = pixelToEMU(actualHeight)
     let finalWidthInEMU = defaultWidthInEMU
     let finalHeightInEMU = defaultHeightInEMU
     const maxWidth = maximumWidth || docxDocumentInstance.availableDocumentSpace
@@ -84,7 +92,7 @@ export async function buildImage(
 
     // Respect maximum width constraint
     if (defaultWidthInEMU > maximumWidthInEMU) {
-      const aspectRatio = 600 / 400
+      const aspectRatio = actualWidth / actualHeight
       finalWidthInEMU = maximumWidthInEMU
       finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio)
     }
@@ -140,7 +148,7 @@ export async function buildImage(
             (percentage / 100) * defaultHeightInEMU,
           )
           if (!style.width || style.width === "auto") {
-            const aspectRatio = 600 / 400
+            const aspectRatio = actualWidth / actualHeight
             finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio)
           }
         }
@@ -151,14 +159,14 @@ export async function buildImage(
         style.width && style.width !== "auto" &&
         (!style.height || style.height === "auto")
       ) {
-        const aspectRatio = 600 / 400
+        const aspectRatio = actualWidth / actualHeight
         finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio)
       }
       else if (
         style.height && style.height !== "auto" &&
         (!style.width || style.width === "auto")
       ) {
-        const aspectRatio = 600 / 400
+        const aspectRatio = actualWidth / actualHeight
         finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio)
       }
     }
@@ -172,8 +180,8 @@ export async function buildImage(
         fileNameWithExtension: originalSrc,
         description: vNode.properties.alt,
         maximumWidth: maxWidth,
-        originalWidth: 600,
-        originalHeight: 400,
+        originalWidth: actualWidth,
+        originalHeight: actualHeight,
         width: finalWidthInEMU,
         height: finalHeightInEMU,
         isExternalLink: true, // Mark this as an external image link
