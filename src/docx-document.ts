@@ -312,6 +312,7 @@ export default class DocxDocument {
   tableRowCantSplit: boolean
   pageNumber: boolean
   skipFirstHeaderFooter: boolean
+  embedImages: boolean
   lineNumberOptions?: {
     countBy: number
     start: number
@@ -391,6 +392,7 @@ export default class DocxDocument {
     tableRowCantSplit?: boolean
     pageNumber?: boolean
     skipFirstHeaderFooter?: boolean
+    embedImages?: boolean
     lineNumber?: boolean
     lineNumberOptions?: {
       countBy: number
@@ -456,6 +458,9 @@ export default class DocxDocument {
       properties.table.row.cantSplit) || false
     this.pageNumber = properties.pageNumber || false
     this.skipFirstHeaderFooter = properties.skipFirstHeaderFooter || false
+    this.embedImages = properties.embedImages !== undefined
+      ? properties.embedImages
+      : true
     this.lineNumberOptions = properties.lineNumber
       ? properties.lineNumberOptions
       : undefined

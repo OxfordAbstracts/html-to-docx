@@ -40,6 +40,7 @@ export const defaultDocumentOptions: DocumentOptions = {
     height: landscapeWidth,
   },
   defaultLang,
+  embedImages: true,
 }
 export const defaultHTMLString = "<p></p>"
 export const relsFolderName = "_rels"

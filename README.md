@@ -126,6 +126,11 @@ Full fledged examples can be found in the [`example`](./example) directory.
     Defaults to `false`.
   - `lang` <?[String]> language localization code for spell checker to work properly.
     Defaults to `en-US`.
+  - `embedImages` <?[Boolean]> flag to control how images are handled.
+    When `true`, images from URLs are fetched and embedded in the document.
+    When `false`, URL images are referenced externally (linked but not embedded).
+    Base64/data URL images are always embedded regardless of this setting.
+    Defaults to `true`.
 - `footerHTMLString` <[String]> clean html string equivalent of footer.
   Defaults to `<p></p>` if footer flag is `true`.
 

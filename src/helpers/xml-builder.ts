@@ -845,6 +845,7 @@ export type Attributes = {
   id?: number
   fileContent?: string
   fileNameWithExtension?: string
+  isExternalLink?: boolean
   tableRowHeight?: number
   rowCantSplit?: boolean
   rowSpan?: string
@@ -1102,43 +1103,64 @@ async function buildRun(
   }
   else if (attributes && attributes.type === "picture") {
     let response = null
+    const originalSrc = (vNode as VNode).properties.src
+    const isUrl = isValidUrl(originalSrc)
 
     // Convert URL to data URL if needed
-    if (isValidUrl((vNode as VNode).properties.src)) {
+    if (isUrl && docxDocumentInstance.embedImages) {
       ;(vNode as VNode).properties.src = await fetchImageToDataUrl(
         (vNode as VNode).properties.src,
       )
     }
 
-    const base64Uri = decodeURIComponent((vNode as VNode).properties.src)
-    if (base64Uri) {
-      response = docxDocumentInstance.createMediaFile(base64Uri)
-    }
-
-    if (response) {
-      ;(docxDocumentInstance.zip as JSZip)
-        .folder("word")
-        ?.folder("media")
-        ?.file(
-          response.fileNameWithExtension,
-          Buffer.from(response.fileContent, "base64"),
-          {
-            createFolders: false,
-          },
-        )
-
+    // Handle URL-referenced images (not embedded)
+    if (isUrl && !docxDocumentInstance.embedImages) {
       const documentRelsId = docxDocumentInstance.createDocumentRelationships(
         docxDocumentInstance.relationshipFilename,
         imageType,
-        `media/${response.fileNameWithExtension}`,
-        internalRelationship,
+        originalSrc,
+        "External",
       )
 
       attributes.inlineOrAnchored = true
       attributes.relationshipId = documentRelsId
-      attributes.id = response.id
-      attributes.fileContent = response.fileContent
-      attributes.fileNameWithExtension = response.fileNameWithExtension
+      attributes.fileNameWithExtension = originalSrc
+      attributes.isExternalLink = true
+      // Use default dimensions for external images
+      if (!attributes.width) attributes.width = pixelToEMU(600)
+      if (!attributes.height) attributes.height = pixelToEMU(400)
+    } else {
+      // Handle embedded images (base64 or fetched URLs)
+      const base64Uri = decodeURIComponent((vNode as VNode).properties.src)
+      if (base64Uri) {
+        response = docxDocumentInstance.createMediaFile(base64Uri)
+      }
+
+      if (response) {
+        ;(docxDocumentInstance.zip as JSZip)
+          .folder("word")
+          ?.folder("media")
+          ?.file(
+            response.fileNameWithExtension,
+            Buffer.from(response.fileContent, "base64"),
+            {
+              createFolders: false,
+            },
+          )
+
+        const documentRelsId = docxDocumentInstance.createDocumentRelationships(
+          docxDocumentInstance.relationshipFilename,
+          imageType,
+          `media/${response.fileNameWithExtension}`,
+          internalRelationship,
+        )
+
+        attributes.inlineOrAnchored = true
+        attributes.relationshipId = documentRelsId
+        attributes.id = response.id
+        attributes.fileContent = response.fileContent
+        attributes.fileNameWithExtension = response.fileNameWithExtension
+      }
     }
 
     const imageFragment = buildDrawing(attributes)
@@ -1200,27 +1222,33 @@ async function buildRunOrRuns(
 
       // Handle image dimension computation for images within spans
       if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
-        if (isValidUrl((childVNode as VNode).properties.src)) {
+        const isUrl = isValidUrl((childVNode as VNode).properties.src)
+
+        if (isUrl && docxDocumentInstance.embedImages) {
           ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
             (childVNode as VNode).properties.src,
           )
         }
-        const base64String = extractBase64Data(
-          (childVNode as VNode).properties.src,
-        )?.base64Content
-        const imageBuffer = Buffer.from(
-          decodeURIComponent(base64String || ""),
-          "base64",
-        )
 
-        const imageProperties = await getImageDimensions(imageBuffer)
+        // Only compute dimensions for embedded images (not external URLs)
+        if (!isUrl || docxDocumentInstance.embedImages) {
+          const base64String = extractBase64Data(
+            (childVNode as VNode).properties.src,
+          )?.base64Content
+          const imageBuffer = Buffer.from(
+            decodeURIComponent(base64String || ""),
+            "base64",
+          )
 
-        modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
-          docxDocumentInstance.availableDocumentSpace
-        modifiedAttributes.originalWidth = imageProperties.width
-        modifiedAttributes.originalHeight = imageProperties.height
+          const imageProperties = await getImageDimensions(imageBuffer)
 
-        computeImageDimensions(childVNode as VNode, modifiedAttributes)
+          modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
+            docxDocumentInstance.availableDocumentSpace
+          modifiedAttributes.originalWidth = imageProperties.width
+          modifiedAttributes.originalHeight = imageProperties.height
+
+          computeImageDimensions(childVNode as VNode, modifiedAttributes)
+        }
       }
 
       const tempRunFragments = await buildRun(
@@ -1833,28 +1861,34 @@ async function buildParagraph(
       for (let index = 0; index < processedChildren.length; index++) {
         const childVNode = processedChildren[index]
         if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
-          if (isValidUrl((childVNode as VNode).properties.src)) {
+          const isUrl = isValidUrl((childVNode as VNode).properties.src)
+
+          if (isUrl && docxDocumentInstance.embedImages) {
             ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
               (childVNode as VNode).properties.src,
             )
           }
-          const base64String = extractBase64Data(
-            (childVNode as VNode).properties.src,
-          )
-            ?.base64Content
-          const imageBuffer = Buffer.from(
-            decodeURIComponent(base64String || ""),
-            "base64",
-          )
 
-          const imageProperties = await getImageDimensions(imageBuffer)
+          // Only compute dimensions for embedded images (not external URLs)
+          if (!isUrl || docxDocumentInstance.embedImages) {
+            const base64String = extractBase64Data(
+              (childVNode as VNode).properties.src,
+            )
+              ?.base64Content
+            const imageBuffer = Buffer.from(
+              decodeURIComponent(base64String || ""),
+              "base64",
+            )
 
-          modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
-            docxDocumentInstance.availableDocumentSpace
-          modifiedAttributes.originalWidth = imageProperties.width
-          modifiedAttributes.originalHeight = imageProperties.height
+            const imageProperties = await getImageDimensions(imageBuffer)
 
-          computeImageDimensions(childVNode as VNode, modifiedAttributes)
+            modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
+              docxDocumentInstance.availableDocumentSpace
+            modifiedAttributes.originalWidth = imageProperties.width
+            modifiedAttributes.originalHeight = imageProperties.height
+
+            computeImageDimensions(childVNode as VNode, modifiedAttributes)
+          }
         }
         const runOrHyperlinkFragments = await buildRunOrHyperLink(
           childVNode as VNode,
@@ -3078,24 +3112,34 @@ function buildSrcRectFragment() {
     .up()
 }
 
-function buildBinaryLargeImageOrPicture(relationshipId: number) {
-  return fragment({
+function buildBinaryLargeImageOrPicture(relationshipId: number, isExternalLink?: boolean) {
+  const fragment_obj = fragment({
     namespaceAlias: { a: namespaces.a, r: namespaces.r },
   })
     .ele("@a", "blip")
-    .att("@r", "embed", `rId${relationshipId}`)
-    // FIXME: possible values 'email', 'none', 'print', 'hqprint', 'screen'
-    .att("cstate", "print")
-    .up()
+
+  // Use r:link for external images, r:embed for embedded images
+  if (isExternalLink) {
+    fragment_obj.att("@r", "link", `rId${relationshipId}`)
+  } else {
+    fragment_obj.att("@r", "embed", `rId${relationshipId}`)
+  }
+
+  // FIXME: possible values 'email', 'none', 'print', 'hqprint', 'screen'
+  fragment_obj.att("cstate", "print")
+  fragment_obj.up()
+
+  return fragment_obj
 }
 
-function buildBinaryLargeImageOrPictureFill(relationshipId: number) {
+function buildBinaryLargeImageOrPictureFill(relationshipId: number, isExternalLink?: boolean) {
   const binaryLargeImageOrPictureFillFragment = fragment({
     namespaceAlias: { pic: namespaces.pic },
   })
     .ele("@pic", "blipFill")
   const binaryLargeImageOrPictureFragment = buildBinaryLargeImageOrPicture(
     relationshipId,
+    isExternalLink,
   )
   binaryLargeImageOrPictureFillFragment.import(
     binaryLargeImageOrPictureFragment,
@@ -3163,6 +3207,7 @@ function buildPicture(
     relationshipId,
     width,
     height,
+    isExternalLink,
   }: Attributes,
 ) {
   const pictureFragment = fragment({ namespaceAlias: { pic: namespaces.pic } })
@@ -3175,6 +3220,7 @@ function buildPicture(
   pictureFragment.import(nonVisualPicturePropertiesFragment)
   const binaryLargeImageOrPictureFill = buildBinaryLargeImageOrPictureFill(
     relationshipId || 0,
+    isExternalLink,
   )
   pictureFragment.import(binaryLargeImageOrPictureFill)
   const shapeProperties = buildShapeProperties({ width, height })

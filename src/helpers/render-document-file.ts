@@ -45,18 +45,145 @@ export async function buildImage(
   maximumWidth: number,
 ) {
   let response = null
+  const originalSrc = vNode.properties.src
+  const isUrl = isValidUrl(originalSrc)
+
   try {
-    if (isValidUrl(vNode.properties.src)) {
+    if (isUrl && docxDocumentInstance.embedImages) {
       vNode.properties.src = await fetchImageToDataUrl(vNode.properties.src)
     }
-    const base64Uri = decodeURIComponent(vNode.properties.src)
-    if (base64Uri) {
-      response = docxDocumentInstance.createMediaFile(base64Uri)
+
+    if (!isUrl || docxDocumentInstance.embedImages) {
+      const base64Uri = decodeURIComponent(vNode.properties.src)
+      if (base64Uri) {
+        response = docxDocumentInstance.createMediaFile(base64Uri)
+      }
     }
   }
   catch (error) {
     console.error(error)
   }
+
+  // Handle URL-referenced images (not embedded)
+  if (isUrl && !docxDocumentInstance.embedImages) {
+    const documentRelsId = docxDocumentInstance.createDocumentRelationships(
+      docxDocumentInstance.relationshipFilename,
+      imageType,
+      originalSrc,
+      "External",
+    )
+
+    // Use default dimensions for URL-referenced images
+    // since we can't fetch them to get actual dimensions
+    const defaultWidthInEMU = pixelToEMU(600)
+    const defaultHeightInEMU = pixelToEMU(400)
+    let finalWidthInEMU = defaultWidthInEMU
+    let finalHeightInEMU = defaultHeightInEMU
+    const maxWidth = maximumWidth || docxDocumentInstance.availableDocumentSpace
+    const maximumWidthInEMU = TWIPToEMU(maxWidth || 0)
+
+    // Respect maximum width constraint
+    if (defaultWidthInEMU > maximumWidthInEMU) {
+      const aspectRatio = 600 / 400
+      finalWidthInEMU = maximumWidthInEMU
+      finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio)
+    }
+
+    // Handle CSS styling if present
+    if (vNode.properties && vNode.properties.style) {
+      const style = vNode.properties.style
+      if (style.width && style.width !== "auto") {
+        if (/(\d+)px/.test(style.width)) {
+          finalWidthInEMU = pixelToEMU(
+            parseInt(style.width.match(/(\d+)px/)[1]),
+          )
+        }
+        else if (/(\d+)em/.test(style.width)) {
+          finalWidthInEMU = emToEmu(
+            parseFloat(style.width.match(/(\d+(?:\.\d+)?)em/)[1]),
+          )
+        }
+        else if (/(\d+)rem/.test(style.width)) {
+          finalWidthInEMU = remToEmu(
+            parseFloat(style.width.match(/(\d+(?:\.\d+)?)rem/)[1]),
+          )
+        }
+        else if (/(\d+)%/.test(style.width)) {
+          const percentage = parseFloat(
+            style.width.match(/(\d+(?:\.\d+)?)%/)[1],
+          )
+          finalWidthInEMU = Math.round((percentage / 100) * defaultWidthInEMU)
+        }
+      }
+
+      if (style.height && style.height !== "auto") {
+        if (/(\d+)px/.test(style.height)) {
+          finalHeightInEMU = pixelToEMU(
+            parseInt(style.height.match(/(\d+)px/)[1]),
+          )
+        }
+        else if (/(\d+)em/.test(style.height)) {
+          finalHeightInEMU = emToEmu(
+            parseFloat(style.height.match(/(\d+(?:\.\d+)?)em/)[1]),
+          )
+        }
+        else if (/(\d+)rem/.test(style.height)) {
+          finalHeightInEMU = remToEmu(
+            parseFloat(style.height.match(/(\d+(?:\.\d+)?)rem/)[1]),
+          )
+        }
+        else if (/(\d+)%/.test(style.height)) {
+          const percentage = parseFloat(
+            style.height.match(/(\d+(?:\.\d+)?)%/)[1],
+          )
+          finalHeightInEMU = Math.round(
+            (percentage / 100) * defaultHeightInEMU,
+          )
+          if (!style.width || style.width === "auto") {
+            const aspectRatio = 600 / 400
+            finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio)
+          }
+        }
+      }
+
+      // Maintain aspect ratio if only one dimension is specified
+      if (
+        style.width && style.width !== "auto" &&
+        (!style.height || style.height === "auto")
+      ) {
+        const aspectRatio = 600 / 400
+        finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio)
+      }
+      else if (
+        style.height && style.height !== "auto" &&
+        (!style.width || style.width === "auto")
+      ) {
+        const aspectRatio = 600 / 400
+        finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio)
+      }
+    }
+
+    const imageFragment = await xmlBuilder.buildRun(
+      vNode,
+      {
+        type: "picture",
+        inlineOrAnchored: true,
+        relationshipId: documentRelsId,
+        fileNameWithExtension: originalSrc,
+        description: vNode.properties.alt,
+        maximumWidth: maxWidth,
+        originalWidth: 600,
+        originalHeight: 400,
+        width: finalWidthInEMU,
+        height: finalHeightInEMU,
+        isExternalLink: true, // Mark this as an external image link
+      },
+      docxDocumentInstance,
+    )
+
+    return imageFragment
+  }
+
   if (response) {
     docxDocumentInstance.zip
       .folder("word")

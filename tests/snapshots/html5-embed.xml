@@ -22,19 +22,13 @@
         <w:pStyle w:val="Heading3"/>
       </w:pPr>
       <w:r>
-        <w:t xml:space="preserve">Plain</w:t>
-      </w:r>
-      <w:r>
-        <w:t xml:space="preserve"> </w:t>
-      </w:r>
-      <w:r>
         <w:t xml:space="preserve">&lt;img&gt;</w:t>
       </w:r>
       <w:r>
         <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">element</w:t>
+        <w:t xml:space="preserve">element with a URL that does not exist:</w:t>
       </w:r>
     </w:p>
     <w:p>

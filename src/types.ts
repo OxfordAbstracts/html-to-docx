@@ -64,4 +64,5 @@ export type DocumentOptions = {
   }
   decodeUnicode?: boolean
   defaultLang?: string
+  embedImages?: boolean
 }

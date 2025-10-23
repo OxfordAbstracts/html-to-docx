@@ -21,6 +21,7 @@ for (const fileName of await fs.readdir("tests/snapshots")) {
         {
           createdAt,
           modifiedAt: createdAt,
+          embedImages: true,
         },
         null,
       )
