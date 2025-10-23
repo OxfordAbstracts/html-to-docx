@@ -1,6 +1,8 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [2.1.2](https://github.com/OxfordAbstracts/html-to-docx/compare/v2.1.1...v2.1.2) (2025-10-23)
 
 ## [1.8.0](https://github.com/OxfordAbstracts/html-to-docx/compare/v1.7.0...v1.8.0) (2023-03-26)
 
