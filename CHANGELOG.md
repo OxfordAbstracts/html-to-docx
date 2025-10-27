@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 
+## 2025-10-27 - [2.3.0](https://github.com/OxfordAbstracts/html-to-docx/compare/v2.2.0...v2.3.0)
+
+- Add support for the [EMF](https://en.wikipedia.org/wiki/Windows_Metafile#EMF) image format
+
+
 ## 2025-10-23 - [2.2.0](https://github.com/OxfordAbstracts/html-to-docx/compare/v2.1.2...v2.2.0)
 
 - Add missing build files
