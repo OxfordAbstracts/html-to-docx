@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 
+## 2025-10-23 - [2.2.0](https://github.com/OxfordAbstracts/html-to-docx/compare/v2.1.2...v2.2.0)
+
+- Add missing build files
+
+
 ## 2025-10-23 - [2.1.2](https://github.com/OxfordAbstracts/html-to-docx/compare/v2.1.1...v2.1.2)
 
 - Add streaming dimension detection for external images
