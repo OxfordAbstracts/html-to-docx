@@ -57701,6 +57701,15 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
             runFragmentsArray.push(spanFragment);
           }
           continue;
+        } else if (tempVNode.tagName === "img") {
+          const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" };
+          const imgFragment = await buildRun(tempVNode, imgAttributes, docxDocumentInstance, preserveWhitespace);
+          if (Array.isArray(imgFragment)) {
+            runFragmentsArray.push(...imgFragment);
+          } else {
+            runFragmentsArray.push(imgFragment);
+          }
+          continue;
         }
       }
       if (tempVNode.children?.length) {
@@ -57766,20 +57775,36 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
     const lineBreakFragment = buildLineBreak();
     runFragment.import(lineBreakFragment);
   } else if (import_is_vnode.default(vNode) && vNodeHasChildren(vNode)) {
-    let extractTextFromChildren = function(children) {
-      return children.map((child) => {
+    const mixedFragments = [];
+    async function processChildren(children) {
+      for (const child of children) {
         if (import_is_vtext.default(child)) {
-          return child.text;
+          const text = child.text;
+          if (text.trim()) {
+            const textFragment = buildTextElement(text, preserveWhitespace);
+            const textRun = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
+            if (runPropertiesFragment) {
+              textRun.import(runPropertiesFragment);
+            }
+            textRun.import(textFragment);
+            textRun.up();
+            mixedFragments.push(textRun);
+          }
+        } else if (import_is_vnode.default(child) && child.tagName === "img") {
+          const imgFragment = await buildRun(child, { ...attributes, type: "picture" }, docxDocumentInstance, preserveWhitespace);
+          if (Array.isArray(imgFragment)) {
+            mixedFragments.push(...imgFragment);
+          } else {
+            mixedFragments.push(imgFragment);
+          }
         } else if (import_is_vnode.default(child) && child.children) {
-          return extractTextFromChildren(child.children);
+          await processChildren(child.children);
         }
-        return "";
-      }).join("");
-    };
-    const textContent = extractTextFromChildren(vNode.children);
-    if (textContent.trim()) {
-      const textFragment = buildTextElement(textContent, preserveWhitespace);
-      runFragment.import(textFragment);
+      }
+    }
+    await processChildren(vNode.children);
+    if (mixedFragments.length) {
+      return mixedFragments.length === 1 ? mixedFragments[0] : mixedFragments;
     }
   } else if (import_is_vnode.default(vNode) && vNode.tagName === "img") {
     return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } });
@@ -57808,7 +57833,8 @@ async function buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveW
           computeImageDimensions(childVNode, modifiedAttributes);
         }
       }
-      const tempRunFragments = await buildRun(childVNode, modifiedAttributes, docxDocumentInstance, preserveWhitespace);
+      const childAttributes = import_is_vnode.default(childVNode) && childVNode.tagName === "img" ? { ...modifiedAttributes, type: "picture" } : modifiedAttributes;
+      const tempRunFragments = await buildRun(childVNode, childAttributes, docxDocumentInstance, preserveWhitespace);
       runFragments = runFragments.concat(Array.isArray(tempRunFragments) ? tempRunFragments : [tempRunFragments]);
     }
     return runFragments;
