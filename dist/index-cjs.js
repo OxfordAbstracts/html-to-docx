@@ -57799,6 +57799,7 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
           continue;
         } else if (tempVNode.tagName === "img") {
           const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" };
+          await resolveInlineImageDimensions(tempVNode, imgAttributes, docxDocumentInstance);
           const imgFragment = await buildRun(tempVNode, imgAttributes, docxDocumentInstance, preserveWhitespace);
           if (Array.isArray(imgFragment)) {
             runFragmentsArray.push(...imgFragment);
@@ -57887,7 +57888,9 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
             mixedFragments.push(textRun);
           }
         } else if (import_is_vnode.default(child) && child.tagName === "img") {
-          const imgFragment = await buildRun(child, { ...attributes, type: "picture" }, docxDocumentInstance, preserveWhitespace);
+          const imgAttributes = { ...attributes, type: "picture" };
+          await resolveInlineImageDimensions(child, imgAttributes, docxDocumentInstance);
+          const imgFragment = await buildRun(child, imgAttributes, docxDocumentInstance, preserveWhitespace);
           if (Array.isArray(imgFragment)) {
             mixedFragments.push(...imgFragment);
           } else {
@@ -57908,6 +57911,21 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
   runFragment.up();
   return runFragment;
 }
+async function resolveInlineImageDimensions(imgVNode, attributes, docxDocumentInstance) {
+  const isUrl = isValidUrl(imgVNode.properties.src);
+  if (isUrl && docxDocumentInstance.embedImages) {
+    imgVNode.properties.src = await fetchImageToDataUrl(imgVNode.properties.src);
+  }
+  if (!isUrl || docxDocumentInstance.embedImages) {
+    const base64String = extractBase64Data(imgVNode.properties.src)?.base64Content;
+    const imageBuffer = Buffer.from(decodeURIComponent(base64String || ""), "base64");
+    const imageProperties = await getImageDimensions(imageBuffer);
+    attributes.maximumWidth = attributes.maximumWidth || docxDocumentInstance.availableDocumentSpace;
+    attributes.originalWidth = imageProperties.width;
+    attributes.originalHeight = imageProperties.height;
+    computeImageDimensions(imgVNode, attributes);
+  }
+}
 async function buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
   if (vNode && import_is_vnode.default(vNode) && vNode.tagName === "span") {
     let runFragments = [];
@@ -57915,19 +57933,7 @@ async function buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveW
       const childVNode = vNode.children[index];
       const modifiedAttributes = modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes);
       if (import_is_vnode.default(childVNode) && childVNode.tagName === "img") {
-        const isUrl = isValidUrl(childVNode.properties.src);
-        if (isUrl && docxDocumentInstance.embedImages) {
-          childVNode.properties.src = await fetchImageToDataUrl(childVNode.properties.src);
-        }
-        if (!isUrl || docxDocumentInstance.embedImages) {
-          const base64String = extractBase64Data(childVNode.properties.src)?.base64Content;
-          const imageBuffer = Buffer.from(decodeURIComponent(base64String || ""), "base64");
-          const imageProperties = await getImageDimensions(imageBuffer);
-          modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth || docxDocumentInstance.availableDocumentSpace;
-          modifiedAttributes.originalWidth = imageProperties.width;
-          modifiedAttributes.originalHeight = imageProperties.height;
-          computeImageDimensions(childVNode, modifiedAttributes);
-        }
+        await resolveInlineImageDimensions(childVNode, modifiedAttributes, docxDocumentInstance);
       }
       const childAttributes = import_is_vnode.default(childVNode) && childVNode.tagName === "img" ? { ...modifiedAttributes, type: "picture" } : modifiedAttributes;
       const tempRunFragments = await buildRun(childVNode, childAttributes, docxDocumentInstance, preserveWhitespace);

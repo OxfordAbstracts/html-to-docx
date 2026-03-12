@@ -1061,6 +1061,11 @@ async function buildRun(
         }
         else if ((tempVNode as VNode).tagName === "img") {
           const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" }
+          await resolveInlineImageDimensions(
+            tempVNode as VNode,
+            imgAttributes,
+            docxDocumentInstance,
+          )
           const imgFragment = await buildRun(
             tempVNode as VNode,
             imgAttributes,
@@ -1210,9 +1215,15 @@ async function buildRun(
           }
         }
         else if (isVNode(child) && (child as VNode).tagName === "img") {
+          const imgAttributes = { ...attributes, type: "picture" }
+          await resolveInlineImageDimensions(
+            child as VNode,
+            imgAttributes,
+            docxDocumentInstance,
+          )
           const imgFragment = await buildRun(
             child,
-            { ...attributes, type: "picture" },
+            imgAttributes,
             docxDocumentInstance,
             preserveWhitespace,
           )
@@ -1246,6 +1257,40 @@ async function buildRun(
   return runFragment
 }
 
+/**
+ * Resolves image dimensions for an inline <img> node, fetching the image
+ * data when embedImages is enabled. Mutates both the vNode (src) and the
+ * attributes (width/height) in place.
+ */
+async function resolveInlineImageDimensions(
+  imgVNode: VNode,
+  attributes: Attributes,
+  docxDocumentInstance: DocxDocument,
+): Promise<void> {
+  const isUrl = isValidUrl(imgVNode.properties.src)
+
+  if (isUrl && docxDocumentInstance.embedImages) {
+    imgVNode.properties.src = await fetchImageToDataUrl(imgVNode.properties.src)
+  }
+
+  if (!isUrl || docxDocumentInstance.embedImages) {
+    const base64String = extractBase64Data(imgVNode.properties.src)?.base64Content
+    const imageBuffer = Buffer.from(
+      decodeURIComponent(base64String || ""),
+      "base64",
+    )
+
+    const imageProperties = await getImageDimensions(imageBuffer)
+
+    attributes.maximumWidth = attributes.maximumWidth ||
+      docxDocumentInstance.availableDocumentSpace
+    attributes.originalWidth = imageProperties.width
+    attributes.originalHeight = imageProperties.height
+
+    computeImageDimensions(imgVNode, attributes)
+  }
+}
+
 async function buildRunOrRuns(
   vNode: VNode | VTree | null,
   attributes: Attributes,
@@ -1263,35 +1308,12 @@ async function buildRunOrRuns(
         attributes,
       )
 
-      // Handle image dimension computation for images within spans
       if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
-        const isUrl = isValidUrl((childVNode as VNode).properties.src)
-
-        if (isUrl && docxDocumentInstance.embedImages) {
-          ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
-            (childVNode as VNode).properties.src,
-          )
-        }
-
-        // Only compute dimensions for embedded images (not external URLs)
-        if (!isUrl || docxDocumentInstance.embedImages) {
-          const base64String = extractBase64Data(
-            (childVNode as VNode).properties.src,
-          )?.base64Content
-          const imageBuffer = Buffer.from(
-            decodeURIComponent(base64String || ""),
-            "base64",
-          )
-
-          const imageProperties = await getImageDimensions(imageBuffer)
-
-          modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
-            docxDocumentInstance.availableDocumentSpace
-          modifiedAttributes.originalWidth = imageProperties.width
-          modifiedAttributes.originalHeight = imageProperties.height
-
-          computeImageDimensions(childVNode as VNode, modifiedAttributes)
-        }
+        await resolveInlineImageDimensions(
+          childVNode as VNode,
+          modifiedAttributes,
+          docxDocumentInstance,
+        )
       }
 
       const childAttributes = isVNode(childVNode) && (childVNode as VNode).tagName === "img"

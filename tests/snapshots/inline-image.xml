@@ -55,7 +55,7 @@
       <w:r>
         <w:drawing>
           <wp:inline distB="0" distL="0" distR="0" distT="0">
-            <wp:extent cx="0" cy="0"/>
+            <wp:extent cx="1428750" cy="1428750"/>
             <wp:effectExtent b="0" l="0" r="0" t="0"/>
             <wp:docPr id="2" name="image-43cfb5b14b4627264aed8400d03b39eb3874aacc.webp"/>
             <a:graphic>
@@ -75,7 +75,7 @@
                   <pic:spPr>
                     <a:xfrm>
                       <a:off x="0" y="0"/>
-                      <a:ext cx="0" cy="0"/>
+                      <a:ext cx="1428750" cy="1428750"/>
                     </a:xfrm>
                     <a:prstGeom prst="rect"/>
                   </pic:spPr>
@@ -105,7 +105,7 @@
         </w:rPr>
         <w:drawing>
           <wp:inline distB="0" distL="0" distR="0" distT="0">
-            <wp:extent cx="0" cy="0"/>
+            <wp:extent cx="952500" cy="952500"/>
             <wp:effectExtent b="0" l="0" r="0" t="0"/>
             <wp:docPr id="3" name="image-e3feb2b8358c23d83fa9ab64aed9b31e1f75159e.webp"/>
             <a:graphic>
@@ -125,7 +125,7 @@
                   <pic:spPr>
                     <a:xfrm>
                       <a:off x="0" y="0"/>
-                      <a:ext cx="0" cy="0"/>
+                      <a:ext cx="952500" cy="952500"/>
                     </a:xfrm>
                     <a:prstGeom prst="rect"/>
                   </pic:spPr>
