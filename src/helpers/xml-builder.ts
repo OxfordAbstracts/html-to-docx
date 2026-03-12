@@ -3076,15 +3076,12 @@ function toEMU(v?: number | string) {
 function buildExtents(
   { width, height }: { width?: number | string; height?: number | string },
 ) {
-  if (!width && !height) {
-    return
-  }
-  const cx = toEMU(width)
-  const cy = toEMU(height)
+  const cx = width ? toEMU(width) : 0
+  const cy = height ? toEMU(height) : 0
   return fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "ext")
-    .att("cx", String(cx ?? ""))
-    .att("cy", String(cy ?? ""))
+    .att("cx", String(cx))
+    .att("cy", String(cy))
     .up()
 }
 
@@ -3107,9 +3104,7 @@ function buildGraphicFrameTransform(
   const offsetFragment = buildOffset()
   graphicFrameTransformFragment.import(offsetFragment)
   const extentsFragment = buildExtents(attributes)
-  if (extentsFragment) {
-    graphicFrameTransformFragment.import(extentsFragment)
-  }
+  graphicFrameTransformFragment.import(extentsFragment)
 
   graphicFrameTransformFragment.up()
 
@@ -3342,15 +3337,12 @@ function buildEffectExtentFragment() {
 function buildExtent(
   { width, height }: { width?: number | string; height?: number | string },
 ) {
-  if (!width && !height) {
-    return
-  }
-  const cx = toEMU(width)
-  const cy = toEMU(height)
+  const cx = width ? toEMU(width) : 0
+  const cy = height ? toEMU(height) : 0
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
     .ele("@wp", "extent")
-    .att("cx", String(cx ?? ""))
-    .att("cy", String(cy ?? ""))
+    .att("cx", String(cx))
+    .att("cy", String(cy))
     .up()
 }
 
@@ -3406,9 +3398,7 @@ function buildAnchoredDrawing(graphicType: "picture", attributes: Attributes) {
     width: attributes.width,
     height: attributes.height,
   })
-  if (extentFragment) {
-    anchoredDrawingFragment.import(extentFragment)
-  }
+  anchoredDrawingFragment.import(extentFragment)
   const effectExtentFragment = buildEffectExtentFragment()
   anchoredDrawingFragment.import(effectExtentFragment)
   const wrapSquareFragment = buildWrapSquare()
@@ -3441,9 +3431,7 @@ function buildInlineDrawing(graphicType: "picture", attributes: Attributes) {
     width: attributes.width,
     height: attributes.height,
   })
-  if (extentFragment) {
-    inlineDrawingFragment.import(extentFragment)
-  }
+  inlineDrawingFragment.import(extentFragment)
   const effectExtentFragment = buildEffectExtentFragment()
   inlineDrawingFragment.import(effectExtentFragment)
   const drawingObjectNonVisualPropertiesFragment =

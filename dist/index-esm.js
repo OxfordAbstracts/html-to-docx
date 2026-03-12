@@ -58881,12 +58881,9 @@ function toEMU(v) {
   return Number(v);
 }
 function buildExtents({ width, height }) {
-  if (!width && !height) {
-    return;
-  }
-  const cx = toEMU(width);
-  const cy = toEMU(height);
-  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(cx ?? "")).att("cy", String(cy ?? "")).up();
+  const cx = width ? toEMU(width) : 0;
+  const cy = height ? toEMU(height) : 0;
+  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(cx)).att("cy", String(cy)).up();
 }
 function buildOffset() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "off").att("x", "0").att("y", "0").up();
@@ -58898,9 +58895,7 @@ function buildGraphicFrameTransform(attributes) {
   const offsetFragment = buildOffset();
   graphicFrameTransformFragment.import(offsetFragment);
   const extentsFragment = buildExtents(attributes);
-  if (extentsFragment) {
-    graphicFrameTransformFragment.import(extentsFragment);
-  }
+  graphicFrameTransformFragment.import(extentsFragment);
   graphicFrameTransformFragment.up();
   return graphicFrameTransformFragment;
 }
@@ -59014,12 +59009,9 @@ function buildEffectExtentFragment() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "effectExtent").att("b", "0").att("l", "0").att("r", "0").att("t", "0").up();
 }
 function buildExtent({ width, height }) {
-  if (!width && !height) {
-    return;
-  }
-  const cx = toEMU(width);
-  const cy = toEMU(height);
-  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(cx ?? "")).att("cy", String(cy ?? "")).up();
+  const cx = width ? toEMU(width) : 0;
+  const cy = height ? toEMU(height) : 0;
+  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(cx)).att("cy", String(cy)).up();
 }
 function buildPositionV() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "positionV").att("relativeFrom", "paragraph").ele("@wp", "posOffset").txt("19050").up();
@@ -59044,9 +59036,7 @@ function buildAnchoredDrawing(graphicType, attributes) {
     width: attributes.width,
     height: attributes.height
   });
-  if (extentFragment) {
-    anchoredDrawingFragment.import(extentFragment);
-  }
+  anchoredDrawingFragment.import(extentFragment);
   const effectExtentFragment = buildEffectExtentFragment();
   anchoredDrawingFragment.import(effectExtentFragment);
   const wrapSquareFragment = buildWrapSquare();
@@ -59066,9 +59056,7 @@ function buildInlineDrawing(graphicType, attributes) {
     width: attributes.width,
     height: attributes.height
   });
-  if (extentFragment) {
-    inlineDrawingFragment.import(extentFragment);
-  }
+  inlineDrawingFragment.import(extentFragment);
   const effectExtentFragment = buildEffectExtentFragment();
   inlineDrawingFragment.import(effectExtentFragment);
   const drawingObjectNonVisualPropertiesFragment = buildDrawingObjectNonVisualProperties(attributes.id || 0, attributes.fileNameWithExtension || "");
