@@ -1059,6 +1059,24 @@ async function buildRun(
 
           continue
         }
+        else if ((tempVNode as VNode).tagName === "img") {
+          const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" }
+          const imgFragment = await buildRun(
+            tempVNode as VNode,
+            imgAttributes,
+            docxDocumentInstance,
+            preserveWhitespace,
+          )
+
+          if (Array.isArray(imgFragment)) {
+            runFragmentsArray.push(...imgFragment)
+          }
+          else {
+            runFragmentsArray.push(imgFragment)
+          }
+
+          continue
+        }
       }
 
       if ((tempVNode as VNode).children?.length) {
@@ -1172,24 +1190,49 @@ async function buildRun(
   }
   else if (isVNode(vNode) && vNodeHasChildren(vNode as VNode)) {
     // Handle inline elements with children (like cite, a, etc.)
-    // Extract text content from children recursively
-    function extractTextFromChildren(children: VTree[]): string {
-      return children.map(child => {
+    // Process children, handling both text and images
+    const mixedFragments: XMLBuilder[] = []
+
+    async function processChildren(children: VTree[]): Promise<void> {
+      for (const child of children) {
         if (isVText(child)) {
-          return (child as VText).text
+          const text = (child as VText).text
+          if (text.trim()) {
+            const textFragment = buildTextElement(text, preserveWhitespace)
+            const textRun = fragment({ namespaceAlias: { w: namespaces.w } })
+              .ele("@w", "r")
+            if (runPropertiesFragment) {
+              textRun.import(runPropertiesFragment)
+            }
+            textRun.import(textFragment)
+            textRun.up()
+            mixedFragments.push(textRun)
+          }
+        }
+        else if (isVNode(child) && (child as VNode).tagName === "img") {
+          const imgFragment = await buildRun(
+            child,
+            { ...attributes, type: "picture" },
+            docxDocumentInstance,
+            preserveWhitespace,
+          )
+          if (Array.isArray(imgFragment)) {
+            mixedFragments.push(...imgFragment)
+          }
+          else {
+            mixedFragments.push(imgFragment)
+          }
         }
         else if (isVNode(child) && (child as VNode).children) {
-          return extractTextFromChildren((child as VNode).children)
+          await processChildren((child as VNode).children)
         }
-        return ""
-      })
-        .join("")
+      }
     }
 
-    const textContent = extractTextFromChildren((vNode as VNode).children)
-    if (textContent.trim()) {
-      const textFragment = buildTextElement(textContent, preserveWhitespace)
-      runFragment.import(textFragment)
+    await processChildren((vNode as VNode).children)
+
+    if (mixedFragments.length) {
+      return mixedFragments.length === 1 ? mixedFragments[0] : mixedFragments
     }
   }
   else if (isVNode(vNode) && (vNode as VNode).tagName === "img") {
@@ -1251,9 +1294,12 @@ async function buildRunOrRuns(
         }
       }
 
+      const childAttributes = isVNode(childVNode) && (childVNode as VNode).tagName === "img"
+        ? { ...modifiedAttributes, type: "picture" }
+        : modifiedAttributes
       const tempRunFragments = await buildRun(
         childVNode,
-        modifiedAttributes,
+        childAttributes,
         docxDocumentInstance,
         preserveWhitespace,
       )
