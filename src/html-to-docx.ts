@@ -36,6 +36,7 @@ import {
   pointRegex,
   pointToHIP,
 } from "./utils/unit-conversion.ts"
+import { decodeUrlAttributes } from "./utils/vnode.ts"
 import { sanitizeHtml } from "./utils/xml-sanitizer.ts"
 
 /* eslint-disable new-cap */
@@ -198,6 +199,7 @@ export default async function addFilesToContainer(
 
   if (docxDocument.header && headerHTMLString) {
     const vTree = convertHTML(headerHTMLString)
+    decodeUrlAttributes(vTree)
 
     docxDocument.relationshipFilename = headerFileName
     const { headerId, headerXML } = await docxDocument.generateHeaderXML(vTree)
@@ -224,6 +226,7 @@ export default async function addFilesToContainer(
   }
   if (docxDocument.footer && footerHTMLString) {
     const vTree = convertHTML(footerHTMLString)
+    decodeUrlAttributes(vTree)
 
     docxDocument.relationshipFilename = footerFileName
     const { footerId, footerXML } = await docxDocument.generateFooterXML(vTree)

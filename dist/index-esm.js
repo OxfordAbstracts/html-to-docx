@@ -57074,6 +57074,22 @@ function isValidUrl(urlString) {
 function vNodeHasChildren(vNode) {
   return vNode && vNode.children && Array.isArray(vNode.children) && vNode.children.length;
 }
+function isVNode(vTree) {
+  return "tagName" in vTree;
+}
+function decodeUrlAttributes(vTree) {
+  if (!isVNode(vTree))
+    return;
+  if (vTree.properties.src) {
+    vTree.properties.src = decode(vTree.properties.src);
+  }
+  if (vTree.properties.href) {
+    vTree.properties.href = decode(vTree.properties.href);
+  }
+  for (const child of vTree.children) {
+    decodeUrlAttributes(child);
+  }
+}
 
 // src/helpers/xml-builder.ts
 var import_lodash2 = __toESM(require_lodash(), 1);
@@ -59629,6 +59645,7 @@ async function renderDocumentFile(docxDocumentInstance) {
     throw new Error("HTML string is required");
   }
   const vTree = convertHTML(docxDocumentInstance.htmlString);
+  decodeUrlAttributes(vTree);
   const xmlFragment = import_xmlbuilder22.fragment({ namespaceAlias: { w: namespaces_default.w } });
   await convertVTreeToXML(docxDocumentInstance, vTree, xmlFragment);
   return xmlFragment;
@@ -61038,6 +61055,7 @@ async function addFilesToContainer(zip, htmlString, suppliedDocumentOptions, hea
   });
   if (docxDocument.header && headerHTMLString) {
     const vTree = convertHTML2(headerHTMLString);
+    decodeUrlAttributes(vTree);
     docxDocument.relationshipFilename = headerFileName;
     const { headerId, headerXML } = await docxDocument.generateHeaderXML(vTree);
     docxDocument.relationshipFilename = documentFileName;
@@ -61054,6 +61072,7 @@ async function addFilesToContainer(zip, htmlString, suppliedDocumentOptions, hea
   }
   if (docxDocument.footer && footerHTMLString) {
     const vTree = convertHTML2(footerHTMLString);
+    decodeUrlAttributes(vTree);
     docxDocument.relationshipFilename = footerFileName;
     const { footerId, footerXML } = await docxDocument.generateFooterXML(vTree);
     docxDocument.relationshipFilename = documentFileName;
