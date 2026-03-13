@@ -1,6 +1,7 @@
 import { default as HTMLToVDOM } from "html-to-vdom"
+import type { VNode, VTree } from "virtual-dom"
 // @ts-expect-error  Could not find a declaration file
-import VNode from "virtual-dom/vnode/vnode.js"
+import VNodeImpl from "virtual-dom/vnode/vnode.js"
 // @ts-expect-error  Could not find a declaration file
 import VText from "virtual-dom/vnode/vtext.js"
 import { assert, test } from "vitest"
@@ -9,9 +10,13 @@ import { decodeUrlAttributes } from "../src/utils/vnode.ts"
 
 /* eslint-disable new-cap */
 const convertHTML = HTMLToVDOM({
-  VNode,
+  VNode: VNodeImpl,
   VText,
 })
+
+function asVNode(vTree: VTree): VNode {
+  return vTree as VNode
+}
 
 test("decodes &amp; in img src attribute", () => {
   const vTree = convertHTML(
@@ -20,7 +25,7 @@ test("decodes &amp; in img src attribute", () => {
   decodeUrlAttributes(vTree)
 
   assert.equal(
-    vTree.properties.src,
+    asVNode(vTree).properties.src,
     "https://example.com?a=1&b=2",
   )
 })
@@ -32,7 +37,7 @@ test("decodes &amp; in anchor href attribute", () => {
   decodeUrlAttributes(vTree)
 
   assert.equal(
-    vTree.properties.href,
+    asVNode(vTree).properties.href,
     "https://example.com?x=1&y=2",
   )
 })
@@ -43,9 +48,9 @@ test("decodes nested img src attributes", () => {
   )
   decodeUrlAttributes(vTree)
 
-  const imgNode = vTree.children[0]
+  const imgNode = asVNode(vTree).children[0]
   assert.equal(
-    imgNode.properties.src,
+    asVNode(imgNode).properties.src,
     "https://example.com?x=1&y=2",
   )
 })
@@ -57,7 +62,7 @@ test("leaves already-decoded values unchanged", () => {
   decodeUrlAttributes(vTree)
 
   assert.equal(
-    vTree.properties.src,
+    asVNode(vTree).properties.src,
     "https://example.com?a=1&b=2",
   )
 })
