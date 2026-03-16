@@ -52490,7 +52490,7 @@ __export(exports_html_to_docx, {
   default: () => generateContainer
 });
 module.exports = __toCommonJS(exports_html_to_docx);
-var import_jszip = __toESM(require_lib3());
+var import_jszip = __toESM(require_lib3(), 1);
 
 // node_modules/html-entities/dist/esm/named-references.js
 var __assign = function() {
@@ -52654,13 +52654,13 @@ function decode(text, _a) {
 }
 
 // src/html-to-docx.ts
-var import_html_to_vdom2 = __toESM(require_html_to_vdom2());
-var import_vnode5 = __toESM(require_vnode());
-var import_vtext3 = __toESM(require_vtext());
-var import_xmlbuilder24 = __toESM(require_lib9());
+var import_html_to_vdom2 = __toESM(require_html_to_vdom2(), 1);
+var import_vnode5 = __toESM(require_vnode(), 1);
+var import_vtext3 = __toESM(require_vtext(), 1);
+var import_xmlbuilder24 = __toESM(require_lib9(), 1);
 
 // src/constants.ts
-var import_lodash = __toESM(require_lodash());
+var import_lodash = __toESM(require_lodash(), 1);
 var applicationName = "@oxfordabstracts/html-to-docx";
 var defaultOrientation = "portrait";
 var landscapeWidth = 15840;
@@ -52784,7 +52784,7 @@ var htmlHeadings = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
 // src/docx-document.ts
 var import_node_crypto = require("node:crypto");
-var import_xmlbuilder23 = __toESM(require_lib9());
+var import_xmlbuilder23 = __toESM(require_lib9(), 1);
 
 // node_modules/color-name/index.js
 var color_name_default = {
@@ -52939,12 +52939,12 @@ var color_name_default = {
 };
 
 // src/helpers/render-document-file.ts
-var import_html_to_vdom = __toESM(require_html_to_vdom2());
-var import_is_vnode2 = __toESM(require_is_vnode());
-var import_is_vtext2 = __toESM(require_is_vtext());
-var import_vnode3 = __toESM(require_vnode());
-var import_vtext2 = __toESM(require_vtext());
-var import_xmlbuilder22 = __toESM(require_lib9());
+var import_html_to_vdom = __toESM(require_html_to_vdom2(), 1);
+var import_is_vnode2 = __toESM(require_is_vnode(), 1);
+var import_is_vtext2 = __toESM(require_is_vtext(), 1);
+var import_vnode3 = __toESM(require_vnode(), 1);
+var import_vtext2 = __toESM(require_vtext(), 1);
+var import_xmlbuilder22 = __toESM(require_lib9(), 1);
 
 // src/namespaces.ts
 var namespaces = {
@@ -53409,7 +53409,7 @@ class FileTokenizer extends AbstractTokenizer {
 var fromFile = FileTokenizer.fromFile;
 
 // node_modules/token-types/lib/index.js
-var ieee754 = __toESM(require_ieee754());
+var ieee754 = __toESM(require_ieee754(), 1);
 
 // node_modules/@borewit/text-codec/lib/index.js
 var WINDOWS_1252_EXTRA = {
@@ -53936,7 +53936,7 @@ try {
 } catch (e) {}
 
 // node_modules/@tokenizer/inflate/lib/index.js
-var import_debug = __toESM(require_src());
+var import_debug = __toESM(require_src(), 1);
 
 // node_modules/@tokenizer/inflate/lib/ZipToken.js
 var Signature = {
@@ -56949,7 +56949,7 @@ function imageSize(input) {
 }
 
 // src/utils/base64.ts
-var import_mime_types = __toESM(require_mime_types());
+var import_mime_types = __toESM(require_mime_types(), 1);
 async function fetchImageDimensionsFromUrl(imageUrlStr) {
   const MAX_BYTES = 256 * 1024;
   try {
@@ -57170,14 +57170,30 @@ function isValidUrl(urlString) {
 function vNodeHasChildren(vNode) {
   return vNode && vNode.children && Array.isArray(vNode.children) && vNode.children.length;
 }
+function isVNode(vTree) {
+  return "tagName" in vTree;
+}
+function decodeUrlAttributes(vTree) {
+  if (!isVNode(vTree))
+    return;
+  if (vTree.properties.src) {
+    vTree.properties.src = decode(vTree.properties.src);
+  }
+  if (vTree.properties.href) {
+    vTree.properties.href = decode(vTree.properties.href);
+  }
+  for (const child of vTree.children) {
+    decodeUrlAttributes(child);
+  }
+}
 
 // src/helpers/xml-builder.ts
-var import_lodash2 = __toESM(require_lodash());
-var import_is_vnode = __toESM(require_is_vnode());
-var import_is_vtext = __toESM(require_is_vtext());
-var import_vtext = __toESM(require_vtext());
-var import_vnode = __toESM(require_vnode());
-var import_xmlbuilder2 = __toESM(require_lib9());
+var import_lodash2 = __toESM(require_lodash(), 1);
+var import_is_vnode = __toESM(require_is_vnode(), 1);
+var import_is_vtext = __toESM(require_is_vtext(), 1);
+var import_vtext = __toESM(require_vtext(), 1);
+var import_vnode = __toESM(require_vnode(), 1);
+var import_xmlbuilder2 = __toESM(require_lib9(), 1);
 
 // src/utils/color-conversion.ts
 var rgbRegex = /rgb\((\d+),\s*([\d.]+),\s*([\d.]+)\)/i;
@@ -57797,6 +57813,16 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
             runFragmentsArray.push(spanFragment);
           }
           continue;
+        } else if (tempVNode.tagName === "img") {
+          const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" };
+          await resolveInlineImageDimensions(tempVNode, imgAttributes, docxDocumentInstance);
+          const imgFragment = await buildRun(tempVNode, imgAttributes, docxDocumentInstance, preserveWhitespace);
+          if (Array.isArray(imgFragment)) {
+            runFragmentsArray.push(...imgFragment);
+          } else {
+            runFragmentsArray.push(imgFragment);
+          }
+          continue;
         }
       }
       if (tempVNode.children?.length) {
@@ -57862,26 +57888,59 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
     const lineBreakFragment = buildLineBreak();
     runFragment.import(lineBreakFragment);
   } else if (import_is_vnode.default(vNode) && vNodeHasChildren(vNode)) {
-    let extractTextFromChildren = function(children) {
-      return children.map((child) => {
+    const mixedFragments = [];
+    async function processChildren(children) {
+      for (const child of children) {
         if (import_is_vtext.default(child)) {
-          return child.text;
+          const text = child.text;
+          if (text.trim()) {
+            const textFragment = buildTextElement(text, preserveWhitespace);
+            const textRun = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "r");
+            if (runPropertiesFragment) {
+              textRun.import(runPropertiesFragment);
+            }
+            textRun.import(textFragment);
+            textRun.up();
+            mixedFragments.push(textRun);
+          }
+        } else if (import_is_vnode.default(child) && child.tagName === "img") {
+          const imgAttributes = { ...attributes, type: "picture" };
+          await resolveInlineImageDimensions(child, imgAttributes, docxDocumentInstance);
+          const imgFragment = await buildRun(child, imgAttributes, docxDocumentInstance, preserveWhitespace);
+          if (Array.isArray(imgFragment)) {
+            mixedFragments.push(...imgFragment);
+          } else {
+            mixedFragments.push(imgFragment);
+          }
         } else if (import_is_vnode.default(child) && child.children) {
-          return extractTextFromChildren(child.children);
+          await processChildren(child.children);
         }
-        return "";
-      }).join("");
-    };
-    const textContent = extractTextFromChildren(vNode.children);
-    if (textContent.trim()) {
-      const textFragment = buildTextElement(textContent, preserveWhitespace);
-      runFragment.import(textFragment);
+      }
+    }
+    await processChildren(vNode.children);
+    if (mixedFragments.length) {
+      return mixedFragments.length === 1 ? mixedFragments[0] : mixedFragments;
     }
   } else if (import_is_vnode.default(vNode) && vNode.tagName === "img") {
     return import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } });
   }
   runFragment.up();
   return runFragment;
+}
+async function resolveInlineImageDimensions(imgVNode, attributes, docxDocumentInstance) {
+  const isUrl = isValidUrl(imgVNode.properties.src);
+  if (isUrl && docxDocumentInstance.embedImages) {
+    imgVNode.properties.src = await fetchImageToDataUrl(imgVNode.properties.src);
+  }
+  if (!isUrl || docxDocumentInstance.embedImages) {
+    const base64String = extractBase64Data(imgVNode.properties.src)?.base64Content;
+    const imageBuffer = Buffer.from(decodeURIComponent(base64String || ""), "base64");
+    const imageProperties = await getImageDimensions(imageBuffer);
+    attributes.maximumWidth = attributes.maximumWidth || docxDocumentInstance.availableDocumentSpace;
+    attributes.originalWidth = imageProperties.width;
+    attributes.originalHeight = imageProperties.height;
+    computeImageDimensions(imgVNode, attributes);
+  }
 }
 async function buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveWhitespace = false) {
   if (vNode && import_is_vnode.default(vNode) && vNode.tagName === "span") {
@@ -57890,21 +57949,10 @@ async function buildRunOrRuns(vNode, attributes, docxDocumentInstance, preserveW
       const childVNode = vNode.children[index];
       const modifiedAttributes = modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes);
       if (import_is_vnode.default(childVNode) && childVNode.tagName === "img") {
-        const isUrl = isValidUrl(childVNode.properties.src);
-        if (isUrl && docxDocumentInstance.embedImages) {
-          childVNode.properties.src = await fetchImageToDataUrl(childVNode.properties.src);
-        }
-        if (!isUrl || docxDocumentInstance.embedImages) {
-          const base64String = extractBase64Data(childVNode.properties.src)?.base64Content;
-          const imageBuffer = Buffer.from(decodeURIComponent(base64String || ""), "base64");
-          const imageProperties = await getImageDimensions(imageBuffer);
-          modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth || docxDocumentInstance.availableDocumentSpace;
-          modifiedAttributes.originalWidth = imageProperties.width;
-          modifiedAttributes.originalHeight = imageProperties.height;
-          computeImageDimensions(childVNode, modifiedAttributes);
-        }
+        await resolveInlineImageDimensions(childVNode, modifiedAttributes, docxDocumentInstance);
       }
-      const tempRunFragments = await buildRun(childVNode, modifiedAttributes, docxDocumentInstance, preserveWhitespace);
+      const childAttributes = import_is_vnode.default(childVNode) && childVNode.tagName === "img" ? { ...modifiedAttributes, type: "picture" } : modifiedAttributes;
+      const tempRunFragments = await buildRun(childVNode, childAttributes, docxDocumentInstance, preserveWhitespace);
       runFragments = runFragments.concat(Array.isArray(tempRunFragments) ? tempRunFragments : [tempRunFragments]);
     }
     return runFragments;
@@ -58951,12 +58999,9 @@ function toEMU(v) {
   return Number(v);
 }
 function buildExtents({ width, height }) {
-  if (!width && !height) {
-    return;
-  }
-  const cx = toEMU(width);
-  const cy = toEMU(height);
-  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(cx ?? "")).att("cy", String(cy ?? "")).up();
+  const cx = width ? toEMU(width) : 0;
+  const cy = height ? toEMU(height) : 0;
+  return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(cx)).att("cy", String(cy)).up();
 }
 function buildOffset() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "off").att("x", "0").att("y", "0").up();
@@ -58968,9 +59013,7 @@ function buildGraphicFrameTransform(attributes) {
   const offsetFragment = buildOffset();
   graphicFrameTransformFragment.import(offsetFragment);
   const extentsFragment = buildExtents(attributes);
-  if (extentsFragment) {
-    graphicFrameTransformFragment.import(extentsFragment);
-  }
+  graphicFrameTransformFragment.import(extentsFragment);
   graphicFrameTransformFragment.up();
   return graphicFrameTransformFragment;
 }
@@ -59084,12 +59127,9 @@ function buildEffectExtentFragment() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "effectExtent").att("b", "0").att("l", "0").att("r", "0").att("t", "0").up();
 }
 function buildExtent({ width, height }) {
-  if (!width && !height) {
-    return;
-  }
-  const cx = toEMU(width);
-  const cy = toEMU(height);
-  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(cx ?? "")).att("cy", String(cy ?? "")).up();
+  const cx = width ? toEMU(width) : 0;
+  const cy = height ? toEMU(height) : 0;
+  return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(cx)).att("cy", String(cy)).up();
 }
 function buildPositionV() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "positionV").att("relativeFrom", "paragraph").ele("@wp", "posOffset").txt("19050").up();
@@ -59114,9 +59154,7 @@ function buildAnchoredDrawing(graphicType, attributes) {
     width: attributes.width,
     height: attributes.height
   });
-  if (extentFragment) {
-    anchoredDrawingFragment.import(extentFragment);
-  }
+  anchoredDrawingFragment.import(extentFragment);
   const effectExtentFragment = buildEffectExtentFragment();
   anchoredDrawingFragment.import(effectExtentFragment);
   const wrapSquareFragment = buildWrapSquare();
@@ -59136,9 +59174,7 @@ function buildInlineDrawing(graphicType, attributes) {
     width: attributes.width,
     height: attributes.height
   });
-  if (extentFragment) {
-    inlineDrawingFragment.import(extentFragment);
-  }
+  inlineDrawingFragment.import(extentFragment);
   const effectExtentFragment = buildEffectExtentFragment();
   inlineDrawingFragment.import(effectExtentFragment);
   const drawingObjectNonVisualPropertiesFragment = buildDrawingObjectNonVisualProperties(attributes.id || 0, attributes.fileNameWithExtension || "");
@@ -59705,6 +59741,7 @@ async function renderDocumentFile(docxDocumentInstance) {
     throw new Error("HTML string is required");
   }
   const vTree = convertHTML(docxDocumentInstance.htmlString);
+  decodeUrlAttributes(vTree);
   const xmlFragment = import_xmlbuilder22.fragment({ namespaceAlias: { w: namespaces_default.w } });
   await convertVTreeToXML(docxDocumentInstance, vTree, xmlFragment);
   return xmlFragment;
@@ -61114,6 +61151,7 @@ async function addFilesToContainer(zip, htmlString, suppliedDocumentOptions, hea
   });
   if (docxDocument.header && headerHTMLString) {
     const vTree = convertHTML2(headerHTMLString);
+    decodeUrlAttributes(vTree);
     docxDocument.relationshipFilename = headerFileName;
     const { headerId, headerXML } = await docxDocument.generateHeaderXML(vTree);
     docxDocument.relationshipFilename = documentFileName;
@@ -61130,6 +61168,7 @@ async function addFilesToContainer(zip, htmlString, suppliedDocumentOptions, hea
   }
   if (docxDocument.footer && footerHTMLString) {
     const vTree = convertHTML2(footerHTMLString);
+    decodeUrlAttributes(vTree);
     docxDocument.relationshipFilename = footerFileName;
     const { footerId, footerXML } = await docxDocument.generateFooterXML(vTree);
     docxDocument.relationshipFilename = documentFileName;

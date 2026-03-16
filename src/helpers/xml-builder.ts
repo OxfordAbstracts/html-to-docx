@@ -1059,6 +1059,29 @@ async function buildRun(
 
           continue
         }
+        else if ((tempVNode as VNode).tagName === "img") {
+          const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" }
+          await resolveInlineImageDimensions(
+            tempVNode as VNode,
+            imgAttributes,
+            docxDocumentInstance,
+          )
+          const imgFragment = await buildRun(
+            tempVNode as VNode,
+            imgAttributes,
+            docxDocumentInstance,
+            preserveWhitespace,
+          )
+
+          if (Array.isArray(imgFragment)) {
+            runFragmentsArray.push(...imgFragment)
+          }
+          else {
+            runFragmentsArray.push(imgFragment)
+          }
+
+          continue
+        }
       }
 
       if ((tempVNode as VNode).children?.length) {
@@ -1172,24 +1195,55 @@ async function buildRun(
   }
   else if (isVNode(vNode) && vNodeHasChildren(vNode as VNode)) {
     // Handle inline elements with children (like cite, a, etc.)
-    // Extract text content from children recursively
-    function extractTextFromChildren(children: VTree[]): string {
-      return children.map(child => {
+    // Process children, handling both text and images
+    const mixedFragments: XMLBuilder[] = []
+
+    async function processChildren(children: VTree[]): Promise<void> {
+      for (const child of children) {
         if (isVText(child)) {
-          return (child as VText).text
+          const text = (child as VText).text
+          if (text.trim()) {
+            const textFragment = buildTextElement(text, preserveWhitespace)
+            const textRun = fragment({ namespaceAlias: { w: namespaces.w } })
+              .ele("@w", "r")
+            if (runPropertiesFragment) {
+              textRun.import(runPropertiesFragment)
+            }
+            textRun.import(textFragment)
+            textRun.up()
+            mixedFragments.push(textRun)
+          }
+        }
+        else if (isVNode(child) && (child as VNode).tagName === "img") {
+          const imgAttributes = { ...attributes, type: "picture" }
+          await resolveInlineImageDimensions(
+            child as VNode,
+            imgAttributes,
+            docxDocumentInstance,
+          )
+          const imgFragment = await buildRun(
+            child,
+            imgAttributes,
+            docxDocumentInstance,
+            preserveWhitespace,
+          )
+          if (Array.isArray(imgFragment)) {
+            mixedFragments.push(...imgFragment)
+          }
+          else {
+            mixedFragments.push(imgFragment)
+          }
         }
         else if (isVNode(child) && (child as VNode).children) {
-          return extractTextFromChildren((child as VNode).children)
+          await processChildren((child as VNode).children)
         }
-        return ""
-      })
-        .join("")
+      }
     }
 
-    const textContent = extractTextFromChildren((vNode as VNode).children)
-    if (textContent.trim()) {
-      const textFragment = buildTextElement(textContent, preserveWhitespace)
-      runFragment.import(textFragment)
+    await processChildren((vNode as VNode).children)
+
+    if (mixedFragments.length) {
+      return mixedFragments.length === 1 ? mixedFragments[0] : mixedFragments
     }
   }
   else if (isVNode(vNode) && (vNode as VNode).tagName === "img") {
@@ -1201,6 +1255,40 @@ async function buildRun(
 
   runFragment.up()
   return runFragment
+}
+
+/**
+ * Resolves image dimensions for an inline <img> node, fetching the image
+ * data when embedImages is enabled. Mutates both the vNode (src) and the
+ * attributes (width/height) in place.
+ */
+async function resolveInlineImageDimensions(
+  imgVNode: VNode,
+  attributes: Attributes,
+  docxDocumentInstance: DocxDocument,
+): Promise<void> {
+  const isUrl = isValidUrl(imgVNode.properties.src)
+
+  if (isUrl && docxDocumentInstance.embedImages) {
+    imgVNode.properties.src = await fetchImageToDataUrl(imgVNode.properties.src)
+  }
+
+  if (!isUrl || docxDocumentInstance.embedImages) {
+    const base64String = extractBase64Data(imgVNode.properties.src)?.base64Content
+    const imageBuffer = Buffer.from(
+      decodeURIComponent(base64String || ""),
+      "base64",
+    )
+
+    const imageProperties = await getImageDimensions(imageBuffer)
+
+    attributes.maximumWidth = attributes.maximumWidth ||
+      docxDocumentInstance.availableDocumentSpace
+    attributes.originalWidth = imageProperties.width
+    attributes.originalHeight = imageProperties.height
+
+    computeImageDimensions(imgVNode, attributes)
+  }
 }
 
 async function buildRunOrRuns(
@@ -1220,40 +1308,20 @@ async function buildRunOrRuns(
         attributes,
       )
 
-      // Handle image dimension computation for images within spans
       if (isVNode(childVNode) && (childVNode as VNode).tagName === "img") {
-        const isUrl = isValidUrl((childVNode as VNode).properties.src)
-
-        if (isUrl && docxDocumentInstance.embedImages) {
-          ;(childVNode as VNode).properties.src = await fetchImageToDataUrl(
-            (childVNode as VNode).properties.src,
-          )
-        }
-
-        // Only compute dimensions for embedded images (not external URLs)
-        if (!isUrl || docxDocumentInstance.embedImages) {
-          const base64String = extractBase64Data(
-            (childVNode as VNode).properties.src,
-          )?.base64Content
-          const imageBuffer = Buffer.from(
-            decodeURIComponent(base64String || ""),
-            "base64",
-          )
-
-          const imageProperties = await getImageDimensions(imageBuffer)
-
-          modifiedAttributes.maximumWidth = modifiedAttributes.maximumWidth ||
-            docxDocumentInstance.availableDocumentSpace
-          modifiedAttributes.originalWidth = imageProperties.width
-          modifiedAttributes.originalHeight = imageProperties.height
-
-          computeImageDimensions(childVNode as VNode, modifiedAttributes)
-        }
+        await resolveInlineImageDimensions(
+          childVNode as VNode,
+          modifiedAttributes,
+          docxDocumentInstance,
+        )
       }
 
+      const childAttributes = isVNode(childVNode) && (childVNode as VNode).tagName === "img"
+        ? { ...modifiedAttributes, type: "picture" }
+        : modifiedAttributes
       const tempRunFragments = await buildRun(
         childVNode,
-        modifiedAttributes,
+        childAttributes,
         docxDocumentInstance,
         preserveWhitespace,
       )
@@ -3030,15 +3098,12 @@ function toEMU(v?: number | string) {
 function buildExtents(
   { width, height }: { width?: number | string; height?: number | string },
 ) {
-  if (!width && !height) {
-    return
-  }
-  const cx = toEMU(width)
-  const cy = toEMU(height)
+  const cx = width ? toEMU(width) : 0
+  const cy = height ? toEMU(height) : 0
   return fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "ext")
-    .att("cx", String(cx ?? ""))
-    .att("cy", String(cy ?? ""))
+    .att("cx", String(cx))
+    .att("cy", String(cy))
     .up()
 }
 
@@ -3061,9 +3126,7 @@ function buildGraphicFrameTransform(
   const offsetFragment = buildOffset()
   graphicFrameTransformFragment.import(offsetFragment)
   const extentsFragment = buildExtents(attributes)
-  if (extentsFragment) {
-    graphicFrameTransformFragment.import(extentsFragment)
-  }
+  graphicFrameTransformFragment.import(extentsFragment)
 
   graphicFrameTransformFragment.up()
 
@@ -3296,15 +3359,12 @@ function buildEffectExtentFragment() {
 function buildExtent(
   { width, height }: { width?: number | string; height?: number | string },
 ) {
-  if (!width && !height) {
-    return
-  }
-  const cx = toEMU(width)
-  const cy = toEMU(height)
+  const cx = width ? toEMU(width) : 0
+  const cy = height ? toEMU(height) : 0
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
     .ele("@wp", "extent")
-    .att("cx", String(cx ?? ""))
-    .att("cy", String(cy ?? ""))
+    .att("cx", String(cx))
+    .att("cy", String(cy))
     .up()
 }
 
@@ -3360,9 +3420,7 @@ function buildAnchoredDrawing(graphicType: "picture", attributes: Attributes) {
     width: attributes.width,
     height: attributes.height,
   })
-  if (extentFragment) {
-    anchoredDrawingFragment.import(extentFragment)
-  }
+  anchoredDrawingFragment.import(extentFragment)
   const effectExtentFragment = buildEffectExtentFragment()
   anchoredDrawingFragment.import(effectExtentFragment)
   const wrapSquareFragment = buildWrapSquare()
@@ -3395,9 +3453,7 @@ function buildInlineDrawing(graphicType: "picture", attributes: Attributes) {
     width: attributes.width,
     height: attributes.height,
   })
-  if (extentFragment) {
-    inlineDrawingFragment.import(extentFragment)
-  }
+  inlineDrawingFragment.import(extentFragment)
   const effectExtentFragment = buildEffectExtentFragment()
   inlineDrawingFragment.import(effectExtentFragment)
   const drawingObjectNonVisualPropertiesFragment =

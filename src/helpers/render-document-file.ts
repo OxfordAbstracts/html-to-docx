@@ -30,7 +30,7 @@ import {
   TWIPToEMU,
 } from "../utils/unit-conversion.ts"
 import { isValidUrl } from "../utils/url.ts"
-import { vNodeHasChildren } from "../utils/vnode.ts"
+import { decodeUrlAttributes, vNodeHasChildren } from "../utils/vnode.ts"
 import * as xmlBuilder from "./xml-builder.ts"
 import type { Attributes } from "./xml-builder.ts"
 
@@ -1084,6 +1084,7 @@ export default async function renderDocumentFile(
   }
 
   const vTree = convertHTML(docxDocumentInstance.htmlString)
+  decodeUrlAttributes(vTree)
 
   const xmlFragment = fragment({ namespaceAlias: { w: namespaces.w } })
 

@@ -2016,7 +2016,13 @@
         <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">Option OneOption TwoOption Three</w:t>
+        <w:t xml:space="preserve">Option One</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Option Two</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Option Three</w:t>
       </w:r>
     </w:p>
     <w:p>
@@ -2027,7 +2033,13 @@
         <w:t xml:space="preserve"> </w:t>
       </w:r>
       <w:r>
-        <w:t xml:space="preserve">Option OneOption TwoOption Three</w:t>
+        <w:t xml:space="preserve">Option One</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Option Two</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Option Three</w:t>
       </w:r>
     </w:p>
     <w:p>
