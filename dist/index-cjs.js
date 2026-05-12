@@ -4,39 +4,60 @@ var __defProp = Object.defineProperty;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+function __accessProp(key) {
+  return this[key];
+}
+var __toESMCache_node;
+var __toESMCache_esm;
 var __toESM = (mod, isNodeMode, target) => {
+  var canCache = mod != null && typeof mod === "object";
+  if (canCache) {
+    var cache = isNodeMode ? __toESMCache_node ??= new WeakMap : __toESMCache_esm ??= new WeakMap;
+    var cached = cache.get(mod);
+    if (cached)
+      return cached;
+  }
   target = mod != null ? __create(__getProtoOf(mod)) : {};
   const to = isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target;
   for (let key of __getOwnPropNames(mod))
     if (!__hasOwnProp.call(to, key))
       __defProp(to, key, {
-        get: () => mod[key],
+        get: __accessProp.bind(mod, key),
         enumerable: true
       });
+  if (canCache)
+    cache.set(mod, to);
   return to;
 };
-var __moduleCache = /* @__PURE__ */ new WeakMap;
 var __toCommonJS = (from) => {
-  var entry = __moduleCache.get(from), desc;
+  var entry = (__moduleCache ??= new WeakMap).get(from), desc;
   if (entry)
     return entry;
   entry = __defProp({}, "__esModule", { value: true });
-  if (from && typeof from === "object" || typeof from === "function")
-    __getOwnPropNames(from).map((key) => !__hasOwnProp.call(entry, key) && __defProp(entry, key, {
-      get: () => from[key],
-      enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable
-    }));
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (var key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(entry, key))
+        __defProp(entry, key, {
+          get: __accessProp.bind(from, key),
+          enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable
+        });
+  }
   __moduleCache.set(from, entry);
   return entry;
 };
+var __moduleCache;
 var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
+var __returnValue = (v) => v;
+function __exportSetter(name, newValue) {
+  this[name] = __returnValue.bind(null, newValue);
+}
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, {
       get: all[name],
       enumerable: true,
       configurable: true,
-      set: (newValue) => all[name] = () => newValue
+      set: __exportSetter.bind(all, name)
     });
 };
 var __esm = (fn, res) => () => (fn && (res = fn(fn = 0)), res);
@@ -9428,7 +9449,7 @@ var require_round = __commonJS((exports2, module2) => {
 
 // node_modules/math-intrinsics/isNaN.js
 var require_isNaN = __commonJS((exports2, module2) => {
-  module2.exports = Number.isNaN || function isNaN(a) {
+  module2.exports = Number.isNaN || function isNaN2(a) {
     return a !== a;
   };
 });
@@ -9562,7 +9583,7 @@ var require_implementation = __commonJS((exports2, module2) => {
   var toStr = Object.prototype.toString;
   var max = Math.max;
   var funcType = "[object Function]";
-  var concatty = function concatty(a, b) {
+  var concatty = function concatty2(a, b) {
     var arr = [];
     for (var i = 0;i < a.length; i += 1) {
       arr[i] = a[i];
@@ -9572,7 +9593,7 @@ var require_implementation = __commonJS((exports2, module2) => {
     }
     return arr;
   };
-  var slicy = function slicy(arrLike, offset) {
+  var slicy = function slicy2(arrLike, offset) {
     var arr = [];
     for (var i = offset || 0, j = 0;i < arrLike.length; i += 1, j += 1) {
       arr[j] = arrLike[i];
@@ -9613,7 +9634,7 @@ var require_implementation = __commonJS((exports2, module2) => {
     }
     bound = Function("binder", "return function (" + joiny(boundArgs, ",") + "){ return binder.apply(this,arguments); }")(binder);
     if (target.prototype) {
-      var Empty = function Empty() {};
+      var Empty = function Empty2() {};
       Empty.prototype = target.prototype;
       bound.prototype = new Empty;
       Empty.prototype = null;
@@ -9851,7 +9872,7 @@ var require_get_intrinsic = __commonJS((exports2, module2) => {
     }
   }
   var errorProto;
-  var doEval = function doEval(name) {
+  var doEval = function doEval2(name) {
     var value;
     if (name === "%AsyncFunction%") {
       value = getEvalledConstructor("async function () {}");
@@ -9860,12 +9881,12 @@ var require_get_intrinsic = __commonJS((exports2, module2) => {
     } else if (name === "%AsyncGeneratorFunction%") {
       value = getEvalledConstructor("async function* () {}");
     } else if (name === "%AsyncGenerator%") {
-      var fn = doEval("%AsyncGeneratorFunction%");
+      var fn = doEval2("%AsyncGeneratorFunction%");
       if (fn) {
         value = fn.prototype;
       }
     } else if (name === "%AsyncIteratorPrototype%") {
-      var gen = doEval("%AsyncGenerator%");
+      var gen = doEval2("%AsyncGenerator%");
       if (gen && getProto) {
         value = getProto(gen.prototype);
       }
@@ -9936,7 +9957,7 @@ var require_get_intrinsic = __commonJS((exports2, module2) => {
   var $exec = bind.call($call, RegExp.prototype.exec);
   var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
   var reEscapeChar = /\\(\\)?/g;
-  var stringToPath = function stringToPath(string) {
+  var stringToPath = function stringToPath2(string) {
     var first = $strSlice(string, 0, 1);
     var last = $strSlice(string, -1);
     if (first === "%" && last !== "%") {
@@ -9950,7 +9971,7 @@ var require_get_intrinsic = __commonJS((exports2, module2) => {
     });
     return result;
   };
-  var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
+  var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
     var intrinsicName = name;
     var alias;
     if (hasOwn(LEGACY_ALIASES, intrinsicName)) {
@@ -13741,7 +13762,7 @@ var require_decode = __commonJS((exports2, module2) => {
   var $replace = callBound("String.prototype.replace");
   var $exec = callBound("RegExp.prototype.exec");
   var $parseInt = parseInt;
-  module2.exports = function decode(str) {
+  module2.exports = function decode2(str) {
     if (typeof str !== "string") {
       throw new $TypeError("Expected a String");
     }
@@ -16955,7 +16976,7 @@ var require__stream_writable2 = __commonJS((exports2, module2) => {
       }
     });
   } else {
-    realHasInstance = function realHasInstance(object) {
+    realHasInstance = function realHasInstance2(object) {
       return object instanceof this;
     };
   }
@@ -17753,28 +17774,28 @@ var require_end_of_stream = __commonJS((exports2, module2) => {
     callback = once(callback || noop);
     var readable = opts.readable || opts.readable !== false && stream.readable;
     var writable = opts.writable || opts.writable !== false && stream.writable;
-    var onlegacyfinish = function onlegacyfinish() {
+    var onlegacyfinish = function onlegacyfinish2() {
       if (!stream.writable)
         onfinish();
     };
     var writableEnded = stream._writableState && stream._writableState.finished;
-    var onfinish = function onfinish() {
+    var onfinish = function onfinish2() {
       writable = false;
       writableEnded = true;
       if (!readable)
         callback.call(stream);
     };
     var readableEnded = stream._readableState && stream._readableState.endEmitted;
-    var onend = function onend() {
+    var onend = function onend2() {
       readable = false;
       readableEnded = true;
       if (!writable)
         callback.call(stream);
     };
-    var onerror = function onerror(err) {
+    var onerror = function onerror2(err) {
       callback.call(stream, err);
     };
-    var onclose = function onclose() {
+    var onclose = function onclose2() {
       var err;
       if (readable && !readableEnded) {
         if (!stream._readableState || !stream._readableState.ended)
@@ -17787,7 +17808,7 @@ var require_end_of_stream = __commonJS((exports2, module2) => {
         return callback.call(stream, err);
       }
     };
-    var onrequest = function onrequest() {
+    var onrequest = function onrequest2() {
       stream.req.on("finish", onfinish);
     };
     if (isRequest(stream)) {
@@ -17944,7 +17965,7 @@ var require_async_iterator = __commonJS((exports2, module2) => {
       });
     });
   }), _Object$setPrototypeO), AsyncIteratorPrototype);
-  var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
+  var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator2(stream) {
     var _Object$create;
     var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
       value: stream,
@@ -18133,7 +18154,7 @@ var require__stream_readable2 = __commonJS((exports2, module2) => {
   var Duplex;
   Readable.ReadableState = ReadableState;
   var EE = require("events").EventEmitter;
-  var EElistenerCount = function EElistenerCount(emitter, type) {
+  var EElistenerCount = function EElistenerCount2(emitter, type) {
     return emitter.listeners(type).length;
   };
   var Stream = require_stream2();
@@ -18150,7 +18171,7 @@ var require__stream_readable2 = __commonJS((exports2, module2) => {
   if (debugUtil && debugUtil.debuglog) {
     debug = debugUtil.debuglog("stream");
   } else {
-    debug = function debug() {};
+    debug = function debug2() {};
   }
   var BufferList = require_buffer_list();
   var destroyImpl = require_destroy2();
@@ -19354,7 +19375,7 @@ var require_lib6 = __commonJS((exports2, module2) => {
 // node_modules/html-to-vdom/lib/parse-html.js
 var require_parse_html = __commonJS((exports2, module2) => {
   var htmlparser = require_lib6();
-  var parseHTML = function parseHTML(html) {
+  var parseHTML = function parseHTML2(html) {
     var handler = new htmlparser.DomHandler;
     var parser = new htmlparser.Parser(handler, {
       lowerCaseAttributeNames: false
@@ -37432,7 +37453,7 @@ var require_lodash = __commonJS((exports2, module2) => {
     function unicodeWords(string) {
       return string.match(reUnicodeWord) || [];
     }
-    var runInContext = function runInContext(context) {
+    var runInContext = function runInContext2(context) {
       context = context == null ? root : _.defaults(root.Object(), context, _.pick(root, contextProps));
       var { Array: Array2, Date: Date2, Error: Error2, Function: Function2, Math: Math2, Object: Object2, RegExp: RegExp2, String: String2, TypeError: TypeError2 } = context;
       var arrayProto = Array2.prototype, funcProto = Function2.prototype, objectProto = Object2.prototype;
@@ -41945,7 +41966,7 @@ __p += '`;
       lodash.replace = replace;
       lodash.result = result;
       lodash.round = round;
-      lodash.runInContext = runInContext;
+      lodash.runInContext = runInContext2;
       lodash.sample = sample;
       lodash.size = size;
       lodash.snakeCase = snakeCase;
@@ -57882,8 +57903,10 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
         attributes.fileNameWithExtension = response.fileNameWithExtension;
       }
     }
-    const imageFragment = buildDrawing(attributes);
-    runFragment.import(imageFragment);
+    if (isUrl && !docxDocumentInstance.embedImages || response) {
+      const imageFragment = buildDrawing(attributes);
+      runFragment.import(imageFragment);
+    }
   } else if (import_is_vnode.default(vNode) && vNode.tagName === "br") {
     const lineBreakFragment = buildLineBreak();
     runFragment.import(lineBreakFragment);

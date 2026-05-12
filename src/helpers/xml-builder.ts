@@ -1186,8 +1186,13 @@ async function buildRun(
       }
     }
 
-    const imageFragment = buildDrawing(attributes)
-    runFragment.import(imageFragment)
+    // Only emit a <w:drawing> when we actually created a relationship for it.
+    // Otherwise we'd reference an rId that doesn't exist in document.xml.rels,
+    // which makes Microsoft Word refuse to open the resulting docx.
+    if ((isUrl && !docxDocumentInstance.embedImages) || response) {
+      const imageFragment = buildDrawing(attributes)
+      runFragment.import(imageFragment)
+    }
   }
   else if (isVNode(vNode) && (vNode as VNode).tagName === "br") {
     const lineBreakFragment = buildLineBreak()
