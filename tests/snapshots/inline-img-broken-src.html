@@ -1,0 +1,19 @@
+<!--
+  Regression fixture for inline <img> tags with non-fetchable src values.
+
+  Each of these used to produce a <w:drawing> referencing an rId that was
+  never written into word/_rels/document.xml.rels. Microsoft Word refuses
+  to open docx files with unresolved relationship ids; Pages tolerates them.
+
+  After the fix, the drawing elements are omitted entirely for these cases
+  and only the surrounding text remains.
+-->
+<html>
+  <body>
+    <p>No src: before <img alt="missing" /> after.</p>
+    <p>Empty src: before <img src="" /> after.</p>
+    <p>Relative src: before <img src="/foo/bar.png" /> after.</p>
+    <p>Javascript src: before <img src="javascript:alert(1)" /> after.</p>
+    <p>Valid data URI: before <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" /> after.</p>
+  </body>
+</html>
