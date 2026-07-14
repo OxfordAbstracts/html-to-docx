@@ -20,6 +20,18 @@ export function remToEmu(remValue: number) {
   return pixelToEMU(remValue * 16)
 }
 
+export function pointToEMU(pointValue: number) {
+  return Math.round(pointValue * 12700)
+}
+
+export function cmToEMU(cmValue: number) {
+  return Math.round(cmValue * 360000)
+}
+
+export function inchToEMU(inchValue: number) {
+  return Math.round(inchValue * 914400)
+}
+
 export function EMUToPixel(EMUValue: number) {
   return Math.round(EMUValue / 9525)
 }

@@ -543,29 +543,12 @@ export default class DocxDocument {
 
     const sectPr = fragment({ namespaceAlias: { w: namespaces.w } })
       .ele("@w", "sectPr")
-      .ele("@w", "pgSz")
-      .att("@w", "w", String(this.width))
-      .att("@w", "h", String(this.height))
-      .att("@w", "orient", this.orientation)
-      .up()
-      .ele("@w", "pgMar")
-      .att("@w", "top", String(this.margins?.top || 0))
-      .att("@w", "right", String(this.margins?.right || 0))
-      .att("@w", "bottom", String(this.margins?.bottom || 0))
-      .att("@w", "left", String(this.margins?.left || 0))
-      .att("@w", "header", String(this.margins?.header || 0))
-      .att("@w", "footer", String(this.margins?.footer || 0))
-      .att("@w", "gutter", String(this.margins?.gutter || 0))
-      .up()
       .up()
     body.import(sectPr)
 
-    // console.log(
-    //   documentXML.root()
-    //     .first()
-    //     .toString({ prettyPrint: true }),
-    // )
-
+    // Header/footer references must be the first children of sectPr:
+    // the CT_SectPr schema sequence puts EG_HdrFtrReferences before
+    // pgSz/pgMar, and Word rejects documents that violate the order.
     generateSectionReferenceXML(
       documentXML,
       "header",
@@ -578,6 +561,27 @@ export default class DocxDocument {
       this.footerObjects,
       this.footer,
     )
+
+    documentXML.root()
+      .first()
+      .last()
+      .import(
+        fragment({ namespaceAlias: { w: namespaces.w } })
+          .ele("@w", "pgSz")
+          .att("@w", "w", String(this.width))
+          .att("@w", "h", String(this.height))
+          .att("@w", "orient", this.orientation)
+          .up()
+          .ele("@w", "pgMar")
+          .att("@w", "top", String(this.margins?.top || 0))
+          .att("@w", "right", String(this.margins?.right || 0))
+          .att("@w", "bottom", String(this.margins?.bottom || 0))
+          .att("@w", "left", String(this.margins?.left || 0))
+          .att("@w", "header", String(this.margins?.header || 0))
+          .att("@w", "footer", String(this.margins?.footer || 0))
+          .att("@w", "gutter", String(this.margins?.gutter || 0))
+          .up(),
+      )
 
     if ((this.header || this.footer) && this.skipFirstHeaderFooter) {
       documentXML
