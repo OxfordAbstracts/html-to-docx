@@ -8973,7 +8973,7 @@ var require_zipEntries = __commonJS((exports2, module2) => {
       if (this.centralDirRecords !== this.files.length) {
         if (this.centralDirRecords !== 0 && this.files.length === 0) {
           throw new Error("Corrupted zip or bug: expected " + this.centralDirRecords + " records in central dir, got " + this.files.length);
-        } else {}
+        }
       }
     },
     readEndOfCentral: function() {
@@ -57115,72 +57115,6 @@ async function getImageDimensions(imageBuffer) {
   }
 }
 
-// src/utils/unit-conversion.ts
-var pixelRegex = /([\d.]+)px/i;
-var emRegex = /([\d.]+)em/i;
-var remRegex = /([\d.]+)rem/i;
-var percentageRegex = /([\d.]+)%/i;
-var pointRegex = /([\d.]+)pt/i;
-var cmRegex = /([\d.]+)cm/i;
-var inchRegex = /([\d.]+)in/i;
-function pixelToEMU(pixelValue) {
-  return Math.round(pixelValue * 9525);
-}
-function emToEmu(emValue) {
-  return pixelToEMU(emValue * 16);
-}
-function remToEmu(remValue) {
-  return pixelToEMU(remValue * 16);
-}
-function TWIPToEMU(TWIPValue) {
-  return Math.round(TWIPValue * 635);
-}
-function EMUToTWIP(EMUValue) {
-  return Math.round(EMUValue / 635);
-}
-function pointToTWIP(pointValue) {
-  return Math.round(pointValue * 20);
-}
-function pointToHIP(pointValue) {
-  return Math.round(pointValue * 2);
-}
-function HIPToPoint(HIPValue) {
-  return Math.round(HIPValue / 2);
-}
-function HIPToTWIP(HIPValue) {
-  return Math.round(HIPValue * 10);
-}
-function TWIPToHIP(TWIPValue) {
-  return Math.round(TWIPValue / 10);
-}
-function pixelToTWIP(pixelValue) {
-  return EMUToTWIP(pixelToEMU(pixelValue));
-}
-function pixelToHIP(pixelValue) {
-  return TWIPToHIP(EMUToTWIP(pixelToEMU(pixelValue)));
-}
-function inchToPoint(inchValue) {
-  return Math.round(inchValue * 72);
-}
-function inchToTWIP(inchValue) {
-  return pointToTWIP(inchToPoint(inchValue));
-}
-function cmToInch(cmValue) {
-  return cmValue * 0.3937008;
-}
-function cmToTWIP(cmValue) {
-  return inchToTWIP(cmToInch(cmValue));
-}
-function pixelToPoint(pixelValue) {
-  return HIPToPoint(pixelToHIP(pixelValue));
-}
-function pointToEIP(PointValue) {
-  return Math.round(PointValue * 8);
-}
-function pixelToEIP(pixelValue) {
-  return pointToEIP(pixelToPoint(pixelValue));
-}
-
 // src/utils/url.ts
 function isValidUrl(urlString) {
   const urlRegex = /http(s)?:\/\/(\w+:?\w*@)?(\S+)(:\d+)?((?<=\.)\w+)+(\/([\w#!:.?+=&%@!\-/])*)?/gi;
@@ -57265,6 +57199,81 @@ function hslToHex(hue, saturation, luminosity) {
 function hex3ToHex(red, green, blue) {
   const hexColorCode = [red, green, blue].map((color) => `${color}${color}`).join("");
   return hexColorCode;
+}
+
+// src/utils/unit-conversion.ts
+var pixelRegex = /([\d.]+)px/i;
+var emRegex = /([\d.]+)em/i;
+var remRegex = /([\d.]+)rem/i;
+var percentageRegex = /([\d.]+)%/i;
+var pointRegex = /([\d.]+)pt/i;
+var cmRegex = /([\d.]+)cm/i;
+var inchRegex = /([\d.]+)in/i;
+function pixelToEMU(pixelValue) {
+  return Math.round(pixelValue * 9525);
+}
+function emToEmu(emValue) {
+  return pixelToEMU(emValue * 16);
+}
+function remToEmu(remValue) {
+  return pixelToEMU(remValue * 16);
+}
+function pointToEMU(pointValue) {
+  return Math.round(pointValue * 12700);
+}
+function cmToEMU(cmValue) {
+  return Math.round(cmValue * 360000);
+}
+function inchToEMU(inchValue) {
+  return Math.round(inchValue * 914400);
+}
+function TWIPToEMU(TWIPValue) {
+  return Math.round(TWIPValue * 635);
+}
+function EMUToTWIP(EMUValue) {
+  return Math.round(EMUValue / 635);
+}
+function pointToTWIP(pointValue) {
+  return Math.round(pointValue * 20);
+}
+function pointToHIP(pointValue) {
+  return Math.round(pointValue * 2);
+}
+function HIPToPoint(HIPValue) {
+  return Math.round(HIPValue / 2);
+}
+function HIPToTWIP(HIPValue) {
+  return Math.round(HIPValue * 10);
+}
+function TWIPToHIP(TWIPValue) {
+  return Math.round(TWIPValue / 10);
+}
+function pixelToTWIP(pixelValue) {
+  return EMUToTWIP(pixelToEMU(pixelValue));
+}
+function pixelToHIP(pixelValue) {
+  return TWIPToHIP(EMUToTWIP(pixelToEMU(pixelValue)));
+}
+function inchToPoint(inchValue) {
+  return Math.round(inchValue * 72);
+}
+function inchToTWIP(inchValue) {
+  return pointToTWIP(inchToPoint(inchValue));
+}
+function cmToInch(cmValue) {
+  return cmValue * 0.3937008;
+}
+function cmToTWIP(cmValue) {
+  return inchToTWIP(cmToInch(cmValue));
+}
+function pixelToPoint(pixelValue) {
+  return HIPToPoint(pixelToHIP(pixelValue));
+}
+function pointToEIP(PointValue) {
+  return Math.round(PointValue * 8);
+}
+function pixelToEIP(pixelValue) {
+  return pointToEIP(pixelToPoint(pixelValue));
 }
 
 // src/utils/font-size.ts
@@ -57607,7 +57616,7 @@ function modifiedStyleAttributesBuilder(docxDocumentInstance, vNode, attributes,
       if (properties.style.display) {
         modifiedAttributes.display = properties.style.display;
       }
-      if (properties.style.width) {
+      if (properties.style.width && vNode.tagName !== "img") {
         modifiedAttributes.width = properties.style.width;
       }
     }
@@ -57835,7 +57844,11 @@ async function buildRun(vNode, attributes, docxDocumentInstance, preserveWhitesp
           }
           continue;
         } else if (tempVNode.tagName === "img") {
-          const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" };
+          const imgAttributes = {
+            ...attributes,
+            ...tempAttributes,
+            type: "picture"
+          };
           await resolveInlineImageDimensions(tempVNode, imgAttributes, docxDocumentInstance);
           const imgFragment = await buildRun(tempVNode, imgAttributes, docxDocumentInstance, preserveWhitespace);
           if (Array.isArray(imgFragment)) {
@@ -58163,12 +58176,18 @@ function computeImageDimensions(vNode, attributes) {
     const styleHeight = vNode.properties.style.height;
     if (styleWidth) {
       if (styleWidth !== "auto") {
-        if (pixelRegex.test(styleWidth)) {
+        if (remRegex.test(styleWidth)) {
+          modifiedWidth = remToEmu(styleWidth.match(remRegex)[1]);
+        } else if (pixelRegex.test(styleWidth)) {
           modifiedWidth = pixelToEMU(styleWidth.match(pixelRegex)[1]);
         } else if (emRegex.test(styleWidth)) {
           modifiedWidth = emToEmu(styleWidth.match(emRegex)[1]);
-        } else if (remRegex.test(styleWidth)) {
-          modifiedWidth = remToEmu(styleWidth.match(remRegex)[1]);
+        } else if (pointRegex.test(styleWidth)) {
+          modifiedWidth = pointToEMU(Number(styleWidth.match(pointRegex)[1]));
+        } else if (cmRegex.test(styleWidth)) {
+          modifiedWidth = cmToEMU(Number(styleWidth.match(cmRegex)[1]));
+        } else if (inchRegex.test(styleWidth)) {
+          modifiedWidth = inchToEMU(Number(styleWidth.match(inchRegex)[1]));
         } else if (percentageRegex.test(styleWidth)) {
           const percentageValue = styleWidth.match(percentageRegex)[1];
           modifiedWidth = Math.round(percentageValue / 100 * originalWidthInEMU);
@@ -58185,12 +58204,18 @@ function computeImageDimensions(vNode, attributes) {
     }
     if (styleHeight) {
       if (styleHeight !== "auto") {
-        if (pixelRegex.test(styleHeight)) {
+        if (remRegex.test(styleHeight)) {
+          modifiedHeight = remToEmu(styleHeight.match(remRegex)[1]);
+        } else if (pixelRegex.test(styleHeight)) {
           modifiedHeight = pixelToEMU(styleHeight.match(pixelRegex)[1]);
         } else if (emRegex.test(styleHeight)) {
           modifiedHeight = emToEmu(styleHeight.match(emRegex)[1]);
-        } else if (remRegex.test(styleHeight)) {
-          modifiedHeight = remToEmu(styleHeight.match(remRegex)[1]);
+        } else if (pointRegex.test(styleHeight)) {
+          modifiedHeight = pointToEMU(Number(styleHeight.match(pointRegex)[1]));
+        } else if (cmRegex.test(styleHeight)) {
+          modifiedHeight = cmToEMU(Number(styleHeight.match(cmRegex)[1]));
+        } else if (inchRegex.test(styleHeight)) {
+          modifiedHeight = inchToEMU(Number(styleHeight.match(inchRegex)[1]));
         } else if (percentageRegex.test(styleHeight)) {
           const percentageValue = styleHeight.match(percentageRegex)[1];
           modifiedHeight = Math.round(percentageValue / 100 * originalHeightInEMU);
@@ -58213,13 +58238,23 @@ function computeImageDimensions(vNode, attributes) {
       modifiedHeight = Math.round(modifiedWidth / aspectRatio);
     } else if (modifiedHeight && !modifiedWidth) {
       modifiedWidth = Math.round(modifiedHeight * aspectRatio);
-    } else {
+    } else if (!modifiedWidth && !modifiedHeight) {
       modifiedWidth = originalWidthInEMU;
       modifiedHeight = originalHeightInEMU;
     }
   } else {
     modifiedWidth = originalWidthInEMU;
     modifiedHeight = originalHeightInEMU;
+  }
+  if (typeof modifiedWidth !== "number" || !Number.isFinite(modifiedWidth)) {
+    modifiedWidth = originalWidthInEMU;
+  }
+  if (typeof modifiedHeight !== "number" || !Number.isFinite(modifiedHeight)) {
+    modifiedHeight = originalHeightInEMU;
+  }
+  if (maximumWidthInEMU > 0 && modifiedWidth > maximumWidthInEMU) {
+    modifiedHeight = Math.round(modifiedHeight * (maximumWidthInEMU / modifiedWidth));
+    modifiedWidth = maximumWidthInEMU;
   }
   attributes.width = modifiedWidth;
   attributes.height = modifiedHeight;
@@ -58384,8 +58419,8 @@ function buildTableCellBorders(tableCellBorder) {
   const tableCellBordersFragment = import_xmlbuilder2.fragment({
     namespaceAlias: { w: namespaces_default.w }
   }).ele("@w", "tcBorders");
-  const { color, stroke, ...borders } = tableCellBorder;
-  Object.keys(borders).forEach((border) => {
+  const { color, stroke } = tableCellBorder;
+  ["top", "left", "bottom", "right"].forEach((border) => {
     const borderVal = tableCellBorder[border];
     if (borderVal) {
       const borderFragment = buildBorder(border, borderVal, 0, color, stroke);
@@ -58780,8 +58815,8 @@ function buildTableGridFromTableRow(vNode, attributes) {
 }
 function buildTableBorders(tableBorder) {
   const tableBordersFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "tblBorders");
-  const { color, stroke, ...borders } = tableBorder;
-  Object.keys(borders).forEach((border) => {
+  const { color, stroke } = tableBorder;
+  ["top", "left", "bottom", "right", "insideH", "insideV"].forEach((border) => {
     const borderVal = tableBorder[border];
     if (borderVal) {
       const borderFragment = buildBorder(border, borderVal, 0, color, stroke);
@@ -58799,12 +58834,11 @@ function buildCellMargin(side, margin) {
 }
 function buildTableCellMargins(margin) {
   const tableCellMarFragment = import_xmlbuilder2.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "tblCellMar");
-  ["top", "bottom"].forEach((side) => {
-    const marginFragment = buildCellMargin(side, margin / 2);
-    tableCellMarFragment.import(marginFragment);
-  });
-  ["left", "right"].forEach((side) => {
-    const marginFragment = buildCellMargin(side, margin);
+  [["top", margin / 2], ["left", margin], ["bottom", margin / 2], [
+    "right",
+    margin
+  ]].forEach(([side, sideMargin]) => {
+    const marginFragment = buildCellMargin(side, sideMargin);
     tableCellMarFragment.import(marginFragment);
   });
   return tableCellMarFragment;
@@ -58814,39 +58848,28 @@ function buildTableProperties(attributes) {
     namespaceAlias: { w: namespaces_default.w }
   }).ele("@w", "tblPr");
   if (attributes && attributes.constructor === Object) {
-    Object.keys(attributes).forEach((key) => {
-      switch (key) {
-        case "tableBorder": {
-          if (attributes.tableBorder) {
-            const tableBordersFragment = buildTableBorders(attributes.tableBorder);
-            tablePropertiesFragment.import(tableBordersFragment);
-            delete attributes.tableBorder;
-          }
-          break;
-        }
-        case "tableCellSpacing": {
-          const tableCellSpacingFragment = buildTableCellSpacing(attributes.tableCellSpacing);
-          tablePropertiesFragment.import(tableCellSpacingFragment);
-          delete attributes.tableCellSpacing;
-          break;
-        }
-        case "width": {
-          if (attributes.width) {
-            const tableWidthFragment = buildTableWidth(attributes.width);
-            tablePropertiesFragment.import(tableWidthFragment);
-          }
-          delete attributes.width;
-          break;
-        }
-        default:
-          break;
-      }
-    });
+    if (attributes.width) {
+      const tableWidthFragment = buildTableWidth(attributes.width);
+      tablePropertiesFragment.import(tableWidthFragment);
+    }
+    delete attributes.width;
+  }
+  const alignmentFragment = buildHorizontalAlignment("center");
+  tablePropertiesFragment.import(alignmentFragment);
+  if (attributes && attributes.constructor === Object) {
+    if ("tableCellSpacing" in attributes) {
+      const tableCellSpacingFragment = buildTableCellSpacing(attributes.tableCellSpacing);
+      tablePropertiesFragment.import(tableCellSpacingFragment);
+      delete attributes.tableCellSpacing;
+    }
+    if (attributes.tableBorder) {
+      const tableBordersFragment = buildTableBorders(attributes.tableBorder);
+      tablePropertiesFragment.import(tableBordersFragment);
+      delete attributes.tableBorder;
+    }
   }
   const tableCellMarginFragment = buildTableCellMargins(160);
   tablePropertiesFragment.import(tableCellMarginFragment);
-  const alignmentFragment = buildHorizontalAlignment("center");
-  tablePropertiesFragment.import(alignmentFragment);
   tablePropertiesFragment.up();
   return tablePropertiesFragment;
 }
@@ -59006,24 +59029,37 @@ function toEMU(v) {
   if (v === undefined || v === null)
     return;
   if (typeof v === "number")
-    return v;
+    return Number.isFinite(v) ? v : undefined;
+  if (remRegex.test(v)) {
+    const [, num2] = v.match(remRegex);
+    return remToEmu(Number(num2));
+  }
   if (pixelRegex.test(v)) {
-    const [, num] = v.match(pixelRegex);
-    return pixelToEMU(Number(num));
+    const [, num2] = v.match(pixelRegex);
+    return pixelToEMU(Number(num2));
   }
   if (emRegex.test(v)) {
-    const [, num] = v.match(emRegex);
-    return emToEmu(Number(num));
+    const [, num2] = v.match(emRegex);
+    return emToEmu(Number(num2));
   }
-  if (remRegex.test(v)) {
-    const [, num] = v.match(remRegex);
-    return remToEmu(Number(num));
+  if (pointRegex.test(v)) {
+    const [, num2] = v.match(pointRegex);
+    return pointToEMU(Number(num2));
   }
-  return Number(v);
+  if (cmRegex.test(v)) {
+    const [, num2] = v.match(cmRegex);
+    return cmToEMU(Number(num2));
+  }
+  if (inchRegex.test(v)) {
+    const [, num2] = v.match(inchRegex);
+    return inchToEMU(Number(num2));
+  }
+  const num = Number(v);
+  return Number.isFinite(num) ? num : undefined;
 }
 function buildExtents({ width, height }) {
-  const cx = width ? toEMU(width) : 0;
-  const cy = height ? toEMU(height) : 0;
+  const cx = (width ? toEMU(width) : 0) ?? 0;
+  const cy = (height ? toEMU(height) : 0) ?? 0;
   return import_xmlbuilder2.fragment({ namespaceAlias: { a: namespaces_default.a } }).ele("@a", "ext").att("cx", String(cx)).att("cy", String(cy)).up();
 }
 function buildOffset() {
@@ -59150,8 +59186,8 @@ function buildEffectExtentFragment() {
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "effectExtent").att("b", "0").att("l", "0").att("r", "0").att("t", "0").up();
 }
 function buildExtent({ width, height }) {
-  const cx = width ? toEMU(width) : 0;
-  const cy = height ? toEMU(height) : 0;
+  const cx = (width ? toEMU(width) : 0) ?? 0;
+  const cy = (height ? toEMU(height) : 0) ?? 0;
   return import_xmlbuilder2.fragment({ namespaceAlias: { wp: namespaces_default.wp } }).ele("@wp", "extent").att("cx", String(cx)).att("cy", String(cy)).up();
 }
 function buildPositionV() {
@@ -59248,68 +59284,19 @@ async function buildImage(docxDocumentInstance, vNode, maximumWidth) {
       actualWidth = fetchedDimensions.width;
       actualHeight = fetchedDimensions.height;
     }
-    const defaultWidthInEMU = pixelToEMU(actualWidth);
-    const defaultHeightInEMU = pixelToEMU(actualHeight);
-    let finalWidthInEMU = defaultWidthInEMU;
-    let finalHeightInEMU = defaultHeightInEMU;
-    const maxWidth = maximumWidth || docxDocumentInstance.availableDocumentSpace;
-    const maximumWidthInEMU = TWIPToEMU(maxWidth || 0);
-    if (defaultWidthInEMU > maximumWidthInEMU) {
-      const aspectRatio = actualWidth / actualHeight;
-      finalWidthInEMU = maximumWidthInEMU;
-      finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio);
-    }
-    if (vNode.properties && vNode.properties.style) {
-      const style = vNode.properties.style;
-      if (style.width && style.width !== "auto") {
-        if (/(\d+)px/.test(style.width)) {
-          finalWidthInEMU = pixelToEMU(parseInt(style.width.match(/(\d+)px/)[1]));
-        } else if (/(\d+)em/.test(style.width)) {
-          finalWidthInEMU = emToEmu(parseFloat(style.width.match(/(\d+(?:\.\d+)?)em/)[1]));
-        } else if (/(\d+)rem/.test(style.width)) {
-          finalWidthInEMU = remToEmu(parseFloat(style.width.match(/(\d+(?:\.\d+)?)rem/)[1]));
-        } else if (/(\d+)%/.test(style.width)) {
-          const percentage = parseFloat(style.width.match(/(\d+(?:\.\d+)?)%/)[1]);
-          finalWidthInEMU = Math.round(percentage / 100 * defaultWidthInEMU);
-        }
-      }
-      if (style.height && style.height !== "auto") {
-        if (/(\d+)px/.test(style.height)) {
-          finalHeightInEMU = pixelToEMU(parseInt(style.height.match(/(\d+)px/)[1]));
-        } else if (/(\d+)em/.test(style.height)) {
-          finalHeightInEMU = emToEmu(parseFloat(style.height.match(/(\d+(?:\.\d+)?)em/)[1]));
-        } else if (/(\d+)rem/.test(style.height)) {
-          finalHeightInEMU = remToEmu(parseFloat(style.height.match(/(\d+(?:\.\d+)?)rem/)[1]));
-        } else if (/(\d+)%/.test(style.height)) {
-          const percentage = parseFloat(style.height.match(/(\d+(?:\.\d+)?)%/)[1]);
-          finalHeightInEMU = Math.round(percentage / 100 * defaultHeightInEMU);
-          if (!style.width || style.width === "auto") {
-            const aspectRatio = actualWidth / actualHeight;
-            finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio);
-          }
-        }
-      }
-      if (style.width && style.width !== "auto" && (!style.height || style.height === "auto")) {
-        const aspectRatio = actualWidth / actualHeight;
-        finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio);
-      } else if (style.height && style.height !== "auto" && (!style.width || style.width === "auto")) {
-        const aspectRatio = actualWidth / actualHeight;
-        finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio);
-      }
-    }
-    const imageFragment = await buildRun(vNode, {
+    const attributes = {
       type: "picture",
       inlineOrAnchored: true,
       relationshipId: documentRelsId,
       fileNameWithExtension: originalSrc,
       description: vNode.properties.alt,
-      maximumWidth: maxWidth,
+      maximumWidth: maximumWidth || docxDocumentInstance.availableDocumentSpace,
       originalWidth: actualWidth,
       originalHeight: actualHeight,
-      width: finalWidthInEMU,
-      height: finalHeightInEMU,
       isExternalLink: true
-    }, docxDocumentInstance);
+    };
+    computeImageDimensions(vNode, attributes);
+    const imageFragment = await buildRun(vNode, attributes, docxDocumentInstance);
     return imageFragment;
   }
   if (response) {
@@ -59319,64 +59306,18 @@ async function buildImage(docxDocumentInstance, vNode, maximumWidth) {
     const documentRelsId = docxDocumentInstance.createDocumentRelationships(docxDocumentInstance.relationshipFilename, imageType, `media/${response.fileNameWithExtension}`, internalRelationship);
     const imageBuffer = Buffer.from(response.fileContent, "base64");
     const imageProperties = await getImageDimensions(imageBuffer);
-    const maxWidth = maximumWidth || docxDocumentInstance.availableDocumentSpace;
-    const originalWidthInEMU = pixelToEMU(imageProperties.width || 0);
-    const originalHeightInEMU = pixelToEMU(imageProperties.height || 0);
-    const maximumWidthInEMU = TWIPToEMU(maxWidth || 0);
-    const aspectRatio = (imageProperties.width || 0) / (imageProperties.height || 1);
-    let finalWidthInEMU = originalWidthInEMU;
-    let finalHeightInEMU = originalHeightInEMU;
-    if (originalWidthInEMU > maximumWidthInEMU) {
-      finalWidthInEMU = maximumWidthInEMU;
-      finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio);
-    }
-    if (vNode.properties && vNode.properties.style) {
-      const style = vNode.properties.style;
-      if (style.width && style.width !== "auto") {
-        if (/(\d+)px/.test(style.width)) {
-          finalWidthInEMU = pixelToEMU(parseInt(style.width.match(/(\d+)px/)[1]));
-        } else if (/(\d+)em/.test(style.width)) {
-          finalWidthInEMU = emToEmu(parseFloat(style.width.match(/(\d+(?:\.\d+)?)em/)[1]));
-        } else if (/(\d+)rem/.test(style.width)) {
-          finalWidthInEMU = remToEmu(parseFloat(style.width.match(/(\d+(?:\.\d+)?)rem/)[1]));
-        } else if (/(\d+)%/.test(style.width)) {
-          const percentage = parseFloat(style.width.match(/(\d+(?:\.\d+)?)%/)[1]);
-          finalWidthInEMU = Math.round(percentage / 100 * originalWidthInEMU);
-        }
-      }
-      if (style.height && style.height !== "auto") {
-        if (/(\d+)px/.test(style.height)) {
-          finalHeightInEMU = pixelToEMU(parseInt(style.height.match(/(\d+)px/)[1]));
-        } else if (/(\d+)em/.test(style.height)) {
-          finalHeightInEMU = emToEmu(parseFloat(style.height.match(/(\d+(?:\.\d+)?)em/)[1]));
-        } else if (/(\d+)rem/.test(style.height)) {
-          finalHeightInEMU = remToEmu(parseFloat(style.height.match(/(\d+(?:\.\d+)?)rem/)[1]));
-        } else if (/(\d+)%/.test(style.height)) {
-          const percentage = parseFloat(style.height.match(/(\d+(?:\.\d+)?)%/)[1]);
-          finalHeightInEMU = Math.round(percentage / 100 * originalHeightInEMU);
-          if (!style.width || style.width === "auto") {
-            finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio);
-          }
-        }
-      }
-      if (style.width && style.width !== "auto" && (!style.height || style.height === "auto")) {
-        finalHeightInEMU = Math.round(finalWidthInEMU / aspectRatio);
-      } else if (style.height && style.height !== "auto" && (!style.width || style.width === "auto")) {
-        finalWidthInEMU = Math.round(finalHeightInEMU * aspectRatio);
-      }
-    }
-    const imageFragment = await buildRun(vNode, {
+    const attributes = {
       type: "picture",
       inlineOrAnchored: true,
       relationshipId: documentRelsId,
       ...response,
       description: vNode.properties.alt,
-      maximumWidth: maxWidth,
+      maximumWidth: maximumWidth || docxDocumentInstance.availableDocumentSpace,
       originalWidth: imageProperties.width,
-      originalHeight: imageProperties.height,
-      width: finalWidthInEMU,
-      height: finalHeightInEMU
-    }, docxDocumentInstance);
+      originalHeight: imageProperties.height
+    };
+    computeImageDimensions(vNode, attributes);
+    const imageFragment = await buildRun(vNode, attributes, docxDocumentInstance);
     return imageFragment;
   }
 }
@@ -60728,10 +60669,11 @@ class DocxDocument {
     } else {
       throw new Error("Document XML must be created before importing");
     }
-    const sectPr = import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "sectPr").ele("@w", "pgSz").att("@w", "w", String(this.width)).att("@w", "h", String(this.height)).att("@w", "orient", this.orientation).up().ele("@w", "pgMar").att("@w", "top", String(this.margins?.top || 0)).att("@w", "right", String(this.margins?.right || 0)).att("@w", "bottom", String(this.margins?.bottom || 0)).att("@w", "left", String(this.margins?.left || 0)).att("@w", "header", String(this.margins?.header || 0)).att("@w", "footer", String(this.margins?.footer || 0)).att("@w", "gutter", String(this.margins?.gutter || 0)).up().up();
+    const sectPr = import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "sectPr").up();
     body.import(sectPr);
     generateSectionReferenceXML(documentXML, "header", this.headerObjects, this.header);
     generateSectionReferenceXML(documentXML, "footer", this.footerObjects, this.footer);
+    documentXML.root().first().last().import(import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "pgSz").att("@w", "w", String(this.width)).att("@w", "h", String(this.height)).att("@w", "orient", this.orientation).up().ele("@w", "pgMar").att("@w", "top", String(this.margins?.top || 0)).att("@w", "right", String(this.margins?.right || 0)).att("@w", "bottom", String(this.margins?.bottom || 0)).att("@w", "left", String(this.margins?.left || 0)).att("@w", "header", String(this.margins?.header || 0)).att("@w", "footer", String(this.margins?.footer || 0)).att("@w", "gutter", String(this.margins?.gutter || 0)).up());
     if ((this.header || this.footer) && this.skipFirstHeaderFooter) {
       documentXML.root().first().first().import(import_xmlbuilder23.fragment({ namespaceAlias: { w: namespaces_default.w } }).ele("@w", "titlePg"));
     }

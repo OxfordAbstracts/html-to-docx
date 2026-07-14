@@ -54,20 +54,20 @@
     </w:p>
     <w:tbl>
       <w:tblPr>
+        <w:jc w:val="center"/>
+        <w:tblCellSpacing w:w="0" w:type="dxa"/>
         <w:tblBorders>
           <w:top w:val="single" w:sz="2" w:space="0" w:color="000000"/>
-          <w:bottom w:val="single" w:sz="2" w:space="0" w:color="000000"/>
           <w:left w:val="single" w:sz="2" w:space="0" w:color="000000"/>
+          <w:bottom w:val="single" w:sz="2" w:space="0" w:color="000000"/>
           <w:right w:val="single" w:sz="2" w:space="0" w:color="000000"/>
         </w:tblBorders>
-        <w:tblCellSpacing w:w="0" w:type="dxa"/>
         <w:tblCellMar>
           <w:top w:type="dxa" w:w="80"/>
-          <w:bottom w:type="dxa" w:w="80"/>
           <w:left w:type="dxa" w:w="160"/>
+          <w:bottom w:type="dxa" w:w="80"/>
           <w:right w:type="dxa" w:w="160"/>
         </w:tblCellMar>
-        <w:jc w:val="center"/>
       </w:tblPr>
       <w:tblGrid>
         <w:gridCol w:w="4320"/>
@@ -79,8 +79,8 @@
           <w:tcPr>
             <w:tcBorders>
               <w:top w:val="single" w:sz="1" w:space="0" w:color="000000"/>
-              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:left w:val="single" w:sz="1" w:space="0" w:color="000000"/>
+              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:right w:val="single" w:sz="1" w:space="0" w:color="000000"/>
             </w:tcBorders>
           </w:tcPr>
@@ -94,8 +94,8 @@
           <w:tcPr>
             <w:tcBorders>
               <w:top w:val="single" w:sz="1" w:space="0" w:color="000000"/>
-              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:left w:val="single" w:sz="1" w:space="0" w:color="000000"/>
+              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:right w:val="single" w:sz="1" w:space="0" w:color="000000"/>
             </w:tcBorders>
           </w:tcPr>
@@ -112,8 +112,8 @@
           <w:tcPr>
             <w:tcBorders>
               <w:top w:val="single" w:sz="1" w:space="0" w:color="000000"/>
-              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:left w:val="single" w:sz="1" w:space="0" w:color="000000"/>
+              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:right w:val="single" w:sz="1" w:space="0" w:color="000000"/>
             </w:tcBorders>
           </w:tcPr>
@@ -127,8 +127,8 @@
           <w:tcPr>
             <w:tcBorders>
               <w:top w:val="single" w:sz="1" w:space="0" w:color="000000"/>
-              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:left w:val="single" w:sz="1" w:space="0" w:color="000000"/>
+              <w:bottom w:val="single" w:sz="1" w:space="0" w:color="000000"/>
               <w:right w:val="single" w:sz="1" w:space="0" w:color="000000"/>
             </w:tcBorders>
           </w:tcPr>

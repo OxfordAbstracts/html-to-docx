@@ -40,11 +40,13 @@ import { fixupFontSize } from "../utils/font-size.ts"
 import { getImageDimensions } from "../utils/image-dimensions.ts"
 import {
   cmRegex,
+  cmToEMU,
   cmToTWIP,
   emRegex,
   emToEmu,
   HIPToTWIP,
   inchRegex,
+  inchToEMU,
   inchToTWIP,
   percentageRegex,
   pixelRegex,
@@ -53,6 +55,7 @@ import {
   pixelToTWIP,
   pointRegex,
   pointToEIP,
+  pointToEMU,
   pointToTWIP,
   remRegex,
   remToEmu,
@@ -629,7 +632,11 @@ function modifiedStyleAttributesBuilder(
         modifiedAttributes.display = properties.style.display
       }
 
-      if (properties.style.width) {
+      // Never copy the raw CSS width onto an <img> node's attributes:
+      // picture dimensions are computed (in EMU) by computeImageDimensions,
+      // and a raw string like "451pt" would clobber them and end up as
+      // cx="NaN" in the drawing extent, which makes Word reject the file.
+      if (properties.style.width && (vNode as VNode).tagName !== "img") {
         modifiedAttributes.width = properties.style.width
       }
     }
@@ -1060,7 +1067,11 @@ async function buildRun(
           continue
         }
         else if ((tempVNode as VNode).tagName === "img") {
-          const imgAttributes = { ...attributes, ...tempAttributes, type: "picture" }
+          const imgAttributes = {
+            ...attributes,
+            ...tempAttributes,
+            type: "picture",
+          }
           await resolveInlineImageDimensions(
             tempVNode as VNode,
             imgAttributes,
@@ -1152,7 +1163,8 @@ async function buildRun(
       // Use default dimensions for external images
       if (!attributes.width) attributes.width = pixelToEMU(600)
       if (!attributes.height) attributes.height = pixelToEMU(400)
-    } else {
+    }
+    else {
       // Handle embedded images (base64 or fetched URLs)
       const base64Uri = decodeURIComponent((vNode as VNode).properties.src)
       if (base64Uri) {
@@ -1279,7 +1291,8 @@ async function resolveInlineImageDimensions(
   }
 
   if (!isUrl || docxDocumentInstance.embedImages) {
-    const base64String = extractBase64Data(imgVNode.properties.src)?.base64Content
+    const base64String = extractBase64Data(imgVNode.properties.src)
+      ?.base64Content
     const imageBuffer = Buffer.from(
       decodeURIComponent(base64String || ""),
       "base64",
@@ -1321,9 +1334,10 @@ async function buildRunOrRuns(
         )
       }
 
-      const childAttributes = isVNode(childVNode) && (childVNode as VNode).tagName === "img"
-        ? { ...modifiedAttributes, type: "picture" }
-        : modifiedAttributes
+      const childAttributes =
+        isVNode(childVNode) && (childVNode as VNode).tagName === "img"
+          ? { ...modifiedAttributes, type: "picture" }
+          : modifiedAttributes
       const tempRunFragments = await buildRun(
         childVNode,
         childAttributes,
@@ -1654,14 +1668,23 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
 
     if (styleWidth) {
       if (styleWidth !== "auto") {
-        if (pixelRegex.test(styleWidth)) {
+        if (remRegex.test(styleWidth)) {
+          modifiedWidth = remToEmu(styleWidth.match(remRegex)[1])
+        }
+        else if (pixelRegex.test(styleWidth)) {
           modifiedWidth = pixelToEMU(styleWidth.match(pixelRegex)[1])
         }
         else if (emRegex.test(styleWidth)) {
           modifiedWidth = emToEmu(styleWidth.match(emRegex)[1])
         }
-        else if (remRegex.test(styleWidth)) {
-          modifiedWidth = remToEmu(styleWidth.match(remRegex)[1])
+        else if (pointRegex.test(styleWidth)) {
+          modifiedWidth = pointToEMU(Number(styleWidth.match(pointRegex)[1]))
+        }
+        else if (cmRegex.test(styleWidth)) {
+          modifiedWidth = cmToEMU(Number(styleWidth.match(cmRegex)[1]))
+        }
+        else if (inchRegex.test(styleWidth)) {
+          modifiedWidth = inchToEMU(Number(styleWidth.match(inchRegex)[1]))
         }
         else if (percentageRegex.test(styleWidth)) {
           const percentageValue = styleWidth.match(percentageRegex)[1]
@@ -1684,14 +1707,23 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
     }
     if (styleHeight) {
       if (styleHeight !== "auto") {
-        if (pixelRegex.test(styleHeight)) {
+        if (remRegex.test(styleHeight)) {
+          modifiedHeight = remToEmu(styleHeight.match(remRegex)[1])
+        }
+        else if (pixelRegex.test(styleHeight)) {
           modifiedHeight = pixelToEMU(styleHeight.match(pixelRegex)[1])
         }
         else if (emRegex.test(styleHeight)) {
           modifiedHeight = emToEmu(styleHeight.match(emRegex)[1])
         }
-        else if (remRegex.test(styleHeight)) {
-          modifiedHeight = remToEmu(styleHeight.match(remRegex)[1])
+        else if (pointRegex.test(styleHeight)) {
+          modifiedHeight = pointToEMU(Number(styleHeight.match(pointRegex)[1]))
+        }
+        else if (cmRegex.test(styleHeight)) {
+          modifiedHeight = cmToEMU(Number(styleHeight.match(cmRegex)[1]))
+        }
+        else if (inchRegex.test(styleHeight)) {
+          modifiedHeight = inchToEMU(Number(styleHeight.match(inchRegex)[1]))
         }
         else if (percentageRegex.test(styleHeight)) {
           const percentageValue = styleHeight.match(percentageRegex)[1]
@@ -1722,7 +1754,9 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
     else if (modifiedHeight && !modifiedWidth) {
       modifiedWidth = Math.round(modifiedHeight * aspectRatio)
     }
-    else {
+    else if (!modifiedWidth && !modifiedHeight) {
+      // when both dimensions were parsed from styles, keep them;
+      // only fall back to the natural size when neither was resolved
       modifiedWidth = originalWidthInEMU
       modifiedHeight = originalHeightInEMU
     }
@@ -1730,6 +1764,27 @@ function computeImageDimensions(vNode: VNode, attributes: Attributes) {
   else {
     modifiedWidth = originalWidthInEMU
     modifiedHeight = originalHeightInEMU
+  }
+
+  // The aspect ratio is 0 when the natural image size is unknown (e.g.
+  // unparsable image data), which turns the divisions above into
+  // Infinity/NaN. A non-finite extent makes Word reject the whole file,
+  // so fall back to the natural size (possibly 0) instead.
+  if (typeof modifiedWidth !== "number" || !Number.isFinite(modifiedWidth)) {
+    modifiedWidth = originalWidthInEMU
+  }
+  if (typeof modifiedHeight !== "number" || !Number.isFinite(modifiedHeight)) {
+    modifiedHeight = originalHeightInEMU
+  }
+
+  // Styled dimensions can exceed the printable page width (common with
+  // content pasted from Word, which sizes images in pt); scale them down
+  // proportionally so images are not cut off at the right page edge.
+  if (maximumWidthInEMU > 0 && modifiedWidth > maximumWidthInEMU) {
+    modifiedHeight = Math.round(
+      modifiedHeight * (maximumWidthInEMU / modifiedWidth),
+    )
+    modifiedWidth = maximumWidthInEMU
   }
 
   attributes.width = modifiedWidth
@@ -2053,11 +2108,10 @@ function buildTableCellBorders(tableCellBorder: {
       "tcBorders",
     )
 
-  const { color, stroke, ...borders } = tableCellBorder
-  Object.keys(borders)
+  const { color, stroke } = tableCellBorder // CT_TcBorders is a schema sequence: top, left, bottom, right
+  ;(["top", "left", "bottom", "right"] as const)
     .forEach((border) => {
-      const borderVal =
-        tableCellBorder[border as "top" | "bottom" | "left" | "right"]
+      const borderVal = tableCellBorder[border]
 
       if (borderVal) {
         const borderFragment = buildBorder(
@@ -2718,12 +2772,11 @@ function buildTableBorders(
       "tblBorders",
     )
 
-  const { color, stroke, ...borders } = tableBorder
-
-  Object.keys(borders)
+  const { color, stroke } = tableBorder // CT_TblBorders is a schema sequence: top, left, bottom, right,
+  // insideH, insideV
+  ;(["top", "left", "bottom", "right", "insideH", "insideV"] as const)
     .forEach((border) => {
-      const borderVal =
-        tableBorder[border as "top" | "left" | "bottom" | "right"]
+      const borderVal = tableBorder[border]
 
       if (borderVal) {
         const borderFragment = buildBorder(
@@ -2763,13 +2816,15 @@ function buildTableCellMargins(margin: number) {
     .ele(
       "@w",
       "tblCellMar",
+    ) // CT_TblCellMar is a schema sequence: top, left, bottom, right
+  ;[["top", margin / 2], ["left", margin], ["bottom", margin / 2], [
+    "right",
+    margin,
+  ]].forEach(([side, sideMargin]) => {
+    const marginFragment = buildCellMargin(
+      side as string,
+      sideMargin as number,
     )
-  ;["top", "bottom"].forEach((side) => {
-    const marginFragment = buildCellMargin(side, margin / 2)
-    tableCellMarFragment.import(marginFragment)
-  })
-  ;["left", "right"].forEach((side) => {
-    const marginFragment = buildCellMargin(side, margin)
     tableCellMarFragment.import(marginFragment)
   })
 
@@ -2782,50 +2837,41 @@ function buildTableProperties(attributes: Attributes) {
   })
     .ele("@w", "tblPr")
 
+  // CT_TblPrBase is a schema sequence; emit the properties in its
+  // order: tblW, jc, tblCellSpacing, tblBorders, tblCellMar
   if (attributes && attributes.constructor === Object) {
-    Object.keys(attributes)
-      .forEach((key) => {
-        switch (key) {
-          case "tableBorder": {
-            if (attributes.tableBorder) {
-              const tableBordersFragment = buildTableBorders(
-                attributes.tableBorder,
-              )
-              tablePropertiesFragment.import(tableBordersFragment)
-
-              delete attributes.tableBorder
-            }
-            break
-          }
-          case "tableCellSpacing": {
-            const tableCellSpacingFragment = buildTableCellSpacing(
-              attributes.tableCellSpacing,
-            )
-            tablePropertiesFragment.import(tableCellSpacingFragment)
-
-            delete attributes.tableCellSpacing
-            break
-          }
-          case "width": {
-            if (attributes.width) {
-              const tableWidthFragment = buildTableWidth(attributes.width)
-              tablePropertiesFragment.import(tableWidthFragment)
-            }
-
-            delete attributes.width
-            break
-          }
-          default:
-            break
-        }
-      })
+    if (attributes.width) {
+      const tableWidthFragment = buildTableWidth(attributes.width)
+      tablePropertiesFragment.import(tableWidthFragment)
+    }
+    delete attributes.width
   }
-  const tableCellMarginFragment = buildTableCellMargins(160)
-  tablePropertiesFragment.import(tableCellMarginFragment)
 
   // by default, all tables are center aligned.
   const alignmentFragment = buildHorizontalAlignment("center")
   tablePropertiesFragment.import(alignmentFragment)
+
+  if (attributes && attributes.constructor === Object) {
+    if ("tableCellSpacing" in attributes) {
+      const tableCellSpacingFragment = buildTableCellSpacing(
+        attributes.tableCellSpacing,
+      )
+      tablePropertiesFragment.import(tableCellSpacingFragment)
+
+      delete attributes.tableCellSpacing
+    }
+    if (attributes.tableBorder) {
+      const tableBordersFragment = buildTableBorders(
+        attributes.tableBorder,
+      )
+      tablePropertiesFragment.import(tableBordersFragment)
+
+      delete attributes.tableBorder
+    }
+  }
+
+  const tableCellMarginFragment = buildTableCellMargins(160)
+  tablePropertiesFragment.import(tableCellMarginFragment)
 
   tablePropertiesFragment.up()
 
@@ -3084,7 +3130,12 @@ function buildPresetGeometry() {
 
 function toEMU(v?: number | string) {
   if (v === undefined || v === null) return undefined
-  if (typeof v === "number") return v // already EMU
+  if (typeof v === "number") return Number.isFinite(v) ? v : undefined // already EMU
+  // rem before em: emRegex would also match the "em" suffix of "rem"
+  if (remRegex.test(v)) { // like "5rem"
+    const [, num] = v.match(remRegex) as RegExpMatchArray
+    return remToEmu(Number(num))
+  }
   if (pixelRegex.test(v)) { // like "256px"
     const [, num] = v.match(pixelRegex) as RegExpMatchArray
     return pixelToEMU(Number(num))
@@ -3093,18 +3144,30 @@ function toEMU(v?: number | string) {
     const [, num] = v.match(emRegex) as RegExpMatchArray
     return emToEmu(Number(num))
   }
-  if (remRegex.test(v)) { // like "5rem"
-    const [, num] = v.match(remRegex) as RegExpMatchArray
-    return remToEmu(Number(num))
+  if (pointRegex.test(v)) { // like "451.3pt"
+    const [, num] = v.match(pointRegex) as RegExpMatchArray
+    return pointToEMU(Number(num))
   }
-  return Number(v) // fallback – numeric string
+  if (cmRegex.test(v)) { // like "5.4cm"
+    const [, num] = v.match(cmRegex) as RegExpMatchArray
+    return cmToEMU(Number(num))
+  }
+  if (inchRegex.test(v)) { // like "2in"
+    const [, num] = v.match(inchRegex) as RegExpMatchArray
+    return inchToEMU(Number(num))
+  }
+  // fallback – numeric string; "auto", "50%", "50vw" etc. are not
+  // representable as an absolute length, so return undefined rather
+  // than NaN (NaN serialized into wp:extent makes Word reject the file)
+  const num = Number(v)
+  return Number.isFinite(num) ? num : undefined
 }
 
 function buildExtents(
   { width, height }: { width?: number | string; height?: number | string },
 ) {
-  const cx = width ? toEMU(width) : 0
-  const cy = height ? toEMU(height) : 0
+  const cx = (width ? toEMU(width) : 0) ?? 0
+  const cy = (height ? toEMU(height) : 0) ?? 0
   return fragment({ namespaceAlias: { a: namespaces.a } })
     .ele("@a", "ext")
     .att("cx", String(cx))
@@ -3180,7 +3243,10 @@ function buildSrcRectFragment() {
     .up()
 }
 
-function buildBinaryLargeImageOrPicture(relationshipId: number, isExternalLink?: boolean) {
+function buildBinaryLargeImageOrPicture(
+  relationshipId: number,
+  isExternalLink?: boolean,
+) {
   const fragment_obj = fragment({
     namespaceAlias: { a: namespaces.a, r: namespaces.r },
   })
@@ -3189,7 +3255,8 @@ function buildBinaryLargeImageOrPicture(relationshipId: number, isExternalLink?:
   // Use r:link for external images, r:embed for embedded images
   if (isExternalLink) {
     fragment_obj.att("@r", "link", `rId${relationshipId}`)
-  } else {
+  }
+  else {
     fragment_obj.att("@r", "embed", `rId${relationshipId}`)
   }
 
@@ -3200,7 +3267,10 @@ function buildBinaryLargeImageOrPicture(relationshipId: number, isExternalLink?:
   return fragment_obj
 }
 
-function buildBinaryLargeImageOrPictureFill(relationshipId: number, isExternalLink?: boolean) {
+function buildBinaryLargeImageOrPictureFill(
+  relationshipId: number,
+  isExternalLink?: boolean,
+) {
   const binaryLargeImageOrPictureFillFragment = fragment({
     namespaceAlias: { pic: namespaces.pic },
   })
@@ -3364,8 +3434,8 @@ function buildEffectExtentFragment() {
 function buildExtent(
   { width, height }: { width?: number | string; height?: number | string },
 ) {
-  const cx = width ? toEMU(width) : 0
-  const cy = height ? toEMU(height) : 0
+  const cx = (width ? toEMU(width) : 0) ?? 0
+  const cy = (height ? toEMU(height) : 0) ?? 0
   return fragment({ namespaceAlias: { wp: namespaces.wp } })
     .ele("@wp", "extent")
     .att("cx", String(cx))
@@ -3504,5 +3574,6 @@ export {
   buildTextElement,
   buildTextElementsWithSpaceSeparation,
   buildUnderline,
+  computeImageDimensions,
   fixupLineHeight,
 }
