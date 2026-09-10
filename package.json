@@ -12,6 +12,10 @@
   ],
   "main": "dist/index-cjs.js",
   "types": "dist/index-cjs.d.ts",
+  "files": [
+    "dist",
+    "bin"
+  ],
   "bin": {
     "html-to-docx": "bin/html-to-docx.mjs"
   },
